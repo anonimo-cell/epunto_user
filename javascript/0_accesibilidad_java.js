@@ -1,5 +1,15 @@
 // Guardamos el tamaño inicial (100%)
 let tamanoActual = 100;
+document.addEventListener('mousedown', function() {
+    document.body.classList.remove('navegacion-teclado');
+});
+
+// Si el usuario pulsa la tecla Tabulador, activamos el estilo azul gigante
+document.addEventListener('keydown', function(evento) {
+    if (evento.key === 'Tab') {
+        document.body.classList.add('navegacion-teclado');
+    }
+});
 
 // Función auxiliar para aplicar el tamaño de fuente
 function cambiarTamanoFuente(nuevoTamano) {

@@ -19,6 +19,8 @@ function cerrarModalInfo() {
     }
 }
 
+
+
 function cerrarModal(boton) {
     // Busca el <dialog> más cercano al botón que se ha pulsado
     const modal = boton.closest('dialog');

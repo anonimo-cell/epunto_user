@@ -13,7 +13,7 @@ function inicializarImagenPaso(contenedor) {
         if (!file) return;
 
         if (!file.type.startsWith('image/')) {
-            alert("Error: Solo se permiten archivos de imagen.");
+            mostrarMensajeEstado("Error: Solo se permiten archivos de imagen.");
             this.value = '';
             return;
         }

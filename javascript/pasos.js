@@ -11,7 +11,7 @@ document.getElementById('btn-agregar-paso').addEventListener('click', function (
     const listaPasos = document.getElementById('lista-pasos');
 
     if (listaPasos.children.length >= 7) {
-        alert("Has alcanzado el límite máximo de 7 pasos.");
+        mostrarMensajeEstado("Has alcanzado el límite máximo de 7 pasos.");
         return;
     }
 

@@ -2,10 +2,10 @@
 // SISTEMA DEFINITIVO DEL BOTÓN DE CABECERA (LOGIN / LOGOUT) Y SESIÓN TEMPORAL
 // =========================================================================
 
-let vistaAntesDelLogin = 'vista-ver'; 
-let vistaIntencion = null; 
+let vistaAntesDelLogin = 'vista-ver';
+let vistaIntencion = null;
 
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const botonIrALogin = event.target.closest('[data-vista="vista-login"]');
     if (botonIrALogin) {
         const vistasAbiertas = document.querySelectorAll('.subvista-contenido');
@@ -17,20 +17,24 @@ document.addEventListener('click', function(event) {
     }
 }, true);
 
-function toggleMostrarPassword() {
-    const inputPass = document.getElementById('login-password');
-    const btnToggle = document.getElementById('btn-toggle-pass');
-    if (inputPass && btnToggle) {
-        if (inputPass.type === 'password') {
-            inputPass.type = 'text'; 
-            btnToggle.innerText = 'Ocultar'; 
-        } else {
-            inputPass.type = 'password'; 
-            btnToggle.innerText = 'Mostrar'; 
-        }
+// =========================================================================
+// MOSTRAR / OCULTAR CONTRASEÑA EN FORMULARIO SOLICITUD
+// =========================================================================
+// =========================================================================
+// MOSTRAR / OCULTAR CONTRASEÑA INDEPENDIENTE
+// =========================================================================
+function toggleMostrarPassword(inputId, btnId) {
+    const inputPass = document.getElementById(inputId);
+    const btnPass = document.getElementById(btnId);
+
+    if (inputPass && inputPass.type === "password") {
+        inputPass.type = "text";
+        if (btnPass) btnPass.innerText = "Ocultar";
+    } else if (inputPass) {
+        inputPass.type = "password";
+        if (btnPass) btnPass.innerText = "Mostrar";
     }
 }
-
 // 1. Qué pasa cuando haces clic en el botón de la cabecera
 async function gestionarClickLogin(boton) {
     const estadoSesion = sessionStorage.getItem('sesionIniciada');
@@ -43,10 +47,17 @@ async function gestionarClickLogin(boton) {
         } catch (error) {
             console.error("Error al cerrar sesión:", error);
         }
-        
+
         sessionStorage.removeItem('sesionIniciada');
-        alert("Has cerrado sesión correctamente.");
-        window.location.reload(); 
+
+        // 1. Mostramos el mensaje con el fondo desenfocado
+        mostrarMensajeEstado("Has cerrado sesión");
+
+        // 2. Esperamos 3.5 segundos (lo que dura el mensaje) antes de recargar la página
+        setTimeout(() => {
+            window.location.reload();
+        }, 3500);
+
     } else {
         const modalLogin = document.getElementById('modal-login');
         if (modalLogin) {
@@ -54,7 +65,6 @@ async function gestionarClickLogin(boton) {
         }
     }
 }
-
 // 2. Pintar el botón según el estado
 function pintarBotonLogin() {
     const boton = document.getElementById('mi-boton-login');
@@ -63,25 +73,24 @@ function pintarBotonLogin() {
     const estadoSesion = sessionStorage.getItem('sesionIniciada');
 
     if (estadoSesion === '1') {
-        // --- AQUÍ CAMBIAS EL COLOR Y EL TEXTO CUANDO ESTÁS LOGUEADO ---
-        
-        // 1. Para el color: Puedes quitar/poner tus clases CSS (active, activ-cate) 
-        // o forzar un color exacto así:
-        boton.style.backgroundColor = "#d93025"; // Cambia este código de color al que prefieras
-        boton.style.color = "white"; // Color de la letra
-        boton.style.border = "none"; // Quita el borde si lo necesitas
-        
-        // 2. Para el texto:
-        boton.innerText = "Salir de mi cuenta"; // Escribe aquí el texto que quieras
-        
+        const estadoSesion = sessionStorage.getItem('sesionIniciada');
+        const botonLogin = document.getElementById('mi-boton-login'); // Asegúrate de que este sea el id de tu botón de sesión
+
+        if (estadoSesion === '1' && botonLogin) {
+            // Añadimos la clase CSS para el fondo rojo y texto blanco
+            botonLogin.classList.add('btn-sesion-activa');
+
+            // Cambiamos el texto del botón
+            botonLogin.innerText = "Salir de mi cuenta";
+        }
     } else {
         // --- AQUÍ CAMBIAS EL ASPECTO CUANDO NO HAY SESIÓN ---
-        
+
         // Restauramos los colores por defecto quitando los estilos que pusimos arriba
-        boton.style.backgroundColor = ""; 
+        boton.style.backgroundColor = "";
         boton.style.color = "";
         boton.style.border = "";
-        
+
         boton.innerText = "Iniciar sesión";
     }
 }
@@ -97,7 +106,7 @@ function seleccionarPerfilFormulario(botonPulsado) {
     const contenedor = botonPulsado.closest('.guia-card');
     if (contenedor) {
         contenedor.querySelectorAll('.btn-rela').forEach(btn => {
-            btn.classList.remove('activ-cate'); 
+            btn.classList.remove('activ-cate');
         });
     }
     botonPulsado.classList.add('activ-cate');

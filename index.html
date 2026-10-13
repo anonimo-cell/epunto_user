@@ -7,6 +7,7 @@
   <title>EPunto</title>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght=400;700&display=swap"
     rel="stylesheet">
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="stylesheet" href="0_css/responsivo.css">
 
 </head>
@@ -21,11 +22,13 @@
         <p class="titulo-menu-acce-claro">Productos hechos para y por personas con Parkinson</p>
       </span>
       <div class="botones-login-container">
+        <button class="btn-login-header" data-vista="vista-empresa" tabindex="0"
+          onclick="cambiarEstadoslider(this)">Empresa</button>
         <!--id="btn-header-sesion"-->
         <button id="mi-boton-login" class="btn-login-header" onclick="gestionarClickLogin(this)">Iniciar sesión</button>
 
         <button class="btn-login-header" data-vista="vista-solicitud" tabindex="0" id="btn-solicitud"
-          onclick="cambiarEstadoslider(this)">solicitar cuenta</button>
+          onclick="cambiarEstadoslider(this)">Solicitar cuenta</button>
       </div>
     </div>
     <!--BTN ERES EMPRESA-->
@@ -90,7 +93,7 @@
         <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModalDona('modal-donar')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/dona.svg" class="cap-icon-izq" alt="Icono de donaciones">
-            <span class="btn-titulo-izq">Agradecimientos</span>
+            <span class="btn-titulo-izq">Donar</span>
           </div>
         </div>
         <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModalContacto('modal-donar')">
@@ -138,7 +141,7 @@
           <img src="svg/menu/probar.svg" class="cap-icon-menu" alt="Icono de producto" aria-hidden="true">
         </div>
         <div class="btn-textos-contenedor-menu">
-          <h3 class="btn-titulo-menu">PROBAR UN PRODUCTO</h3>
+          <h3 class="btn-titulo-menu">Probar un producto</h3>
           <p class="btn-frase-menu">Prueba nuevos productos de apoyo</p>
         </div>
       </div>
@@ -159,9 +162,14 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
-              <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
-              <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+
+              <!-- Etiqueta real para WAVE, oculta visualmente pero leída por lectores de pantalla -->
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
+
+              <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="" aria-hidden="true">
+
+              <input type="text" id="input-busqueda-id" class="input-busqueda" tabindex="0" arial-label="Buscar producto"
+                placeholder="Buscar producto" maxlength="20" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -181,12 +189,12 @@
             <button class="btn-cate" data-vista="vista-comunica" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Comunicación</span>
               <span class="btn-cate-frase">Expresar lo que siento y pienso</span>
-              <img src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+              <img src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="Pictograma de comunicación">
             </button>
             <button class="btn-cate" data-vista="vista-productividad" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Tareas cotidianas</span>
               <span class="btn-cate-frase">Quehaceres de la casa</span>
-              <img src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+              <img src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="Pictograma de tareas">
             </button>
             <button class="btn-cate" data-vista="vista-ocio" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Ocio</span>
@@ -271,19 +279,23 @@
               <div class="form-grid-ini">
                 <div class="col-left">
                   <div class="form-row">
-                    <label class="titulo-form">Título:</label>
-                    <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="20">
+                    <label class="titulo-form" for="nombre-usuario">Nombre:*</label>
+                    <input type="text" id="nombre-usuario" class="input-moderno" placeholder="Nombre del producto"
+                      maxlength="30" aria-label="Nombre del producto">
                   </div>
                   <div class="form-row">
-                    <label>Descripción:</label>
-                    <textarea class="input-moderno" placeholder="¿Para que sirve tu producto¿"></textarea>
+                    <label>Descripción:*
+                      <textarea class="input-moderno" placeholder="¿Para que sirve tu producto?"
+                        aria-label="¿Para que sirve tu producto?" maxlength="300"></textarea>
+                    </label>
                   </div>
 
                 </div>
                 <div class="col-right">
-                  <label class="titulo-form">Imagen del Proyecto:</label>
-                  <div class="area-carga-imagen">
-                    <input type="file" class="file-input" accept="image/*" style="display:none;">
+                  <label class="titulo-form" for="imagen-proyecto">Imagen del Proyecto:*</label>
+                  <div class="area-carga-imagen" id="imagen-proyecto">
+                    <input type="file" class="file-input" accept="image/*" style="display:none;"
+                      aria-label="Subir imagen">
                     <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
                     <div class="preview-container" style="display:none;">
                       <img class="img-preview" src="#" alt="Vista previa">
@@ -307,7 +319,7 @@
             <div class="guia-card">
               <div class="contenedor-categoria">
                 <button type="button" class="btn-filt" onclick="abrirModalDificultad()">
-                  <span class="btn-cate-txt">Dificultad</span>
+                  <span class="btn-cate-txt">Dificultad*</span>
                   <div class="cabecera-linea-acce">
                     <img id="icono-elegido-dificultad" class="cap-icon-mini-fil" src="" alt="" style="display: none;">
                     <span id="valor-dificultad" class="btn-sele-filt">No seleccionada</span>
@@ -316,7 +328,7 @@
 
                 <button type="button" class="btn-filt" onclick="abrirModalPrecio()">
 
-                  <span class="btn-cate-txt">Precio</span>
+                  <span class="btn-cate-txt">Precio*</span>
 
                   <div class="cabecera-linea-acce">
                     <img id="icono-elegido-precio" class="cap-icon-mini-fil" src="" alt="" style="display: none;">
@@ -327,7 +339,7 @@
                 </button>
 
                 <button type="button" class="btn-filt" onclick="abrirModalTiempo()">
-                  <span class="btn-cate-txt">Tiempo</span>
+                  <span class="btn-cate-txt">Tiempo*</span>
 
                   <div class="cabecera-linea-acce">
                     <img id="icono-elegido-tiempo" class="cap-icon-mini-fil" src="" alt="" style="display: none;">
@@ -363,19 +375,19 @@
             <summary>Categorias</summary>
             <div class="contenedor-categoria">
               <button type="button" class="btn-cate" onclick="abrirModalCate1()">
-                <span class="btn-cate-txt">Nivel 1</span>
+                <span class="btn-cate-txt">Nivel 1*</span>
                 <span id="valor-n1" class="btn-sele-filt">No seleccionada</span>
                 <img id="icono-elegido-n1" class="cap-icon-cate" src="" alt="Icono Nivel 1" style="display: none;">
               </button>
 
               <button type="button" class="btn-cate" onclick="abrirModalNivel2()">
-                <span class="btn-cate-txt">Nivel 2</span>
+                <span class="btn-cate-txt">Nivel 2*</span>
                 <span id="valor-n2" class="btn-sele-filt">No seleccionada</span>
                 <img id="icono-elegido-n2" class="cap-icon-cate" src="" alt="Icono Nivel 2" style="display: none;">
               </button>
 
               <button type="button" class="btn-cate" onclick="abrirModalNivel3()">
-                <span class="btn-cate-txt">Nivel 3</span>
+                <span class="btn-cate-txt">Nivel 3*</span>
                 <span id="valor-n3" class="btn-sele-filt">No seleccionada</span>
                 <img id="icono-elegido-n3" class="cap-icon-cate" src="" alt="Icono Nivel 3" style="display: none;">
               </button>
@@ -399,7 +411,7 @@
           </details>
           <!--MATERIALES-->
           <details id="seccion-materiales">
-            <summary>Materiales necesarios</summary>
+            <summary>Materiales necesarios*</summary>
 
             <!-- Contenedor dinámico de materiales (máximo 10) -->
             <div id="lista-materiales" style="margin-bottom: 15px;">
@@ -429,7 +441,7 @@
           </details>
           <!--PASOS-->
           <details id="seccion-pasos">
-            <summary>Pasos del tutorial</summary>
+            <summary>Pasos del tutorial*</summary>
             <div class="guia-card">
               <div id="lista-pasos">
 
@@ -439,25 +451,28 @@
 
                     <!-- Columna Izquierda (Texto) -->
                     <div class="paso-columna-texto">
-                      <label class="paso-label" style="font-weight: bold; margin-bottom: 5px;">Paso 1</label>
-                      <div class="form-row" style="flex: 1; display: flex; flex-direction: column;">
-                        <textarea placeholder="Descripción detallada" maxlength="80"
-                          style="flex: 1; width: 100%; resize: none;"></textarea>
-                      </div>
+                      <label class="paso-label" style="font-weight: bold; margin-bottom: 5px;">Paso 1
+                        <div class="form-row" style="flex: 1; display: flex; flex-direction: column;">
+                          <textarea placeholder="Descripción detallada" maxlength="80"
+                            aria-label="Descripción detallada" style="flex: 1; width: 100%; resize: none;"></textarea>
+                        </div>
+                      </label>
                     </div>
 
                     <!-- Columna Derecha (Imagen) -->
                     <div class="paso-columna-imagen">
                       <label class="titulo-form" style="font-size: 0.85rem; margin-bottom: 5px;">Imagen del
-                        Proyecto:</label>
-                      <div class="area-carga-imagen" id="contenedor-imagen">
-                        <input type="file" class="file-input" accept="image/*" style="display:none;">
-                        <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
-                        <div class="preview-container" style="display:none;">
-                          <img class="img-preview" src="#" alt="Vista previa">
-                          <button type="button" class="btn-eliminar-foto">✕</button>
+                        Proyecto:
+                        <div class="area-carga-imagen" id="contenedor-imagen">
+                          <input type="file" class="file-input" accept="image/*" style="display:none;"
+                            aria-label="Subir imagen">
+                          <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
+                          <div class="preview-container" style="display:none;">
+                            <img class="img-preview" src="#" alt="Vista previa">
+                            <button type="button" class="btn-eliminar-foto">✕</button>
+                          </div>
                         </div>
-                      </div>
+                      </label>
                     </div>
 
                   </div>
@@ -487,7 +502,7 @@
           <details id="seccion-conclusiones">
             <summary>Conclusiones</summary>
             <div class="form-row"><textarea placeholder="¿Has aprendido algo haciendo este proyecto?"
-                maxlength="80"></textarea></div>
+                aria-label="¿Has aprendido algo haciendo este proyecto?" maxlength="80"></textarea></div>
             <div class="siguiente">
               <div class="btn-siguiente" role="button" tabindex="0" onclick="siguienteSeccion('seccion-pasos')">
                 <div class="cabecera-linea-volver">
@@ -537,10 +552,12 @@
           <div class="guia-card">
             <div class="paso-item">
               <div class="paso-columna-texto">
-                <label>Título:</label>
-                <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="20">
-                <label>Precio:</label>
-                <div class="contenedor-slider-filtros" style="display: flex; gap: 10px;">
+                <label>Nombre:*
+                  <input type="text" class="input-moderno" placeholder="Nombre del producto" maxlength="30"
+                    aria-label="Nombre del producto">
+                </label>
+                <label for="precio-com">Precio:*</label>
+                <div class="contenedor-slider-filtros" style="display: flex; gap: 10px;" id="precio-com">
                   <button type="button" class="btn-filtro"
                     onclick="cambiarOpcionPrecioComercializado(this, 'Bajo')">Bajo (1-20€)</button>
                   <button type="button" class="btn-filtro"
@@ -553,34 +570,36 @@
               </div>
 
               <div class="paso-columna-imagen">
-                <label>Imagen del Producto:</label>
-                <div class="area-carga-imagen">
-                  <input type="file" class="file-input" accept="image/*" style="display:none;">
-                  <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
-                  <div class="preview-container" style="display:none;">
-                    <img class="img-preview" src="#" alt="Vista previa">
-                    <button type="button" class="btn-eliminar-foto">✕</button>
+                <label>Imagen del Producto:*
+                  <div class="area-carga-imagen">
+                    <input type="file" class="file-input" accept="image/*" style="display:none;"
+                      aria-label="Subir imagen">
+                    <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
+                    <div class="preview-container" style="display:none;">
+                      <img class="img-preview" src="#" alt="Vista previa">
+                      <button type="button" class="btn-eliminar-foto">✕</button>
+                    </div>
                   </div>
-                </div>
+                </label>
               </div>
             </div>
             <div class="form-row">
-              <label>Categoria: *</label>
-              <div class="contenedor-categoria">
+              <label for="categoria-sele">Categoria: </label>
+              <div class="contenedor-categoria" id="categoria-sele">
                 <button type="button" class="btn-cate" onclick="abrirModalCate1('-com')">
-                  <span class="btn-cate-txt">Seleccionar categoría</span>
+                  <span class="btn-cate-txt">Nivel 1*</span>
                   <span id="valor-n1-com" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n1-com" class="cap-icon-cate" src="" alt="Icono Nivel 1"
                     style="display: none;">
                 </button>
                 <button type="button" class="btn-cate" onclick="abrirModalNivel2('-com')">
-                  <span class="btn-cate-txt">Seleccionar categoría 2</span>
+                  <span class="btn-cate-txt">Nivel 2*</span>
                   <span id="valor-n2-com" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n2-com" class="cap-icon-cate" src="" alt="Icono Nivel 2"
                     style="display: none;">
                 </button>
                 <button type="button" class="btn-cate" onclick="abrirModalNivel3('-com')">
-                  <span class="btn-cate-txt">Seleccionar categoría 3</span>
+                  <span class="btn-cate-txt">Nivel 3*</span>
                   <span id="valor-n3-com" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n3-com" class="cap-icon-cate" src="" alt="Icono Nivel 3"
                     style="display: none;">
@@ -588,12 +607,16 @@
               </div>
             </div>
             <div class="form-row">
-              <label>Descripción: *</label>
-              <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="80"></textarea>
+              <label>Descripción: *
+                <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="300"
+                  aria-label="Breve descripción..."></textarea>
+              </label>
             </div>
             <div class="form-row">
-              <label>Enlace: *</label>
-              <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"></textarea>
+              <label>Forma de compra: *
+                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="400"
+                  aria-label="¿Cómo lo has comprado?"></textarea>
+              </label>
             </div>
           </div>
           <div class="buscar-espacio">
@@ -634,28 +657,31 @@
           <!--TITULO,IMAGEN, FILTRO-->
           <div class="guia-card">
             <div class="form-row">
-              <label>Nombre de la empresa:</label>
-              <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="20">
+              <label>Nombre de la empresa:*
+                <input type="text" class="input-moderno" placeholder="Nombre de la empresa" maxlength="20"
+                  aria-label="Nombre de la empresa"></label>
             </div>
             <div class="form-row">
-              <label>Descripción de la empresa: *</label>
-              <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="180"></textarea>
+              <label>Descripción de la empresa: *
+                <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="300"
+                  aria-label="Breve descripción..."></textarea></label>
             </div>
             <div class="form-row">
-              <label>Enlace a la empresa: *</label>
-              <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"></textarea>
-            </div>
-
-            <div class="form-row">
-              <label>Contacto*</label>
-              <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                maxlength="80"></textarea>
+              <label>Enlace a la empresa: *
+                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"
+                  aria-label="¿Cómo lo has comprado?"></textarea></label>
             </div>
 
             <div class="form-row">
-              <label>Horario de disponibilidad*</label>
-              <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                maxlength="80"></textarea>
+              <label>Contacto*
+                <textarea class="input-moderno" placeholder="Informanos de cómo ponernos en contacto con ustedes"
+                  maxlength="80" aria-label="Contacto"></textarea></label>
+            </div>
+
+            <div class="form-row">
+              <label>Horario de disponibilidad*
+                <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
+                  maxlength="80" aria-label="Informanos de cuando ponernos en contacto con ustedes"></textarea></label>
             </div>
           </div>
           <div class="buscar-espacio">
@@ -698,19 +724,22 @@
               <div class="form-grid-ini">
                 <div class="col-left">
                   <div class="form-row">
-                    <label class="titulo-form">Nombre del producto:</label>
-                    <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="20">
+                    <label class="titulo-form">Nombre del producto: *
+                      <input type="text" class="input-moderno" placeholder="Nombre del producto" maxlength="80"
+                        aria-label="Nombre del producto"></label>
                   </div>
                   <div class="form-row">
-                    <label>Descripción del producto:</label>
-                    <textarea class="input-moderno" placeholder="¿Para que sirve tu producto¿"></textarea>
+                    <label>Descripción del producto: *
+                      <textarea class="input-moderno" placeholder="¿Para que sirve el producto?"
+                        aria-label="¿Para que sirve el producto?" maxlength="300"></textarea></label>
                   </div>
 
                 </div>
                 <div class="col-right">
-                  <label class="titulo-form">Imagen del Proyecto:</label>
-                  <div class="area-carga-imagen">
-                    <input type="file" class="file-input" accept="image/*" style="display:none;">
+                  <label class="titulo-form" for="imagen-p">Imagen del Proyecto:*</label>
+                  <div class="area-carga-imagen" id="imagen-p">
+                    <input type="file" class="file-input" accept="image/*" style="display:none;"
+                      aria-label="Subir imagen">
                     <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
                     <div class="preview-container" style="display:none;">
                       <img class="img-preview" src="#" alt="Vista previa">
@@ -721,12 +750,16 @@
               </div>
 
               <div class="form-row">
-                <label>Enlace de compra: *</label>
-                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"></textarea>
+                <label>Enlace de compra: *
+                  <textarea class="input-moderno"
+                    placeholder="¿Cón que enlace o forma de compra lo puede adquerir el usuario?"
+                    aria-label="¿Cón que enlace o forma de compra lo puede adquerir el usuario?"
+                    maxlength="400"></textarea></label>
               </div>
               <div class="form-row">
-                <label>Precio original *</label>
-                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"></textarea>
+                <label>Precio original *
+                  <textarea class="input-moderno" placeholder="Inserte el precio original"
+                    aria-label="Inserte el precio original" maxlength="80"></textarea></label>
               </div>
               <div class="siguiente">
                 <div class="btn-siguiente" role="button" tabindex="0" onclick="siguienteSeccion('info-emp')">
@@ -742,28 +775,33 @@
             <summary>Información de la empresa</summary>
             <div class="guia-card">
               <div class="form-row">
-                <label>Nombre de la empresa:</label>
-                <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="20">
+                <label>Nombre de la empresa:*
+                  <input type="text" class="input-moderno" placeholder="Nombre de la empresa"
+                    aria-label="Nombre de la empresa" maxlength="20"></label>
               </div>
               <div class="form-row">
-                <label>Descripción de la empresa: *</label>
-                <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="180"></textarea>
+                <label>Descripción de la empresa: *
+                  <textarea class="input-moderno" placeholder="Breve descripción..." aria-label="Breve descripción..."
+                    maxlength="180"></textarea></label>
               </div>
               <div class="form-row">
-                <label>Enlace a la empresa: *</label>
-                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"></textarea>
-              </div>
-
-              <div class="form-row">
-                <label>Contacto*</label>
-                <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                  maxlength="80"></textarea>
+                <label>Enlace a la empresa: *
+                  <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?"
+                    aria-label="¿Cómo lo has comprado?" maxlength="80"></textarea></label>
               </div>
 
               <div class="form-row">
-                <label>Horario de disponibilidad*</label>
-                <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                  maxlength="80"></textarea>
+                <label>Contacto*
+                  <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
+                    aria-label="Informanos de cuando ponernos en contacto con ustedes"
+                    maxlength="80"></textarea></label>
+              </div>
+
+              <div class="form-row">
+                <label>Horario de disponibilidad*
+                  <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
+                    aria-label="Informanos de cuando ponernos en contacto con ustedes" maxlength="80"></textarea>
+                </label>
               </div>
               <div class="siguiente">
                 <div class="btn-siguiente" role="button" tabindex="0" onclick="siguienteSeccion('seccion-filt')">
@@ -871,8 +909,8 @@
         <!-- TEXTO DINÁMICO (AQUÍ ESTÁ EL ID) -->
         <div class="categorias">
           <h1 id="texto-exito-publicado" class="texto-exito-centrado">Solicitud enviada con exito</h1>
-          <h3>Tu cuenta ha sido creada, para verificar tu identidad te contactaremos a lo largo de la semana en el
-            horario XXXX, en caso de no poder verificar tu identidad, eliminaremos la cuenta</h3>
+          <h3>Tu cuenta ha sido creada, para verificar tu identidad te contactaremos a lo largo de la semana, en caso de
+            no poder verificar tu identidad, eliminaremos la cuenta</h3>
         </div>
 
         <!-- BOTÓN DINÁMICO (AQUÍ ESTÁ EL ID Y LA NUEVA FUNCIÓN) -->
@@ -904,7 +942,7 @@
 
         <!-- TEXTO DINÁMICO (AQUÍ ESTÁ EL ID) -->
         <div class="categorias">
-          <h1 id="texto-exito-publicado" class="texto-exito-centrado">Formulario de empresa ideas enviado con exito</h1>
+          <h1 id="texto-exito-publicado" class="texto-exito-centrado">Formulario de empresa enviado con exito</h1>
           <h3>Nos pondremos en contacto con ustedes segun el horario que han indicado</h3>
         </div>
 
@@ -984,29 +1022,30 @@
           <!--TITULO,IMAGEN, FILTRO-->
           <div class="guia-card">
             <div class="form-row">
-              <label>Cuentanos sobre tu dificultad:*</label>
-              <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="90">
+              <label>Cuentanos sobre tu dificultad:*
+                <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="300"
+                  aria-label="Título del producto" maxlength="300"></label>
             </div>
             <div class="form-row">
-              <label>A qué categoría dirías que pertenece tu dificultad:*</label>
-              <div class="contenedor-categoria">
+              <label for="sele-categoria">A qué categoría dirías que pertenece tu dificultad:*</label>
+              <div class="contenedor-categoria" id="sele-categoria">
                 <!-- Nivel 1 -->
                 <button type="button" class="btn-cate" onclick="abrirModalCate1('-prob')">
-                  <span class="btn-cate-txt">Seleccionar categoría</span>
+                  <span class="btn-cate-txt">Nivel 1*</span>
                   <span id="valor-n1-prob" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n1-prob" class="cap-icon-cate" src="" alt="Icono Nivel 1"
                     style="display: none;">
                 </button>
                 <!-- Nivel 2 -->
                 <button type="button" class="btn-cate" onclick="abrirModalNivel2('-prob')">
-                  <span class="btn-cate-txt">Seleccionar categoría 2</span>
+                  <span class="btn-cate-txt">Nivel 2*</span>
                   <span id="valor-n2-prob" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n2-prob" class="cap-icon-cate" src="" alt="Icono Nivel 2"
                     style="display: none;">
                 </button>
                 <!-- Nivel 3 -->
                 <button type="button" class="btn-cate" onclick="abrirModalNivel3('-prob')">
-                  <span class="btn-cate-txt">Seleccionar categoría 3</span>
+                  <span class="btn-cate-txt">Nivel 3*</span>
                   <span id="valor-n3-prob" class="btn-sele-filt">No seleccionada</span>
                   <img id="icono-elegido-n3-prob" class="cap-icon-cate" src="" alt="Icono Nivel 3"
                     style="display: none;">
@@ -1014,8 +1053,9 @@
               </div>
             </div>
             <div class="form-row">
-              <label>¿Se te ha ocurrido alguna idea para solucionarlo?: *</label>
-              <textarea class="input-moderno" placeholder="Cuentanosla porfavor" maxlength="80"></textarea>
+              <label>¿Se te ha ocurrido alguna idea para solucionarlo?:
+                <textarea class="input-moderno" placeholder="Cuentanosla porfavor" aria-label="Cuentanosla porfavor"
+                  maxlength="300"></textarea></label>
             </div>
           </div>
           <div class="buscar-espacio">
@@ -1055,6 +1095,45 @@
         </button>
       </div>
     </div>
+    <!--VISTA EMPRESA-->
+    <div id="vista-empresa" class="subvista-contenido" style="display: none;">
+      <div class="contenedor-dinamico">
+        <div class="linea_superior">
+          <div class="grid-linea-superior">
+            <div class="cabecera-superior-icono">
+              <div class="text-linea-superior">
+                <h1 class="titulo-linea-superior">Empresa</h1>
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="problema-texto">
+          <div class="btn-frase-problema">
+            <p>Hola, en este portal damos facilitamos a las empresas el diseño centrado en el usuario para los productos
+              de apoyo.
+              ¿En que te podemos ayudar?
+            </p>
+          </div>
+        </div>
+
+        <div class="slider-subir">
+          <div class="btn-subir-emp" role="button" tabindex="0" data-vista="vista-form-ideas"
+            onclick="cambiarEstadoslider(this)">
+            <span class="btn-titulo-subir">Ideas de diseño</span>
+            <span class="btn-frase-subir">Gracias a nuestros formularios anónimos, hemos recopilado ideas y retos reales
+              validados por usuarios de la comunidad parkinson</span>
+          </div>
+          <div class="btn-subir-emp" role="button" tabindex="0" data-vista="vista-form-validar"
+            onclick="cambiarEstadoslider(this)">
+            <span class="btn-titulo-subir">Validar un producto</span>
+            <span class="btn-frase-subir">Ofrecemos la opción de poner en contacto a usuarios reales de la comunidad
+              para
+              validar, ideas, prototipos y productos</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <!--VISTA PRODUCTO DE BAJO COSTE-->
     <div id="vista-detalle-verproducto" class="subvista-contenido" style="display: none;">
       <div class="contenedor-dinamico">
@@ -1085,7 +1164,8 @@
         <div class="detalle-card" style="text-align: left; margin-top: 20px; padding: 20px;">
 
           <div style="text-align: center; margin-bottom: 20px;">
-            <img id="detalle-ver-imagen" src="" style="max-height: 100%; height: 400px; border-radius: 10px;">
+            <img id="detalle-ver-imagen" src="" style="max-height: 100%; height: 400px; border-radius: 10px;"
+              alt="detalle-imagen">
           </div>
 
           <div class="prod-etiquetas" style="justify-content: center; margin-bottom: 30px; display: flex; gap: 10px;">
@@ -1131,7 +1211,6 @@
             <div class="btn-volver" role="button" tabindex="0" onclick="regresarAnterior()">
               <div class="cabecera-linea-volver">
                 <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
               </div>
             </div>
 
@@ -1146,7 +1225,8 @@
         <div class="detalle-card" style="text-align: left; margin-top: 20px; padding: 20px;">
 
           <div style="text-align: center; margin-bottom: 20px;">
-            <img id="detalle-ver-imagen" src="" style="max-height: 100%; height: 400px; border-radius: 10px;">
+            <img id="detalle-ver-imagen" src="" style="max-height: 100%; height: 400px; border-radius: 10px;"
+              alt="detalle-imagen">
           </div>
 
           <div class="prod-etiquetas" style="justify-content: center; margin-bottom: 30px; display: flex; gap: 10px;">
@@ -1192,9 +1272,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
-              <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+              <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto"
+                aria-label="Buscar producto" maxlength="20" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
           </div>
         </div>
@@ -1212,12 +1293,12 @@
 
             <button class="btn-cate" data-vista="vista-vestir" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Vestirse</span>
-              <img src="svg/cate/auto/vestirse/ropa.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+              <img src="svg/cate/auto/vestirse/ropa.png" class="cap-icon-cate" alt="Pictograma de vestirse">
             </button>
 
             <button class="btn-cate" onclick="abrirCatalogoProductos(this)">
               <span class="btn-cate-txt">Medicación</span>
-              <img src="svg/cate/auto/medi/medicamento.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+              <img src="svg/cate/auto/medi/medicamento.png" class="cap-icon-cate" alt="Pictograma de medicacion">
             </button>
 
             <button class="btn-cate" onclick="abrirCatalogoProductos(this)">
@@ -1254,9 +1335,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
-              <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+              <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto"
+                aria-label="Buscar producto" maxlength="20" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1318,9 +1400,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                aria-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1389,9 +1472,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                aria-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1460,9 +1544,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                arial-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1535,9 +1620,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                arial-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1606,9 +1692,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                arial-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
 
           </div>
@@ -1682,9 +1769,10 @@
             </div>
 
             <div class="caja-contenedor-busqueda">
+              <label for="input-busqueda-id" class="sr-only">Buscar producto</label>
               <img src="svg/buscar/buscar_input.svg" class="cap-icon-busqueda" alt="Icono de lupa" aria-hidden="true">
               <input type="text" class="input-busqueda" tabindex="0" placeholder="Buscar producto" maxlength="20"
-                onkeypress="ejecutarBusquedaTexto(event, this)">
+                arial-label="Buscar producto" onkeypress="ejecutarBusquedaTexto(event, this)">
             </div>
           </div>
 
@@ -1801,7 +1889,7 @@
           <!-- Imagen central -->
           <div style="text-align: center; margin-bottom: 25px;">
             <img id="detalle-probar-imagen" src=""
-              style="max-height: 100%; height: 400px; border-radius: 10px; object-fit: contain;">
+              style="max-height: 100%; height: 400px; border-radius: 10px; object-fit: contain;" alt="detalle-imagen">
           </div>
 
           <!-- Sección Descripción -->
@@ -1823,7 +1911,7 @@
           </div>
           <div class="buscar-espacio">
             <button type="button" class="btn-buscar" onclick="comprobarSesionYContactar(event)">
-              Contactar
+              Quiero probar este producto
             </button>
           </div>
 
@@ -1851,35 +1939,39 @@
             <div class="form-grid-ini">
               <div class="col-left">
                 <div class="form-row">
-                  <label class="titulo-form">Nombre de usuario:</label>
-                  <!-- AÑADIDO ID -->
-                  <input type="text" id="solicitud-usuario" class="input-moderno" placeholder="Nombre de usuario"
-                    maxlength="80">
+                  <label class="titulo-form">Nombre de usuario: *
+                    <!-- AÑADIDO ID -->
+                    <input type="text" id="solicitud-usuario" class="input-moderno" placeholder="Nombre de usuario"
+                      arial-label="Nombre de usuario" maxlength="20" minlength="4"></label>
                 </div>
               </div>
               <!--REPETIR CONTRASEÑAS-->
               <div class="col-right">
                 <div class="form-row" style="margin-bottom: 30px;">
-                  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Contraseña:</label>
+                  <label style="font-weight: bold; display: block; margin-bottom: 5px;"
+                    for="contrasena-primera">Contraseña: *</label>
 
-                  <div style="display: flex; gap: 10px;">
+                  <div style="display: flex; gap: 10px;" id="contrasena-primera">
+                    <label for="psswd-1" class="sr-only">Introducir contraseña</label>
                     <input type="password" id="psswd-1" class="input-moderno" placeholder="Introducir contraseña"
-                      style="flex: 1;">
+                      arial-label="Introducir contraseña" style="flex: 1;">
 
-                    <button type="button" id="btn-toggle-pass" onclick="toggleMostrarPassword()"
-                      style="padding: 0 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif;">
+                    <button type="button" id="btn-toggle-pass"
+                      onclick="toggleMostrarPassword('psswd-1', 'btn-toggle-pass')" class="btn-mostrar">
                       Mostrar
                     </button>
                   </div>
                 </div>
                 <div class="form-row" style="margin-bottom: 30px;">
-                  <label style="font-weight: bold; display: block; margin-bottom: 5px;">Repite la contraseña:</label>
-                  <div style="display: flex; gap: 10px;">
+                  <label style="font-weight: bold; display: block; margin-bottom: 5px;" for="contrasena-segunda">Repite
+                    la contraseña:*</label>
+                  <div style="display: flex; gap: 10px;" id="contrasena-segunda">
+                    <label for="psswd-1" class="sr-only">Introducir contraseña</label>
                     <input type="password" id="psswd-2" class="input-moderno" placeholder="Introducir contraseña"
-                      style="flex: 1;">
+                      arial-label="Introducir contraseña" style="flex: 1;">
 
-                    <button type="button" id="btn-toggle-pass-2" onclick="toggleMostrarPassword()"
-                      style="padding: 0 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif;">
+                    <button type="button" id="btn-toggle-pass-2"
+                      onclick="toggleMostrarPassword('psswd-2', 'btn-toggle-pass-2')" class="btn-mostrar">
                       Mostrar
                     </button>
                   </div>
@@ -1894,17 +1986,18 @@
           </div>
 
           <!--CONTACTO-->
-          <label>Contacto</label>
-          <div class="form-row">
-            <!-- AÑADIDO ID -->
-            <input type="text" id="solicitud-contacto" class="input-moderno" placeholder="Email o teléfono"
-              maxlength="80">
-          </div>
+          <label>Contacto:*
+            <div class="form-row">
+              <!-- AÑADIDO ID -->
+              <input type="text" id="solicitud-contacto" class="input-moderno" placeholder="Email o teléfono"
+                aria-label="Email o teléfono">
+            </div>
+          </label>
 
-          <label>Relación con el parkinson</label>
-          <div class="guia-card">
+          <label for="sele-relacion">Relación con el parkinson *</label>
+          <div class="guia-card" id="sele-relacion">
             <div
-              style="display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; gap: 10px; margin-bottom: 25px; width: 100%;">
+              style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 25px; width: 100%;">
               <button type="button" class="btn-rela" data-perfil="paciente" onclick="seleccionarPerfilFormulario(this)">
                 <span class="btn-cate-txt">Paciente</span>
 
@@ -1928,13 +2021,14 @@
             </div>
           </div>
 
-          <label>Fundación</label>
-          <div class="form-row">
-            <!-- AÑADIDO ID -->
-            <input type="text" id="solicitud-fundacion" class="input-moderno"
-              placeholder="Si perteneces a alguna asociación, escribela porfavor" maxlength="30">
-          </div>
-
+          <label>Fundación:
+            <div class="form-row">
+              <!-- AÑADIDO ID -->
+              <input type="text" id="solicitud-fundacion" class="input-moderno"
+                aria-label="Si perteneces a alguna asociación, escribela porfavor"
+                placeholder="Si perteneces a alguna asociación, escribela porfavor" maxlength="30">
+            </div>
+          </label>
           <!--BOTÓN FINAL CON LA NUEVA FUNCIÓN-->
           <div class="buscar-espacio" style="margin-top: 20px;">
             <button type="button" data-vista="vista-publicado-solicitud" onclick="validarFormularioSolicitud(this)"
@@ -1944,6 +2038,13 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Contenedor global para mensajes de estado con fondo desenfocado -->
+  <div id="mensaje-estado-global" class="mensaje-estado-flotante">
+    <div class="mensaje-estado-contenido">
+      <span id="texto-estado-global">Mensaje de estado</span>
     </div>
   </div>
 
@@ -1969,18 +2070,18 @@
       </p>
 
       <div class="form-row" style="margin-bottom: 15px;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Usuario:</label>
-        <input type="text" id="login-usuario-modal" class="input-moderno" placeholder="Introducir usuario"
-          maxlength="20" style="width: 100%; padding: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Usuario: *
+          <input type="text" id="login-usuario-modal" class="input-moderno" placeholder="Introducir usuario"
+            aria-label="Introducir usuario" maxlength="20" style="width: 100%; padding: 10px;"></label>
       </div>
 
       <div class="form-row" style="margin-bottom: 20px;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Contraseña:</label>
-        <div style="display: flex; gap: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;" for="contrase-inicio">Contraseña:
+          *</label>
+        <div style="display: flex; gap: 10px;" id="contrase-inicio">
           <input type="password" id="login-password-modal" class="input-moderno" placeholder="Introducir contraseña"
-            style="flex: 1; padding: 10px;">
-          <button type="button" id="btn-toggle-pass-modal" onclick="toggleMostrarPasswordModal()"
-            style="padding: 0 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif;">
+            aria-label="Introducir contraseña" style="flex: 1; padding: 10px;">
+          <button type="button" id="btn-toggle-pass-modal" onclick="toggleMostrarPasswordModal()" class="btn-mostrar">
             Mostrar
           </button>
         </div>
@@ -1988,7 +2089,7 @@
 
       <p id="mensaje-error-login-modal"
         style="color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; font-size: 0.9em; display: none;">
-        El usuario o la contraseña no coinciden.
+        El usuario o la contraseña no son correctos.
       </p>
 
       <div class="buscar-espacio" style="margin-top: 10px;">
@@ -2034,7 +2135,8 @@
     <div class="modal-cuerpo">
       <h4> Hola, bienvenido a nuestra web EPunto.</h4>
       <p>EPunto es una página web que quiere aumentar la autonomía de las personas con Parkinson.</p>
-      <p>Ella esta pensada para que personas con Parkinson, familiares o terapeutas puedan buscar y subir soluciones que
+      <p>Ella esta pensada para que personas con Parkinson, familiares o terapeutas puedan buscar y subir soluciones
+        que
         les han sido utiles</p>
       <p>Así, ellos ayudan a otras personas con Parkinson que hayan tenido las mismas dificultades</p>
       <p>En esta página vas a encontrar 2 tipos de productos de apoyo:</p>
@@ -2055,7 +2157,8 @@
     </div>
     <div class="modal-cuerpo">
       <h4>Ver productos de apoyo</h4>
-      <p> Podrás ver productos de apoyo que hayan recomendado otras personas relacionadas con el Parkinson en la seccion
+      <p> Podrás ver productos de apoyo que hayan recomendado otras personas relacionadas con el Parkinson en la
+        seccion
         "Ver".</p>
       <p> Los productos que verás pueden ser pueden vender o pueden ser tutoriales caseros que hayan hecho otras
         personas.</p>
@@ -2094,7 +2197,8 @@
       <p>Desde EPunto hacemos una gran labor encantado, pero nuestra web tiene unos gastos que necesitamos pagar</p>
       <p>Si quieres ayudarnos donando algo de dinero pulsar el botón de abajo</p>
       <button class="side-btn-acce" style="margin-top:10px;"
-        onclick="window.open('donaciones.html', '_blank')">Agradecimientos</button>
+        onclick="mostrarMensajeEstado('No habilitado aún')">Donar</button>
+
     </div>
   </dialog>
 
@@ -2140,13 +2244,13 @@
       <button class="btn-cate" data-vista="vista-comunica" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Comunicación</span>
         <span class="btn-cate-frase">Expresar lo que siento y pienso</span>
-        <img src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+        <img src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="Pictograma de comunicación">
       </button>
 
       <button class="btn-cate" data-vista="vista-productividad" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Tareas cotidianas</span>
         <span class="btn-cate-frase">Quehaceres de la casa</span>
-        <img src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="Pictograma de desarrollo">
+        <img src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="Pictograma de tareas">
       </button>
 
       <button class="btn-cate" data-vista="vista-ocio" onclick="seleccionarCatenivel1(this)">
@@ -2551,7 +2655,7 @@
     onclick="cerrarImagenGrande()">
     <span
       style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
-    <img id="imagen-ampliada-src"
+    <img id="imagen-ampliada-src" alt="detalle-imagen"
       style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); object-fit: contain;">
   </div>
   <!--ENLACE DOCUMENTOS-->
@@ -2564,7 +2668,7 @@
 
     window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    console.log("Supabase inicializado correctamente:", window.supabase);
+    console.log("Supabase inicializado", window.supabase);
   </script>
 
 

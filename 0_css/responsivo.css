@@ -102,6 +102,17 @@ html {
   font-size: var(--tamano-fuente-base);
   box-sizing: border-box;
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 *,
 *::before,
@@ -117,6 +128,42 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background-color: #fcfcfc;
+}
+.class-txt{
+  font-size: 1rem;
+  color: #232222;
+}
+
+.mensaje-estado-flotante {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  /* Subimos el z-index para que quede por encima de cualquier dialog */
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+/* Contenido interno del mensaje para mantener su diseño original */
+.mensaje-estado-contenido {
+  background-color: #204555;
+  color: #fff;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  text-align: center;
+  max-width: 90%;
+}
+
+.mensaje-estado-flotante.error .mensaje-estado-contenido {
+  background-color: #d93025;
 }
 
 /* =========================================================================
@@ -182,7 +229,7 @@ body {
 }
 
 .btn-rela {
-  border-radius: 25px;
+  border-radius: 5px;
   border: 4px solid var(--color-acce-borde);
   background-color: #fff;
   color: var(--color-cate-text);
@@ -191,6 +238,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.btn-rela.activ-cate {
+
+  background-color: var(--color-acce-borde-lateral);
+  border-radius: 5px;
+  border: 4px solid var(--color-acce-borde);
 }
 
 .btn-menu {
@@ -206,6 +260,19 @@ body {
   grid-template-columns: 45px 1fr;
   align-items: center;
   gap: 12px;
+}
+
+/* Estilo del botón cuando la sesión está iniciada (Rojo de salida) */
+.btn-sesion-activa {
+  background-color: #d93025 !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* Efecto hover cuando la sesión está iniciada (Un rojo un poco más oscuro) */
+.btn-sesion-activa:hover {
+  background-color: #f49e98 !important;
+  color: #000 !important;
 }
 
 .active {
@@ -335,31 +402,13 @@ body {
 }
 
 .input-busqueda:hover {
-  border: 5px solid #000;
+  border: 5px solid var(--color-acce-borde);
 }
 
 /* =========================================================================
    FOCO DE ACCESIBILIDAD GLOBAL
    ========================================================================= */
-*:focus-visible {
-  outline: none !important;
-  ;
-  /* Quitamos el borde por defecto del navegador */
-  box-shadow: 0 0 0 4px #0317fa, 0 0 0 6px #000000 !important;
-  /* Tu diseño personalizado */
-  border-radius: inherit;
-  /* Hace que el foco respete las esquinas redondeadas de cada elemento */
-  z-index: 9999 !important; 
-  position: relative;
-}
 
-button:focus,
-input:focus {
-  outline: 5px solid var(--color-btn-frase);
-  /* Puedes cambiar el color para que encaje con tu diseño */
-  outline-offset: 3px;
-  border-radius: 4px;
-}
 
 /* Opcional: Si quieres quitar el recuadro cuando se hace clic con el ratón y dejarlo solo para el teclado */
 button:focus:not(:focus-visible) {
@@ -469,6 +518,7 @@ button:focus:not(:focus-visible) {
   object-fit: contain;
 }
 
+
 .btn-titulo-izq {
   font-weight: normal;
   font-size: 0.8rem;
@@ -540,10 +590,77 @@ button:focus:not(:focus-visible) {
   text-decoration: underline;
 }
 
+.miga-enlace:hover {
+  color: #409cff;
+  /* O el color exacto que prefieras para resaltar */
+  opacity: 0.8;
+}
+
 .columna-botones {
   width: 100%;
   display: flex;
   justify-content: center;
+}
+
+/* 1. Actualizamos tu botón para fijar su altura */
+.btn-mostrar {
+  min-width: 85px;
+  padding: 0 15px;
+  background-color: var(--color-acce);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  color: var(--color-text-superior);
+  font-weight: bold;
+  height: 50px;
+  /* FIJAMOS LA ALTURA */
+}
+
+/* =========================================================================
+   ESTILO AL SELECCIONAR INPUTS CON EL RATÓN (SIN RECUADRO AZUL)
+   ========================================================================= */
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+.input-moderno:focus {
+  outline: none !important;
+  /* Quita el borde feo del navegador */
+  box-shadow: none !important;
+  /* APAGA EL RECUADRO AZUL Y NEGRO */
+
+  /* Cambia el borde a tu color naranja de la paleta */
+  border: 6px solid var(--color-hover-superior-borde) !important;
+}
+
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================================
+   ESTILO DE ACCESIBILIDAD (SOLO AL USAR LA TECLA TABULADOR)
+   ========================================================================= */
+body.navegacion-teclado *:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px #0317fa, 0 0 0 6px var(--color-acce-borde-lateral) !important;
+  border-radius: inherit !important;
+  z-index: 9999 !important;
+  position: relative;
+}
+
+.btn-mostrar:hover {
+  background-color: var(--color-hover-superior);
+}
+
+/* 2. Fijamos la altura de los campos de contraseña para que no salten */
+#psswd-1,
+#psswd-2,
+#login-password-modal {
+  height: 50px;
+  /* MISMA ALTURA QUE EL BOTÓN */
+  box-sizing: border-box;
+  /* Evita que el padding sume tamaño extra */
 }
 
 /* DIALOGS */
@@ -650,12 +767,7 @@ button:focus:not(:focus-visible) {
   justify-content: center;
 }
 
-.cap-icon-modal {
-  height: 24px;
-  width: auto;
-  flex-shrink: 0;
-  object-fit: contain;
-}
+
 
 .btn-subir,
 .btn-subir-emp,
@@ -675,6 +787,11 @@ button:focus:not(:focus-visible) {
   justify-items: center;
   align-items: center;
   gap: 5px;
+}
+
+.btn-cerrar-modal:hover {
+  background-color: #ef5e5e;
+  border: #710707;
 }
 
 .btn-cerrar-modal {
@@ -714,14 +831,21 @@ button:focus:not(:focus-visible) {
 .side-btn-izq:hover,
 .btn-buscar:hover,
 .btn-menu:hover,
-.btn-volver:hover,
-.btn-volver-atras:hover,
+.btn-filtro:hover,
 .btn-subir:hover,
 .btn-login-header:hover {
   outline: none;
   background-color: var(--color-btn-menu-hover);
 }
 
+.btn-volver:hover,
+.btn-siguiente:hover,
+.btn-subir-emp:hover,
+.btn-volver-atras:hover {
+  outline: none;
+  background-color: var(--color-acce-hover);
+
+}
 
 
 .btn-cate:hover,
@@ -968,32 +1092,14 @@ button:focus:not(:focus-visible) {
     width: 4rem;
     flex: 1;
     padding: 10px;
-    border-radius: 15px;
+    border-radius: 5px;
     border: 2px solid #d1d5db;
     background-color: #f9fafb;
     color: #374151;
     cursor: pointer;
     text-align: center;
-    transition: all 0.2s ease;
   }
 
-  .btn-rela.activ-cate {
-    border-color: #0056b3;
-    background-color: #ac48b1;
-    color: #0056b3;
-    font-weight: bold;
-  }
-
-  .btn-rela img {
-    max-width: 40px;
-    max-height: 40px;
-    object-fit: contain;
-  }
-
-  .btn-rela .btn-cate-txt {
-    font-size: 1rem;
-    color: #000;
-  }
 
   .btn-accion {
     width: auto;
@@ -1226,6 +1332,10 @@ button:focus:not(:focus-visible) {
     object-fit: contain;
   }
 
+  .mensaje-estado-contenido {
+    font-size: 4rem;
+  }
+
   .txt-detalle {
     font-size: 1.75rem;
     color: #0056b3;
@@ -1412,9 +1522,55 @@ button:focus:not(:focus-visible) {
     text-align: left;
   }
 
+
+  /* =========================================================================
+   AJUSTE DE CABECERA EN VISTAS DE DETALLE DE PRODUCTO
+   ========================================================================= */
+
+  /* 1. Forzamos un tamaño correcto y uniforme para el botón de volver en los detalles */
+  #vista-detalle-verproducto .btn-volver,
+  #vista-detalle-verproductocom .btn-volver {
+    width: 100% !important;
+    max-width: 130px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: var(--color-btn-volver);
+    border-radius: 22px;
+  }
+
+  /* 2. Damos más espacio al título y evitamos que se rompa feo en varias líneas */
+  #vista-detalle-verproducto .titulo-linea-superior,
+  #vista-detalle-verproductocom .titulo-linea-superior {
+    font-size: 2.2rem !important;
+    /* Tamaño grande y legible */
+    line-height: 1.2;
+    word-break: normal !important;
+    /* Evita cortes extraños en medio de las palabras */
+    max-width: 100%;
+  }
+
+  /* 3. Ampliamos el contenedor central de la cabecera en los detalles */
+  #vista-detalle-verproducto .cabecera-superior-icono,
+  #vista-detalle-verproductocom .cabecera-superior-icono {
+    width: 100% !important;
+    grid-area: col2 / col2 / span 1 / span 2 !important;
+    /* Le permitimos expandirse ocupando más columnas si es necesario */
+    justify-self: start !important;
+    text-align: left;
+  }
+
   .btn-titulo-subir {
     font-size: 1.5rem;
     text-align: left;
+  }
+
+  .cap-icon-modal {
+    height: 54px;
+    width: auto;
+    flex-shrink: 0;
+    object-fit: contain;
   }
 
 
@@ -1453,7 +1609,8 @@ button:focus:not(:focus-visible) {
     margin: 0;
     padding: 10px 15px 10px 45px !important;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 10px;
+    /* <--- Aquí aplicamos las esquinas redondeadas */
     box-sizing: border-box;
     font-family: inherit;
     font-size: 0.8rem;
@@ -2009,11 +2166,11 @@ button:focus:not(:focus-visible) {
     align-items: center;
     max-width: 250px;
     justify-content: center;
-     font-size: 1.2rem !important;
-   
+    font-size: 1.2rem !important;
+
   }
 
-  
+
   #vista-detalle-verproductocom #detalle-ver-valoracion {
     display: flex !important;
     flex-direction: row !important;
@@ -2158,6 +2315,28 @@ button:focus:not(:focus-visible) {
     display: none !important;
   }
 
+  .btn-rela {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 3rem;
+
+    /* NUEVO: Permite que ocupen 1/3 del espacio, forzando 3 arriba y 2 abajo */
+    flex: 1 1 calc(33% - 10px);
+    min-width: 110px;
+    /* Evita que se encojan demasiado en móviles pequeños */
+
+    padding: 10px;
+    border-radius: 15px;
+    border: 2px solid #d1d5db;
+    background-color: #f9fafb;
+    color: #374151;
+    cursor: pointer;
+    text-align: center;
+  }
+
   .btn-top-acce:active {
     background-color: var(--color-acce-hover);
   }
@@ -2212,6 +2391,13 @@ button:focus:not(:focus-visible) {
     padding-bottom: 15px !important;
     border-bottom: 1px solid #eee !important;
     width: 100% !important;
+  }
+
+  .cap-icon-modal {
+    height: 24px;
+    width: auto;
+    flex-shrink: 0;
+    object-fit: contain;
   }
 
   #modal-accesibilidad .modal-cuerpo,
@@ -2477,7 +2663,7 @@ button:focus:not(:focus-visible) {
     margin: 0;
     padding: 10px 15px 10px 45px !important;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 10px;
     box-sizing: border-box;
     font-family: inherit;
     font-size: 0.7rem;
@@ -2495,6 +2681,10 @@ button:focus:not(:focus-visible) {
 
   .titulo-linea-superior {
     font-size: 1.3rem;
+  }
+
+  .mensaje-estado-contenido {
+    font-size: 2rem;
   }
 
   .btn-titulo-subir {
@@ -2556,6 +2746,41 @@ button:focus:not(:focus-visible) {
     border-radius: 12px;
   }
 
+  /* =========================================================================
+     CORRECCIONES PARA VISTA DETALLE "PROBAR PRODUCTO" EN MÓVIL
+     ========================================================================= */
+  #vista-detalle-productosprobar .detalle-card {
+    padding: 10px 15px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #vista-detalle-productosprobar #detalle-probar-imagen {
+    width: 100% !important;
+    max-height: 250px !important;
+    /* Evita que la imagen sea gigante en móvil */
+    height: auto !important;
+    object-fit: contain !important;
+  }
+
+  #vista-detalle-productosprobar p,
+  #vista-detalle-productosprobar div,
+  #vista-detalle-productosprobar h3 {
+    word-break: break-word !important;
+    /* Evita que el texto desborde la pantalla */
+    box-sizing: border-box !important;
+  }
+
+  #vista-detalle-productosprobar .btn-buscar {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px !important;
+    font-size: 1.2rem !important;
+    box-sizing: border-box !important;
+    margin: 20px 0 0 0 !important;
+  }
+
   .modal-cate,
   .modal-accesible,
   .modal-pequeno {
@@ -2587,6 +2812,29 @@ button:focus:not(:focus-visible) {
     justify-content: space-between !important;
     align-items: center !important;
     flex-wrap: nowrap;
+  }
+
+  /* Centrar el título del modal de inicio de sesión horizontal y verticalmente */
+  #modal-login .modal-cabecera {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    /* Centra verticalmente respecto al botón de cerrar */
+    justify-content: space-between !important;
+  }
+
+  #modal-login .btn-cabecera-linea-modal {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex: 1 !important;
+    text-align: center !important;
+    gap: 0 !important;
+  }
+
+  #modal-login .btn-titulo-dialog {
+    width: 100% !important;
+    text-align: center !important;
   }
 
   .btn-cabecera-linea-modal {

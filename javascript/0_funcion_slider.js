@@ -51,18 +51,18 @@ function cambiarEstadoslider(elemento) {
     // 🌟 GESTIÓN INTELIGENTE DE BOTONES ACTIVOS 🌟
     if (elemento) {
         const esFormularioEmpresa = idVistaDestino === 'vista-form-ideas' || idVistaDestino === 'vista-form-validar';
-        const esBotonInterno = elemento.closest('.slider-subir') || 
-                               elemento.classList.contains('btn-subir') || 
-                               idVistaDestino === 'vista-formulario-problema';
+        const esBotonInterno = elemento.closest('.slider-subir') ||
+            elemento.classList.contains('btn-subir') ||
+            idVistaDestino === 'vista-formulario-problema';
 
         // Si pulsamos directamente un menú principal o cabecera, lo encendemos
         if (!esBotonInterno && !esFormularioEmpresa) {
-            elemento.classList.add('active'); 
-        } 
+            elemento.classList.add('active');
+        }
         // Si navegamos por un submenú, buscamos a su padre y lo encendemos
         else {
             let vistaMenuPadre = 'vista-ver';
-            
+
             if (esFormularioEmpresa) {
                 vistaMenuPadre = 'vista-empresa';
             } else if (elemento.closest('#vista-subir') || (idVistaDestino && idVistaDestino.includes('prod-'))) {
@@ -72,7 +72,7 @@ function cambiarEstadoslider(elemento) {
             } else if (elemento.closest('#vista-probar')) {
                 vistaMenuPadre = 'vista-probar';
             }
-            
+
             // Encendemos el padre correcto
             let botonMenuPadre = document.querySelector(`.multi-slider .btn-menu[data-vista="${vistaMenuPadre}"]`);
             if (!botonMenuPadre && vistaMenuPadre === 'vista-empresa') {
@@ -89,9 +89,9 @@ function cambiarEstadoslider(elemento) {
         'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
         'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com', 
+        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com',
         'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
-        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 
+        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
         'vista-detalle-verproductocom', 'vista-catalogo-productosprobar', 'vista-detalle-productosprobar',
         'vista-form-ideas', 'vista-form-validar', 'vista-empresa', 'vista-publicado-empresa',
         'vista-publicado-solicitud'
@@ -138,7 +138,7 @@ function seleccionarCategoria1(elemento) {
     if (idVistaDestino === 'vista-prod-baj' || idVistaDestino === 'vista-prod-com') {
         const estadoSesion = localStorage.getItem('sesionIniciada');
         if (estadoSesion !== '1') {
-            alert("¡Hola! Para poder subir un producto, necesitas iniciar sesión primero.");
+            mostrarMensajeEstado("¡Hola! Para poder subir un producto, necesitas iniciar sesión primero.");
 
             // === ESTA ES LA LÍNEA MÁGICA NUEVA ===
             // Guardamos a dónde quería ir antes de mandarle al login
@@ -200,7 +200,7 @@ let historialVistas = [];
 // 2. TU FUNCIÓN DE BUSCAR MODIFICADA (Reemplaza la que tenías antes por esta)
 function realizarBusqueda() {
     if (!vistaObjetivoSeleccionada) {
-        alert("Por favor, selecciona una opción antes de continuar.");
+        mostrarMensajeEstado("Selecciona una opción antes de continuar.");
         return;
     }
 
@@ -220,7 +220,7 @@ function realizarBusqueda() {
                 //vistas de ver nivel 1
                 'vista-autonomia', 'vista-ocio', 'vista-productividaductividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
                 'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login', 'vista-solicitud'
-                , 'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto','vista-form-ideas','vista-empresa', 'vista-form-validar'
+                , 'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-form-ideas', 'vista-empresa', 'vista-form-validar'
                 //vistas de alimentacion a borrar
 
             ];
@@ -245,7 +245,7 @@ function realizarBusqueda() {
             'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
             'vista-higiene', 'vista-movilidad', 'vista-vestir', , 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
             , 'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-            'vista-form-ideas','vista-empresa', 'vista-form-validar', 'vista-comunica'
+            'vista-form-ideas', 'vista-empresa', 'vista-form-validar', 'vista-comunica'
             //vistas de alimentacion a borrar
 
         ];
@@ -266,7 +266,7 @@ function realizarBusqueda() {
 
     } else {
         console.warn(`El elemento HTML con ID '${vistaObjetivoSeleccionada}' no existe.`);
-        alert("Esta sección aún no ha sido implementada en el HTML.");
+        mostrarMensajeEstado("Esta sección aún no ha sido implementada en el HTML.");
     }
 }
 
@@ -289,7 +289,7 @@ function regresarAnterior() {
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
         'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
         , 'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema', 'vista-detalle-producto', , 'vista-detalle-verproducto',
-        'vista-detalle-productosprobar', 'vista-form-ideas','vista-empresa', 'vista-form-validar'
+        'vista-detalle-productosprobar', 'vista-form-ideas', 'vista-empresa', 'vista-form-validar'
         //vistas de alimentacion a borrar
 
     ];
@@ -351,9 +351,9 @@ function regresarvolver(opcion) {
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
         'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
         'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login',
-        'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema', 
+        'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema',
         'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-catalogo-productosprobar', 'vista-detalle-productosprobar',
-        'vista-form-ideas','vista-empresa', 'vista-form-validar','vista-publicado-empresa', 'vista-publicado-solicitud'
+        'vista-form-ideas', 'vista-empresa', 'vista-form-validar', 'vista-publicado-empresa', 'vista-publicado-solicitud'
     ];
 
     subvistasCategorias.forEach(id => {
@@ -370,7 +370,7 @@ function regresarvolver(opcion) {
 
     // 3. Diccionario/Switch para decidir el destino
     let idDestino = '';
-    switch(opcion) {
+    switch (opcion) {
         case 1: idDestino = 'vista-ver'; break;
         case 2: idDestino = 'vista-subir'; break;
         case 3: idDestino = 'vista-problema'; break;
@@ -441,7 +441,7 @@ let categoriaSeleccionada_ali = null;
 
 
 // =========================================================================
-// VALIDACIÓN INTEGRAL EN BLOQUE (ALERTA ÚNICA Y SCROLL AL PRIMERO)
+// VALIDACIÓN INTEGRAL EN BLOQUE (mostrarMensajeEstadoA ÚNICA Y SCROLL AL PRIMERO)
 
 // =========================================================================
 // VALIDACIÓN INTEGRAL EN BLOQUE Y SUBIDA A SUPABASE
@@ -486,21 +486,21 @@ async function validarYPublicar(elemento) {
         if (!txtPrecio || txtPrecio.innerText.toLowerCase().includes("no seleccionada")) registrarError(txtPrecio ? txtPrecio.closest('button') : vistaActual, "#seccion-filt");
 
         const txtN1Baj = document.getElementById('valor-n1');
-            if (!txtN1Baj || txtN1Baj.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN1Baj ? txtN1Baj.closest('button') : vistaActual, ".guia-card");
-            }
+        if (!txtN1Baj || txtN1Baj.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN1Baj ? txtN1Baj.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 2. Validar Categoría 2 (Bajo coste)
-            const txtN2Baj = document.getElementById('valor-n2');
-            if (!txtN2Baj || txtN2Baj.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN2Baj ? txtN2Baj.closest('button') : vistaActual, ".guia-card");
-            }
+        // 2. Validar Categoría 2 (Bajo coste)
+        const txtN2Baj = document.getElementById('valor-n2');
+        if (!txtN2Baj || txtN2Baj.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN2Baj ? txtN2Baj.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 3. Validar Categoría 3 (Bajo coste)
-            const txtN3Baj = document.getElementById('valor-n3');
-            if (!txtN3Baj || txtN3Baj.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN3Baj ? txtN3Baj.closest('button') : vistaActual, ".guia-card");
-            }
+        // 3. Validar Categoría 3 (Bajo coste)
+        const txtN3Baj = document.getElementById('valor-n3');
+        if (!txtN3Baj || txtN3Baj.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN3Baj ? txtN3Baj.closest('button') : vistaActual, ".guia-card");
+        }
 
         const txtTiempo = document.getElementById('valor-tiempo');
         if (!txtTiempo || txtTiempo.innerText.toLowerCase().includes("no seleccionada")) registrarError(txtTiempo ? txtTiempo.closest('button') : vistaActual, "#seccion-filt");
@@ -531,7 +531,7 @@ async function validarYPublicar(elemento) {
             }
         }
 
-    
+
     }
 
     // ==========================================
@@ -571,28 +571,25 @@ async function validarYPublicar(elemento) {
             registrarError(enlaceCom, vistaActual);
         }
         const txtN1Com = document.getElementById('valor-n1-com');
-            if (!txtN1Com || txtN1Com.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN1Com ? txtN1Com.closest('button') : vistaActual, ".guia-card");
-            }
+        if (!txtN1Com || txtN1Com.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN1Com ? txtN1Com.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 2. Validar Categoría 2 (Comercializado)
-            const txtN2Com = document.getElementById('valor-n2-com');
-            if (!txtN2Com || txtN2Com.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN2Com ? txtN2Com.closest('button') : vistaActual, ".guia-card");
-            }
+        // 2. Validar Categoría 2 (Comercializado)
+        const txtN2Com = document.getElementById('valor-n2-com');
+        if (!txtN2Com || txtN2Com.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN2Com ? txtN2Com.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 3. Validar Categoría 3 (Comercializado)
-            const txtN3Com = document.getElementById('valor-n3-com');
-            if (!txtN3Com || txtN3Com.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN3Com ? txtN3Com.closest('button') : vistaActual, ".guia-card");
-            }
+        // 3. Validar Categoría 3 (Comercializado)
+        const txtN3Com = document.getElementById('valor-n3-com');
+        if (!txtN3Com || txtN3Com.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN3Com ? txtN3Com.closest('button') : vistaActual, ".guia-card");
+        }
     }
 
 
     // ==========================================
-    // A.3) VALIDACIÓN: FORMULARIO DE PROBLEMA
-    // ==========================================
-   // ==========================================
     // A.3) VALIDACIÓN: FORMULARIO DE PROBLEMA
     // ==========================================
     if (vistaActual.id === 'vista-formulario-problema') {
@@ -622,30 +619,30 @@ async function validarYPublicar(elemento) {
             registrarError(txtN3Problema ? txtN3Problema.closest('button') : vistaActual, ".guia-card");
         }
 
-       
+
         // 1. Validar Categoría 1 (Problema)
-            const txtN1Prob = document.getElementById('valor-n1-prob');
-            if (!txtN1Prob || txtN1Prob.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN1Prob ? txtN1Prob.closest('button') : vistaActual, ".guia-card");
-            }
+        const txtN1Prob = document.getElementById('valor-n1-prob');
+        if (!txtN1Prob || txtN1Prob.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN1Prob ? txtN1Prob.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 2. Validar Categoría 2 (Problema)
-            const txtN2Prob = document.getElementById('valor-n2-prob');
-            if (!txtN2Prob || txtN2Prob.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN2Prob ? txtN2Prob.closest('button') : vistaActual, ".guia-card");
-            }
+        // 2. Validar Categoría 2 (Problema)
+        const txtN2Prob = document.getElementById('valor-n2-prob');
+        if (!txtN2Prob || txtN2Prob.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN2Prob ? txtN2Prob.closest('button') : vistaActual, ".guia-card");
+        }
 
-            // 3. Validar Categoría 3 (Problema)
-            const txtN3Prob = document.getElementById('valor-n3-prob');
-            if (!txtN3Prob || txtN3Prob.innerText.toLowerCase().includes("no seleccionada")) {
-                registrarError(txtN3Prob ? txtN3Prob.closest('button') : vistaActual, ".guia-card");
-            }
+        // 3. Validar Categoría 3 (Problema)
+        const txtN3Prob = document.getElementById('valor-n3-prob');
+        if (!txtN3Prob || txtN3Prob.innerText.toLowerCase().includes("no seleccionada")) {
+            registrarError(txtN3Prob ? txtN3Prob.closest('button') : vistaActual, ".guia-card");
+        }
     }
     // ==========================================
-    // B) GESTIÓN DE LA ALERTA ÚNICA Y EL SCROLL (FRENADO)
+    // B) GESTIÓN DE LA mostrarMensajeEstadoA ÚNICA Y EL SCROLL (FRENADO)
     // ==========================================
     if (errores.length > 0) {
-        alert("Falta información por rellenar.");
+        mostrarMensajeEstado("Falta información por rellenar.");
         const primerError = errores[0];
         if (primerError.acordeon) {
             const detalles = vistaActual.querySelector(primerError.acordeon);
@@ -676,7 +673,7 @@ async function validarYPublicar(elemento) {
 
         const spanNivel2 = vistaActual.querySelector('#valor-n2');
         const categoria2Final = spanNivel2 ? spanNivel2.innerText.trim() : "Sin categoría";
-        
+
         // Nivel 3 (Ya lo tenías)
         const spanNivel3 = vistaActual.querySelector('#valor-n3');
         const categoriaFinal = spanNivel3 ? spanNivel3.innerText.trim() : "Sin categoría";
@@ -700,11 +697,11 @@ async function validarYPublicar(elemento) {
         });
 
         const textoOriginalBoton = elemento.innerText;
-        elemento.innerText = "Subiendo producto... ⏳";
+        elemento.innerText = "Subiendo producto... ";
         elemento.disabled = true;
 
         try {
-           const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabase.auth.getUser();
             const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
             const fechaActual = new Date().toISOString();
 
@@ -734,10 +731,10 @@ async function validarYPublicar(elemento) {
 
             limpiarFormulariosCompletos();
 
-           //  Inyectamos todos los textos dinámicos para BAJO COSTE
+            //  Inyectamos todos los textos dinámicos para BAJO COSTE
             const tituloExito = document.getElementById('texto-exito-publicado');
             if (tituloExito) tituloExito.innerText = "Producto de bajo coste publicado con éxito";
-            
+
             const btnExito = document.getElementById('btn-volver-publicado');
             if (btnExito) btnExito.innerText = "Subir más productos";
 
@@ -750,7 +747,7 @@ async function validarYPublicar(elemento) {
 
         } catch (error) {
             console.error("Error al guardar en Supabase:", error);
-            alert("Hubo un problema al subir el producto. Inténtalo de nuevo.");
+            mostrarMensajeEstado("Hubo un problema al subir el producto. Inténtalo de nuevo.");
         } finally {
             elemento.innerText = textoOriginalBoton;
             elemento.disabled = false;
@@ -779,17 +776,17 @@ async function validarYPublicar(elemento) {
         const categoriaFinal = spanNivel3Com ? spanNivel3Com.innerText.trim() : "Sin categoría";
 
         // Recogemos el enlace
-        const enlaceInput = vistaActual.querySelector('.input-enlace');
-        const enlaceFinal = enlaceInput ? enlaceInput.value.trim() : "";
+        const textareas = vistaActual.querySelectorAll('textarea');
+        const enlaceFinal = textareas[1] ? textareas[1].value.trim() : "";
 
         // Feedback visual en el botón
         const textoOriginalBoton = elemento.innerText;
-        elemento.innerText = "Subiendo producto... ⏳";
+        elemento.innerText = "Subiendo producto...";
         elemento.disabled = true;
 
         try {
             // 2. Enviamos a Supabase
-          const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabase.auth.getUser();
             const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
             const fechaActual = new Date().toISOString();
 
@@ -815,11 +812,11 @@ async function validarYPublicar(elemento) {
 
             limpiarFormulariosCompletos();
 
-            
-            // ✨ Inyectamos todos los textos dinámicos para COMERCIALIZADO
+
+            //  Inyectamos todos los textos dinámicos para COMERCIALIZADO
             const tituloExito = document.getElementById('texto-exito-publicado');
             if (tituloExito) tituloExito.innerText = "Producto comercializado publicado con éxito";
-            
+
             const btnExito = document.getElementById('btn-volver-publicado');
             if (btnExito) btnExito.innerText = "Subir más productos";
 
@@ -832,7 +829,7 @@ async function validarYPublicar(elemento) {
 
         } catch (error) {
             console.error("Error al guardar el producto comercializado en Supabase:", error);
-            alert("Hubo un problema al subir el producto. Inténtalo de nuevo.");
+            mostrarMensajeEstado("Hubo un problema al subir el producto. Inténtalo de nuevo.");
         } finally {
             elemento.innerText = textoOriginalBoton;
             elemento.disabled = false;
@@ -842,84 +839,91 @@ async function validarYPublicar(elemento) {
 
 
     // ==========================================
-        // C.3) SUBIDA A SUPABASE: FORMULARIO DE DIFICULTAD
-        // ==========================================
-        else if (vistaActual.id === 'vista-formulario-problema') {
-            const dificultadFinal = vistaActual.querySelector('.form-row input[type="text"]').value.trim();
-            const ideaFinal = vistaActual.querySelector('.form-row textarea').value.trim();
-            
-            const spanCat1 = document.getElementById('valor-n1-prob');
-            const cat1Final = spanCat1 ? spanCat1.innerText.trim() : "Sin categoría";
-            
-            const spanCat2 = document.getElementById('valor-n2-prob');
-            const cat2Final = spanCat2 ? spanCat2.innerText.trim() : "Sin categoría";
-            
-            const spanCat3 = document.getElementById('valor-n3-prob');
-            const cat3Final = spanCat3 ? spanCat3.innerText.trim() : "Sin categoría";
+    // C.3) SUBIDA A SUPABASE: FORMULARIO DE DIFICULTAD
+    // ==========================================
+    else if (vistaActual.id === 'vista-formulario-problema') {
+        const dificultadFinal = vistaActual.querySelector('.form-row input[type="text"]').value.trim();
+        const ideaFinal = vistaActual.querySelector('.form-row textarea').value.trim();
 
-            const textoOriginalBoton = elemento.innerText;
-            elemento.innerText = "Enviando formulario...";
-            elemento.disabled = true;
+        const spanCat1 = document.getElementById('valor-n1-prob');
+        const cat1Final = spanCat1 ? spanCat1.innerText.trim() : "Sin categoría";
 
-            try {
-                // 1. Enviamos los datos EXACTOS a la tabla 'dificultad' de Supabase
-                const { error } = await supabase
-                    .from('dificultad-form') 
-                    .insert([
-                        {
-                            dificultad: dificultadFinal,
-                            categoria1: cat1Final,
-                            categoria2: cat2Final,
-                            categoria: cat3Final, // Tal y como la nombraste en tu base de datos
-                            idea: ideaFinal
-                        }
-                    ]);
+        const spanCat2 = document.getElementById('valor-n2-prob');
+        const cat2Final = spanCat2 ? spanCat2.innerText.trim() : "Sin categoría";
 
-                if (error) throw error;
+        const spanCat3 = document.getElementById('valor-n3-prob');
+        const cat3Final = spanCat3 ? spanCat3.innerText.trim() : "Sin categoría";
 
-                // ==========================================
-                // 2. LIMPIEZA TOTAL DEL FORMULARIO
-                // ==========================================
-                const inputDificultad = vistaActual.querySelector('.form-row input[type="text"]');
-                if (inputDificultad) inputDificultad.value = "";
-                
-                const textareaIdea = vistaActual.querySelector('.form-row textarea');
-                if (textareaIdea) textareaIdea.value = "";
+        const textoOriginalBoton = elemento.innerText;
+        elemento.innerText = "Enviando formulario...";
+        elemento.disabled = true;
 
-                if (typeof resetearFormularioDOM === 'function') {
-                    resetearFormularioDOM('-prob');
-                }
+        try {
+            // 🌟 OBTENER EL USUARIO LOGUEADO PARA LA DIFICULTAD 🌟
+            const { data: { user } } = await supabase.auth.getUser();
+            const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
+            const fechaActual = new Date().toISOString();
 
-                localStorage.removeItem('categoriaGuardadaNombre-prob');
-                localStorage.removeItem('subcategoriaGuardada-prob');
-                localStorage.removeItem('subcategoriaNivel3Guardada-prob');
-                // ==========================================
+            // 1. Enviamos los datos EXACTOS a la tabla 'dificultad-form' de Supabase
+            const { error } = await supabase
+                .from('dificultad-form')
+                .insert([
+                    {
+                        dificultad: dificultadFinal,
+                        categoria1: cat1Final,
+                        categoria2: cat2Final,
+                        categoria: cat3Final, // Tal y como la nombraste en tu base de datos
+                        idea: ideaFinal,
+                        usuario: nombreUsuario, // <-- Añadido aquí el nombre de usuario
+                        fecha: fechaActual
+                    }
+                ]);
 
-                // 3. INYECTAMOS LOS TEXTOS DINÁMICOS DE ÉXITO
-                const tituloExito = document.getElementById('texto-exito-publicado');
-                if (tituloExito) tituloExito.innerText = "¡Dificultad reportada con éxito!";
-                
-                const btnExito = document.getElementById('btn-volver-publicado');
-                if (btnExito) {
-                    btnExito.innerText = "Volver a Problemas";
-                    btnExito.onclick = function() { regresarvolver(3); };
-                }
+            if (error) throw error;
 
-                const migaForm = document.getElementById('miga-tipo-formulario');
-                if (migaForm) migaForm.innerText = "Formulario de dificultades";
+            // ==========================================
+            // 2. LIMPIEZA TOTAL DEL FORMULARIO
+            // ==========================================
+            const inputDificultad = vistaActual.querySelector('.form-row input[type="text"]');
+            if (inputDificultad) inputDificultad.value = "";
 
-                // 4. Cambiamos a la vista de éxito
-                vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-                if (typeof realizarBusqueda === 'function') realizarBusqueda();
+            const textareaIdea = vistaActual.querySelector('.form-row textarea');
+            if (textareaIdea) textareaIdea.value = "";
 
-            } catch (error) {
-                console.error("Error al enviar la dificultad a Supabase:", error);
-                alert("Hubo un error al enviar los datos. Revisa tu conexión a internet.");
-            } finally {
-                elemento.innerText = textoOriginalBoton;
-                elemento.disabled = false;
+            if (typeof resetearFormularioDOM === 'function') {
+                resetearFormularioDOM('-prob');
             }
+
+            localStorage.removeItem('categoriaGuardadaNombre-prob');
+            localStorage.removeItem('subcategoriaGuardada-prob');
+            localStorage.removeItem('subcategoriaNivel3Guardada-prob');
+            // ==========================================
+
+            // 3. INYECTAMOS LOS TEXTOS DINÁMICOS DE ÉXITO
+            const tituloExito = document.getElementById('texto-exito-publicado');
+            if (tituloExito) tituloExito.innerText = "¡Dificultad reportada con éxito!";
+
+            const btnExito = document.getElementById('btn-volver-publicado');
+            if (btnExito) {
+                btnExito.innerText = "Volver a Problemas";
+                btnExito.onclick = function () { regresarvolver(3); };
+            }
+
+            const migaForm = document.getElementById('miga-tipo-formulario');
+            if (migaForm) migaForm.innerText = "Formulario de dificultades";
+
+            // 4. Cambiamos a la vista de éxito
+            vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
+            if (typeof realizarBusqueda === 'function') realizarBusqueda();
+
+        } catch (error) {
+            console.error("Error al enviar la dificultad a Supabase:", error);
+            mostrarMensajeEstado("Hubo un error al enviar los datos. Revisa tu conexión a internet.");
+        } finally {
+            elemento.innerText = textoOriginalBoton;
+            elemento.disabled = false;
         }
+    }
 
 
     // C.3) Para otras pantallas genéricas
@@ -928,7 +932,6 @@ async function validarYPublicar(elemento) {
         if (typeof realizarBusqueda === 'function') realizarBusqueda();
     }
 }
-
 // =========================================================================
 // UX: LIMPIEZA AUTOMÁTICA DE ERRORES AL INTERACTUAR
 // =========================================================================
@@ -1016,8 +1019,8 @@ function agregarFilaMaterial() {
     const contenedor = document.getElementById('lista-materiales');
     const totalMateriales = contenedor.querySelectorAll('.material-item').length;
 
-    if (totalMateriales >= 10) {
-        alert("Solo puedes añadir un máximo de 10 materiales.");
+    if (totalMateriales >= 5) {
+        mostrarMensajeEstado("Solo puedes añadir un máximo de 5 materiales.");
         return;
     }
 
@@ -1028,7 +1031,7 @@ function agregarFilaMaterial() {
     // Si es el primer material (totalMateriales === 0), NO añadimos el botón "X"
     if (totalMateriales === 0) {
         div.innerHTML = `
-            <input type="text" placeholder="Escribe qué material" maxlength="20" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; width90%">
+            <input type="text" placeholder="Escribe qué material" maxlength="20" aria-label="Añade un material" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; width90%">
         `;
     } else {
         // A partir del segundo material, sí llevan el botón de eliminar
@@ -1151,20 +1154,20 @@ function limpiarFormulariosCompletos() {
 // =========================================================================
 async function ejecutarBusquedaTexto(event, inputElement) {
     if (event.key === 'Enter' || event.keyCode === 13) {
-        
+
         const terminoBusqueda = inputElement.value.trim();
-        
+
         if (terminoBusqueda === "") {
-            alert("Por favor, escribe un nombre de producto para buscar.");
+            mostrarMensajeEstado("Por favor, escribe un nombre de producto para buscar.");
             return;
         }
 
-        inputElement.blur(); 
+        inputElement.blur();
 
         // 🌟 Búsqueda segura del contexto de la pantalla actual 🌟
         let tituloVista = "";
         const vistaActual = inputElement.closest('.subvista-contenido') || document.querySelector('.subvista-contenido');
-        
+
         if (vistaActual) {
             const tituloVistaEl = vistaActual.querySelector('.titulo-linea-superior, .titulo-linea-sup');
             if (tituloVistaEl) {
@@ -1177,15 +1180,15 @@ async function ejecutarBusquedaTexto(event, inputElement) {
 
         if (tituloVista && tituloVista.toLowerCase() !== "ver productos" && tituloVista.toLowerCase() !== "cargando...") {
             url += `&categoria1=ilike.*${encodeURIComponent(tituloVista)}*`;
-            textoMiga = `Búsqueda en ${tituloVista}`; 
+            textoMiga = `Búsqueda en ${tituloVista}`;
         }
 
         const tituloMolde = document.getElementById('titulo-dinamico');
         if (tituloMolde) tituloMolde.innerText = `"${terminoBusqueda}"`;
-        
+
         const iconoMolde = document.getElementById('icono-dinamico');
-        if (iconoMolde) iconoMolde.src = 'svg/buscar/buscar_input.svg'; 
-        
+        if (iconoMolde) iconoMolde.src = 'svg/buscar/buscar_input.svg';
+
         const navMigasCatalogo = document.querySelector('#vista-productos-final .migas-pan');
         if (navMigasCatalogo) {
             navMigasCatalogo.innerHTML = `
@@ -1199,7 +1202,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         if (contenedorProductos) {
             contenedorProductos.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                    <h2 style="color: #666;">Buscando "${terminoBusqueda}"... ⏳</h2>
+                    <h2 style="color: #666;">Buscando "${terminoBusqueda}"...</h2>
                 </div>
             `;
         }
@@ -1227,7 +1230,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
                 btnComercializado.classList.remove('active-filtro');
                 btnBajoCoste.classList.add('active-filtro');
             }
-            tipoFiltroGlobal = 0; 
+            tipoFiltroGlobal = 0;
 
             if (typeof renderizarProductosFiltrados === 'function') {
                 renderizarProductosFiltrados();
@@ -1284,12 +1287,12 @@ async function validarFormularioSolicitud(elemento) {
     // 3. Validar textos
     if (!usuario || !usuario.value.trim()) errores.push(usuario);
     if (!contacto || !contacto.value.trim()) errores.push(contacto);
-    if (!fundacion || !fundacion.value.trim()) errores.push(fundacion);
+
 
     // 4. Validar contraseñas
     if (!pass1 || !pass1.value.trim()) errores.push(pass1);
     if (!pass2 || !pass2.value.trim()) errores.push(pass2);
-    
+
     if (pass1 && pass2 && pass1.value.trim() !== '' && pass1.value !== pass2.value) {
         errores.push(pass1);
         errores.push(pass2);
@@ -1299,12 +1302,12 @@ async function validarFormularioSolicitud(elemento) {
     // 5. Validar selección de perfil
     if (!perfilSeleccionadoSolicitud) {
         vistaActual.querySelectorAll('.btn-rela').forEach(btn => btn.classList.add('campo-error'));
-        errores.push(vistaActual.querySelector('.guia-card')); 
+        errores.push(vistaActual.querySelector('.guia-card'));
     }
 
     // 6. FRENAR SI HAY ERRORES BÁSICOS
     if (errores.length > 0) {
-        alert("Por favor, rellena todos los campos y selecciona tu perfil.");
+        mostrarMensajeEstado("Por favor, rellena todos los campos y selecciona tu perfil.");
         errores.forEach(el => {
             if (el && el.classList) el.classList.add('campo-error');
         });
@@ -1316,7 +1319,7 @@ async function validarFormularioSolicitud(elemento) {
     // 7. COMPROBACIÓN EN SUPABASE Y SUBIDA DE DATOS
     // =======================================================
     const textoOriginalBoton = elemento.innerText;
-    elemento.innerText = "Creando cuenta... ⏳";
+    elemento.innerText = "Creando cuenta...";
     elemento.disabled = true;
 
     try {
@@ -1333,16 +1336,16 @@ async function validarFormularioSolicitud(elemento) {
 
         // Si encontramos a alguien con ese nombre, frenamos todo
         if (usuarioExistente && usuarioExistente.length > 0) {
-            alert("Ese nombre de usuario ya está registrado. Por favor, elige uno distinto.");
+            mostrarMensajeEstado("Ese nombre de usuario ya está registrado. Por favor, elige uno distinto.");
             usuario.classList.add('campo-error');
             usuario.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
+
             // Restauramos el botón y salimos
             elemento.innerText = textoOriginalBoton;
             elemento.disabled = false;
-            return; 
+            return;
         }
-        
+
         // Generamos el correo interno para Auth (ej: nombre@epunto.com) sin espacios
         const emailGenerado = nombreIngresado.toLowerCase().replace(/\s+/g, '') + "@epunto.com";
 
@@ -1352,21 +1355,21 @@ async function validarFormularioSolicitud(elemento) {
             password: passIngresada,
         });
 
-        if (errorAuth) throw errorAuth; 
+        if (errorAuth) throw errorAuth;
 
         // 👇 GUARDAR DATOS EN TU TABLA 'usuarios' 👇
         const fechaActual = new Date().toISOString();
-        
+
         const { error: errorTabla } = await window.supabase
             .from('usuarios')
             .insert([
                 {
                     nombre: nombreIngresado,
-                    contrasena: passIngresada, 
+                    contrasena: passIngresada,
                     contacto: contacto.value.trim(),
-                    relacion: perfilSeleccionadoSolicitud, 
+                    relacion: perfilSeleccionadoSolicitud,
                     fundacion: fundacion.value.trim(),
-                    fecha_envio: fechaActual 
+                    fecha_envio: fechaActual
                 }
             ]);
 
@@ -1390,7 +1393,7 @@ async function validarFormularioSolicitud(elemento) {
 
     } catch (error) {
         console.error("Error al crear cuenta:", error);
-        alert("Hubo un problema al crear la cuenta: " + error.message);
+        mostrarMensajeEstado("Hubo un problema al crear la cuenta: " + error.message);
     } finally {
         elemento.innerText = textoOriginalBoton;
         elemento.disabled = false;
@@ -1424,7 +1427,7 @@ async function validarYEnviarEmpresa(elemento) {
     if (!horarioEmpresa || horarioEmpresa.value.trim() === "") errores.push(horarioEmpresa);
 
     if (errores.length > 0) {
-        alert("Por favor, rellena todos los campos obligatorios para poder enviar los datos.");
+        mostrarMensajeEstado("Por favor, rellena todos los campos obligatorios para poder enviar los datos.");
         errores[0].classList.add('campo-error');
         errores[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
         errores[0].focus();
@@ -1432,7 +1435,7 @@ async function validarYEnviarEmpresa(elemento) {
     }
 
     const textoOriginalBoton = elemento.innerText;
-    elemento.innerText = "Enviando datos... ⏳";
+    elemento.innerText = "Enviando datos...";
     elemento.disabled = true;
 
     try {
@@ -1462,7 +1465,7 @@ async function validarYEnviarEmpresa(elemento) {
 
     } catch (error) {
         console.error("Error al enviar los datos de la empresa a Supabase:", error);
-        alert("Error al enviar: " + (error.message || JSON.stringify(error)));
+        mostrarMensajeEstado("Error al enviar: " + (error.message || JSON.stringify(error)));
     } finally {
         elemento.innerText = textoOriginalBoton;
         elemento.disabled = false;
@@ -1507,8 +1510,8 @@ async function validarYEnviarProductoEmpresa(elemento) {
 
     // Imagen del proyecto
     const imgPreview = vistaActual.querySelector('.img-preview');
-    let urlImagenFinal = (imgPreview && imgPreview.src && imgPreview.src !== '#' && !imgPreview.src.endsWith('/#')) 
-        ? imgPreview.src 
+    let urlImagenFinal = (imgPreview && imgPreview.src && imgPreview.src !== '#' && !imgPreview.src.endsWith('/#'))
+        ? imgPreview.src
         : 'svg/subir/comprar.png';
 
     // 3. Comprobar que absolutamente todo esté relleno
@@ -1523,9 +1526,9 @@ async function validarYEnviarProductoEmpresa(elemento) {
     if (!contactoEmpresa || contactoEmpresa.value.trim() === "") errores.push(contactoEmpresa);
     if (!horarioEmpresa || horarioEmpresa.value.trim() === "") errores.push(horarioEmpresa);
 
-    // 4. Si hay errores, alertar y enfocar el primer campo vacío
+    // 4. Si hay errores, mostrarMensajeEstadoar y enfocar el primer campo vacío
     if (errores.length > 0) {
-        alert("Por favor, rellena todos los campos obligatorios para poder enviar el producto.");
+        mostrarMensajeEstado("Por favor, rellena todos los campos obligatorios para poder enviar el producto.");
         errores[0].classList.add('campo-error');
         errores[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
         errores[0].focus();
@@ -1534,7 +1537,7 @@ async function validarYEnviarProductoEmpresa(elemento) {
 
     // 5. Si todo está correcto, enviamos a Supabase
     const textoOriginalBoton = elemento.innerText;
-    elemento.innerText = "Enviando producto... ⏳";
+    elemento.innerText = "Enviando producto...";
     elemento.disabled = true;
 
     try {
@@ -1563,7 +1566,7 @@ async function validarYEnviarProductoEmpresa(elemento) {
         // Limpiar formulario
         todosInputs.forEach(i => i.value = "");
         todosTextareas.forEach(t => t.value = "");
-        
+
         if (imgPreview) {
             imgPreview.src = "#";
             const previewCont = vistaActual.querySelector('.preview-container');
@@ -1576,9 +1579,43 @@ async function validarYEnviarProductoEmpresa(elemento) {
 
     } catch (error) {
         console.error("Error al enviar los datos a la tabla producto-empresa:", error);
-        alert("Error al enviar: " + (error.message || JSON.stringify(error)));
+        mostrarMensajeEstado("Error al enviar: " + (error.message || JSON.stringify(error)));
     } finally {
         elemento.innerText = textoOriginalBoton;
         elemento.disabled = false;
     }
+}
+
+// =========================================================================
+// SISTEMA DE MENSAJES DE ESTADO GLOBAL (Reemplazo de mostrarMensajeEstado)
+// =========================================================================
+function mostrarMensajeEstado(texto, esError = false) {
+    // Cerramos cualquier modal o diálogo que esté abierto para que no tape el mensaje
+    document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+
+    const contenedor = document.getElementById('mensaje-estado-global');
+    const textoElemento = document.getElementById('texto-estado-global');
+
+    if (!contenedor || !textoElemento) {
+        window.alert(texto);
+        return;
+    }
+
+    textoElemento.innerText = texto;
+
+    if (esError) {
+        contenedor.classList.add('error');
+    } else {
+        contenedor.classList.remove('error');
+    }
+
+    contenedor.style.display = 'flex';
+    contenedor.style.opacity = '1';
+
+    setTimeout(() => {
+        contenedor.style.opacity = '0';
+        setTimeout(() => {
+            contenedor.style.display = 'none';
+        }, 300);
+    }, 2000);
 }
