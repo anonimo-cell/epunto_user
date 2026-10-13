@@ -24,12 +24,9 @@
   --color-btn-frase-claro: #f7f9e3;
   --color-btn-frase-subir: #204555;
 
-  /* TITULOS Y EMPRESA */
+  /* TITULOS */
   --color-titulo: #204555;
   --color-superior-frase: #204555;
-  --color-empresa: #fff;
-  --color-emp-borde: #ad5e05;
-  --color-empr-text: #000;
 
   /* ACCESIBILIDAD */
   --color-acce-borde-lateral: #ffc17a;
@@ -71,9 +68,6 @@
   --color-btn-frase-subir: #313131;
   --color-btn-frase: #000;
   --color-titulo: #000;
-  --color-empresa: #fff;
-  --color-emp-borde: #000;
-  --color-empr-hover-text: #fff;
   --color-acce-borde-lateral: #000;
   --color-acce-text: #000;
   --color-acce: #fff;
@@ -563,14 +557,6 @@ button:focus:not(:focus-visible) {
   object-fit: contain;
 }
 
-.btn-frase-problema {
-  color: var(--color-btn-frase-subir);
-}
-
-.problema-texto {
-  width: 100%;
-}
-
 .buscar-espacio {
   width: 100%;
   display: flex;
@@ -770,7 +756,6 @@ body.navegacion-teclado *:focus {
 
 
 .btn-subir,
-.btn-subir-emp,
 .btn-subir-imagen,
 .btn-subir-imagen-paso,
 .btn-cate,
@@ -840,7 +825,6 @@ body.navegacion-teclado *:focus {
 
 .btn-volver:hover,
 .btn-siguiente:hover,
-.btn-subir-emp:hover,
 .btn-volver-atras:hover {
   outline: none;
   background-color: var(--color-acce-hover);
@@ -936,10 +920,6 @@ body.navegacion-teclado *:focus {
     margin-top: 15px;
     margin-bottom: 5px;
     font-weight: 600;
-  }
-
-  .btn-frase-problema {
-    font-size: 1.2rem;
   }
 
   /* DIFICULTAD GROUP */
@@ -1432,7 +1412,7 @@ body.navegacion-teclado *:focus {
     width: 100%;
     height: max-content;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     background-color: var(--color-multislider);
     box-sizing: border-box;
     z-index: 999;
@@ -1740,17 +1720,6 @@ body.navegacion-teclado *:focus {
     gap: 20px;
   }
 
-  .btn-subir-emp {
-    grid-template-rows: auto auto;
-    row-gap: 7px;
-    width: calc(100% - 40px);
-    height: 12rem;
-    margin: 10px;
-    padding-inline: 20px;
-    text-align: center;
-    gap: 10px;
-  }
-
 
   .btn-subir-imagen,
   .btn-subir-imagen-paso {
@@ -2030,11 +1999,6 @@ body.navegacion-teclado *:focus {
   .slider-subir {
     flex-direction: column;
     gap: 15px;
-    padding-inline: 20px;
-  }
-
-  .btn-frase-problema {
-    font-size: 0.9rem;
     padding-inline: 20px;
   }
 
@@ -2633,15 +2597,6 @@ body.navegacion-teclado *:focus {
     grid-template-rows: auto auto 1fr;
   }
 
-  .btn-subir-emp {
-    width: 100%;
-    height: auto;
-    min-height: 70px;
-    padding: 10px;
-    padding-inline: 20px;
-    grid-template-rows: auto auto;
-  }
-
   .btn-subir {
     padding-inline: 20px;
   }
@@ -2744,41 +2699,6 @@ body.navegacion-teclado *:focus {
     max-width: 45%;
     flex: 1 1 45%;
     border-radius: 12px;
-  }
-
-  /* =========================================================================
-     CORRECCIONES PARA VISTA DETALLE "PROBAR PRODUCTO" EN MÓVIL
-     ========================================================================= */
-  #vista-detalle-productosprobar .detalle-card {
-    padding: 10px 15px !important;
-    margin-top: 10px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  #vista-detalle-productosprobar #detalle-probar-imagen {
-    width: 100% !important;
-    max-height: 250px !important;
-    /* Evita que la imagen sea gigante en móvil */
-    height: auto !important;
-    object-fit: contain !important;
-  }
-
-  #vista-detalle-productosprobar p,
-  #vista-detalle-productosprobar div,
-  #vista-detalle-productosprobar h3 {
-    word-break: break-word !important;
-    /* Evita que el texto desborde la pantalla */
-    box-sizing: border-box !important;
-  }
-
-  #vista-detalle-productosprobar .btn-buscar {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 12px !important;
-    font-size: 1.2rem !important;
-    box-sizing: border-box !important;
-    margin: 20px 0 0 0 !important;
   }
 
   .modal-cate,

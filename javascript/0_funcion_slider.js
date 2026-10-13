@@ -43,41 +43,30 @@ function cambiarEstadoslider(elemento) {
         btn.classList.remove('active');
     });
 
-    // Apagamos los botones de la cabecera (Empresa, Solicitar cuenta, Iniciar sesión)
+    // Apagamos los botones de la cabecera (Solicitar cuenta, Iniciar sesión)
     document.querySelectorAll('.btn-login-header').forEach(btn => {
         btn.classList.remove('active');
     });
 
     // 🌟 GESTIÓN INTELIGENTE DE BOTONES ACTIVOS 🌟
     if (elemento) {
-        const esFormularioEmpresa = idVistaDestino === 'vista-form-ideas' || idVistaDestino === 'vista-form-validar';
         const esBotonInterno = elemento.closest('.slider-subir') ||
-            elemento.classList.contains('btn-subir') ||
-            idVistaDestino === 'vista-formulario-problema';
+            elemento.classList.contains('btn-subir');
 
         // Si pulsamos directamente un menú principal o cabecera, lo encendemos
-        if (!esBotonInterno && !esFormularioEmpresa) {
+        if (!esBotonInterno) {
             elemento.classList.add('active');
         }
         // Si navegamos por un submenú, buscamos a su padre y lo encendemos
         else {
             let vistaMenuPadre = 'vista-ver';
 
-            if (esFormularioEmpresa) {
-                vistaMenuPadre = 'vista-empresa';
-            } else if (elemento.closest('#vista-subir') || (idVistaDestino && idVistaDestino.includes('prod-'))) {
+            if (elemento.closest('#vista-subir') || (idVistaDestino && idVistaDestino.includes('prod-'))) {
                 vistaMenuPadre = 'vista-subir';
-            } else if (elemento.closest('#vista-problema') || idVistaDestino === 'vista-formulario-problema') {
-                vistaMenuPadre = 'vista-problema';
-            } else if (elemento.closest('#vista-probar')) {
-                vistaMenuPadre = 'vista-probar';
             }
 
             // Encendemos el padre correcto
-            let botonMenuPadre = document.querySelector(`.multi-slider .btn-menu[data-vista="${vistaMenuPadre}"]`);
-            if (!botonMenuPadre && vistaMenuPadre === 'vista-empresa') {
-                botonMenuPadre = document.querySelector(`.btn-login-header[data-vista="vista-empresa"]`);
-            }
+            const botonMenuPadre = document.querySelector(`.multi-slider .btn-menu[data-vista="${vistaMenuPadre}"]`);
             if (botonMenuPadre) botonMenuPadre.classList.add('active');
         }
     }
@@ -86,15 +75,13 @@ function cambiarEstadoslider(elemento) {
     // 2. GESTIÓN DE VISTAS (Mostrar/Ocultar)
     // ==========================================
     const idVistasPrincipales = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-ver', 'vista-subir',
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
         'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com',
-        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
-        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-        'vista-detalle-verproductocom', 'vista-catalogo-productosprobar', 'vista-detalle-productosprobar',
-        'vista-form-ideas', 'vista-form-validar', 'vista-empresa', 'vista-publicado-empresa',
-        'vista-publicado-solicitud'
+        'vista-prod-baj', 'vista-publicado', 'vista-prod-com',
+        'vista-login', 'vista-solicitud', 'vista-productos-final',
+        'vista-detalle-producto', 'vista-detalle-verproducto',
+        'vista-detalle-verproductocom', 'vista-publicado-solicitud'
     ];
 
     idVistasPrincipales.forEach(id => {
@@ -216,11 +203,11 @@ function realizarBusqueda() {
             }
 
             const todasLasVistas = [
-                'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+                'vista-ver', 'vista-subir',
                 //vistas de ver nivel 1
                 'vista-autonomia', 'vista-ocio', 'vista-productividaductividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
                 'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login', 'vista-solicitud'
-                , 'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-form-ideas', 'vista-empresa', 'vista-form-validar'
+                , 'vista-detalle-producto', 'vista-detalle-verproducto'
                 //vistas de alimentacion a borrar
 
             ];
@@ -240,12 +227,12 @@ function realizarBusqueda() {
 
         // Apagar vistas anteriores
         const todasLasVistas = [
-            'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+            'vista-ver', 'vista-subir',
             //vistas de ver nivel 1
             'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
             'vista-higiene', 'vista-movilidad', 'vista-vestir', , 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
-            , 'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-            'vista-form-ideas', 'vista-empresa', 'vista-form-validar', 'vista-comunica'
+            , 'vista-solicitud', 'vista-productos-final', 'vista-detalle-producto', 'vista-detalle-verproducto',
+            'vista-comunica'
             //vistas de alimentacion a borrar
 
         ];
@@ -284,12 +271,11 @@ function regresarAnterior() {
     const vistaAnteriorId = historialVistas.pop();
 
     const todasLasVistas = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-ver', 'vista-subir',
         //vistas de ver nivel 1
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
         'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
-        , 'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema', 'vista-detalle-producto', , 'vista-detalle-verproducto',
-        'vista-detalle-productosprobar', 'vista-form-ideas', 'vista-empresa', 'vista-form-validar'
+        , 'vista-solicitud', 'vista-productos-final', 'vista-detalle-producto', 'vista-detalle-verproducto'
         //vistas de alimentacion a borrar
 
     ];
@@ -337,23 +323,22 @@ function regresarAnterior() {
 // 4. LIMPIEZA Y RETORNO (VOLVER FORZADO A 'VER')
 // ==========================================
 // ==========================================
-// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 AL 4)
+// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 Y 2)
 // ==========================================
 // ==========================================
-// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 AL 4)
+// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 Y 2)
 // ==========================================
 function regresarvolver(opcion) {
     console.log("Ejecutando retorno dinámico al menú con opción:", opcion);
 
     // 1. Ocultamos explícitamente todas las subvistas
     const subvistasCategorias = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-ver', 'vista-subir',
         'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
         'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
         'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login',
-        'vista-solicitud', 'vista-productos-final', 'vista-formulario-problema',
-        'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-catalogo-productosprobar', 'vista-detalle-productosprobar',
-        'vista-form-ideas', 'vista-empresa', 'vista-form-validar', 'vista-publicado-empresa', 'vista-publicado-solicitud'
+        'vista-solicitud', 'vista-productos-final',
+        'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-publicado-solicitud'
     ];
 
     subvistasCategorias.forEach(id => {
@@ -373,9 +358,6 @@ function regresarvolver(opcion) {
     switch (opcion) {
         case 1: idDestino = 'vista-ver'; break;
         case 2: idDestino = 'vista-subir'; break;
-        case 3: idDestino = 'vista-problema'; break;
-        case 4: idDestino = 'vista-probar'; break;
-        case 5: idDestino = 'vista-empresa'; break;
         default: idDestino = 'vista-ver'; break;
     }
 
@@ -390,13 +372,8 @@ function regresarvolver(opcion) {
     document.querySelectorAll('.btn-login-header').forEach(btn => btn.classList.remove('active'));
 
     // 6. ENCENDER SOLO EL CORRECTO
-    if (idDestino === 'vista-empresa') {
-        const btnEmpresa = document.querySelector(`.btn-login-header[data-vista="vista-empresa"]`);
-        if (btnEmpresa) btnEmpresa.classList.add('active');
-    } else {
-        const btnInferior = document.querySelector(`.multi-slider .btn-menu[data-vista="${idDestino}"]`);
-        if (btnInferior) btnInferior.classList.add('active');
-    }
+    const btnInferior = document.querySelector(`.multi-slider .btn-menu[data-vista="${idDestino}"]`);
+    if (btnInferior) btnInferior.classList.add('active');
 
     // 7. Limpieza absoluta de estados en memoria
     if (typeof reiniciarCategorias === 'function') reiniciarCategorias();
@@ -589,55 +566,6 @@ async function validarYPublicar(elemento) {
     }
 
 
-    // ==========================================
-    // A.3) VALIDACIÓN: FORMULARIO DE PROBLEMA
-    // ==========================================
-    if (vistaActual.id === 'vista-formulario-problema') {
-        // 1. COMPROBAR SI ESTÁ REGISTRADO (SESIÓN)
-
-        // 2. Validar Input (Dificultad)
-        const inputDificultad = vistaActual.querySelector('.form-row input[type="text"]');
-        if (!inputDificultad || inputDificultad.value.trim() === "") {
-            registrarError(inputDificultad || vistaActual, ".guia-card");
-        }
-
-        // 3. Validar Categoría 1
-        const txtN1Problema = document.getElementById('valor-n1-prob');
-        if (!txtN1Problema || txtN1Problema.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN1Problema ? txtN1Problema.closest('button') : vistaActual, ".guia-card");
-        }
-
-        // 4. Validar Categoría 2 (¡NUEVO!)
-        const txtN2Problema = document.getElementById('valor-n2-prob');
-        if (!txtN2Problema || txtN2Problema.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN2Problema ? txtN2Problema.closest('button') : vistaActual, ".guia-card");
-        }
-
-        // 5. Validar Categoría 3 (¡NUEVO!)
-        const txtN3Problema = document.getElementById('valor-n3-prob');
-        if (!txtN3Problema || txtN3Problema.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN3Problema ? txtN3Problema.closest('button') : vistaActual, ".guia-card");
-        }
-
-
-        // 1. Validar Categoría 1 (Problema)
-        const txtN1Prob = document.getElementById('valor-n1-prob');
-        if (!txtN1Prob || txtN1Prob.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN1Prob ? txtN1Prob.closest('button') : vistaActual, ".guia-card");
-        }
-
-        // 2. Validar Categoría 2 (Problema)
-        const txtN2Prob = document.getElementById('valor-n2-prob');
-        if (!txtN2Prob || txtN2Prob.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN2Prob ? txtN2Prob.closest('button') : vistaActual, ".guia-card");
-        }
-
-        // 3. Validar Categoría 3 (Problema)
-        const txtN3Prob = document.getElementById('valor-n3-prob');
-        if (!txtN3Prob || txtN3Prob.innerText.toLowerCase().includes("no seleccionada")) {
-            registrarError(txtN3Prob ? txtN3Prob.closest('button') : vistaActual, ".guia-card");
-        }
-    }
     // ==========================================
     // B) GESTIÓN DE LA mostrarMensajeEstadoA ÚNICA Y EL SCROLL (FRENADO)
     // ==========================================
@@ -836,94 +764,6 @@ async function validarYPublicar(elemento) {
         }
     }
 
-
-
-    // ==========================================
-    // C.3) SUBIDA A SUPABASE: FORMULARIO DE DIFICULTAD
-    // ==========================================
-    else if (vistaActual.id === 'vista-formulario-problema') {
-        const dificultadFinal = vistaActual.querySelector('.form-row input[type="text"]').value.trim();
-        const ideaFinal = vistaActual.querySelector('.form-row textarea').value.trim();
-
-        const spanCat1 = document.getElementById('valor-n1-prob');
-        const cat1Final = spanCat1 ? spanCat1.innerText.trim() : "Sin categoría";
-
-        const spanCat2 = document.getElementById('valor-n2-prob');
-        const cat2Final = spanCat2 ? spanCat2.innerText.trim() : "Sin categoría";
-
-        const spanCat3 = document.getElementById('valor-n3-prob');
-        const cat3Final = spanCat3 ? spanCat3.innerText.trim() : "Sin categoría";
-
-        const textoOriginalBoton = elemento.innerText;
-        elemento.innerText = "Enviando formulario...";
-        elemento.disabled = true;
-
-        try {
-            // 🌟 OBTENER EL USUARIO LOGUEADO PARA LA DIFICULTAD 🌟
-            const { data: { user } } = await supabase.auth.getUser();
-            const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
-            const fechaActual = new Date().toISOString();
-
-            // 1. Enviamos los datos EXACTOS a la tabla 'dificultad-form' de Supabase
-            const { error } = await supabase
-                .from('dificultad-form')
-                .insert([
-                    {
-                        dificultad: dificultadFinal,
-                        categoria1: cat1Final,
-                        categoria2: cat2Final,
-                        categoria: cat3Final, // Tal y como la nombraste en tu base de datos
-                        idea: ideaFinal,
-                        usuario: nombreUsuario, // <-- Añadido aquí el nombre de usuario
-                        fecha: fechaActual
-                    }
-                ]);
-
-            if (error) throw error;
-
-            // ==========================================
-            // 2. LIMPIEZA TOTAL DEL FORMULARIO
-            // ==========================================
-            const inputDificultad = vistaActual.querySelector('.form-row input[type="text"]');
-            if (inputDificultad) inputDificultad.value = "";
-
-            const textareaIdea = vistaActual.querySelector('.form-row textarea');
-            if (textareaIdea) textareaIdea.value = "";
-
-            if (typeof resetearFormularioDOM === 'function') {
-                resetearFormularioDOM('-prob');
-            }
-
-            localStorage.removeItem('categoriaGuardadaNombre-prob');
-            localStorage.removeItem('subcategoriaGuardada-prob');
-            localStorage.removeItem('subcategoriaNivel3Guardada-prob');
-            // ==========================================
-
-            // 3. INYECTAMOS LOS TEXTOS DINÁMICOS DE ÉXITO
-            const tituloExito = document.getElementById('texto-exito-publicado');
-            if (tituloExito) tituloExito.innerText = "¡Dificultad reportada con éxito!";
-
-            const btnExito = document.getElementById('btn-volver-publicado');
-            if (btnExito) {
-                btnExito.innerText = "Volver a Problemas";
-                btnExito.onclick = function () { regresarvolver(3); };
-            }
-
-            const migaForm = document.getElementById('miga-tipo-formulario');
-            if (migaForm) migaForm.innerText = "Formulario de dificultades";
-
-            // 4. Cambiamos a la vista de éxito
-            vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-            if (typeof realizarBusqueda === 'function') realizarBusqueda();
-
-        } catch (error) {
-            console.error("Error al enviar la dificultad a Supabase:", error);
-            mostrarMensajeEstado("Hubo un error al enviar los datos. Revisa tu conexión a internet.");
-        } finally {
-            elemento.innerText = textoOriginalBoton;
-            elemento.disabled = false;
-        }
-    }
 
 
     // C.3) Para otras pantallas genéricas
@@ -1401,190 +1241,6 @@ async function validarFormularioSolicitud(elemento) {
 }
 
 
-
-// =========================================================================
-// VALIDACIÓN Y ENVÍO EXCLUSIVO: FORMULARIO EMPRESA SOLICITUD DE DATOS
-// =========================================================================
-async function validarYEnviarEmpresa(elemento) {
-    const vistaActual = document.getElementById('vista-form-ideas');
-    if (!vistaActual) return;
-
-    vistaActual.querySelectorAll('.campo-error').forEach(el => el.classList.remove('campo-error'));
-    let errores = [];
-
-    const inputEmpresa = vistaActual.querySelector('input[type="text"]');
-    const textareas = vistaActual.querySelectorAll('textarea');
-
-    const descEmpresa = textareas[0];
-    const enlaceEmpresa = textareas[1];
-    const contactoEmpresa = textareas[2];
-    const horarioEmpresa = textareas[3];
-
-    if (!inputEmpresa || inputEmpresa.value.trim() === "") errores.push(inputEmpresa);
-    if (!descEmpresa || descEmpresa.value.trim() === "") errores.push(descEmpresa);
-    if (!enlaceEmpresa || enlaceEmpresa.value.trim() === "") errores.push(enlaceEmpresa);
-    if (!contactoEmpresa || contactoEmpresa.value.trim() === "") errores.push(contactoEmpresa);
-    if (!horarioEmpresa || horarioEmpresa.value.trim() === "") errores.push(horarioEmpresa);
-
-    if (errores.length > 0) {
-        mostrarMensajeEstado("Por favor, rellena todos los campos obligatorios para poder enviar los datos.");
-        errores[0].classList.add('campo-error');
-        errores[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        errores[0].focus();
-        return false;
-    }
-
-    const textoOriginalBoton = elemento.innerText;
-    elemento.innerText = "Enviando datos...";
-    elemento.disabled = true;
-
-    try {
-        const fechaActual = new Date().toISOString();
-
-        const { error } = await window.supabase
-            .from('ideas-empresa')
-            .insert([
-                {
-                    "nombre-empresa": inputEmpresa.value.trim(),
-                    "descripcion": descEmpresa.value.trim(),
-                    "link": enlaceEmpresa.value.trim(),
-                    "contacto": contactoEmpresa.value.trim(),
-                    "horario": horarioEmpresa.value.trim(),
-                    "fecha": fechaActual
-                }
-            ]);
-
-        if (error) throw error;
-
-        inputEmpresa.value = "";
-        textareas.forEach(t => t.value = "");
-
-        // Cambiar directamente a la nueva vista de éxito de empresa
-        vistaObjetivoSeleccionada = 'vista-publicado-empresa';
-        if (typeof realizarBusqueda === 'function') realizarBusqueda();
-
-    } catch (error) {
-        console.error("Error al enviar los datos de la empresa a Supabase:", error);
-        mostrarMensajeEstado("Error al enviar: " + (error.message || JSON.stringify(error)));
-    } finally {
-        elemento.innerText = textoOriginalBoton;
-        elemento.disabled = false;
-    }
-}
-
-
-// =========================================================================
-// VALIDACIÓN Y ENVÍO EXCLUSIVO: FORMULARIO VALIDAR PRODUCTO EMPRESA
-// =========================================================================
-// =========================================================================
-// VALIDACIÓN Y ENVÍO EXCLUSIVO: FORMULARIO VALIDAR PRODUCTO EMPRESA
-// =========================================================================
-async function validarYEnviarProductoEmpresa(elemento) {
-    const vistaActual = document.getElementById('vista-form-validar');
-    if (!vistaActual) return;
-
-    // 1. Limpiar bordes rojos previos de errores
-    vistaActual.querySelectorAll('.campo-error').forEach(el => {
-        el.classList.remove('campo-error');
-    });
-
-    let errores = [];
-
-    // 2. Capturar todos los campos de texto e inputs de la vista de forma segura
-    const todosInputs = vistaActual.querySelectorAll('input[type="text"]');
-    const todosTextareas = vistaActual.querySelectorAll('textarea');
-
-    // Mapeo según el orden exacto en tu HTML:
-    // --- Sección 1: Información del producto ---
-    const nombreProducto = todosInputs[0];       // 1. Nombre del producto
-    const descProducto = todosTextareas[0];      // 2. Descripción del producto
-    const enlaceCompra = todosTextareas[1];      // 3. Enlace de compra
-    const precioOriginal = todosTextareas[2];    // 4. Precio original
-
-    // --- Sección 2: Información de la empresa ---
-    const nombreEmpresa = todosInputs[1];        // 5. Nombre de la empresa
-    const descEmpresa = todosTextareas[3];       // 6. Descripción de la empresa
-    const enlaceEmpresa = todosTextareas[4];     // 7. Enlace a la empresa
-    const contactoEmpresa = todosTextareas[5];   // 8. Contacto
-    const horarioEmpresa = todosTextareas[6];    // 9. Horario de disponibilidad
-
-    // Imagen del proyecto
-    const imgPreview = vistaActual.querySelector('.img-preview');
-    let urlImagenFinal = (imgPreview && imgPreview.src && imgPreview.src !== '#' && !imgPreview.src.endsWith('/#'))
-        ? imgPreview.src
-        : 'svg/subir/comprar.png';
-
-    // 3. Comprobar que absolutamente todo esté relleno
-    if (!nombreProducto || nombreProducto.value.trim() === "") errores.push(nombreProducto);
-    if (!descProducto || descProducto.value.trim() === "") errores.push(descProducto);
-    if (!enlaceCompra || enlaceCompra.value.trim() === "") errores.push(enlaceCompra);
-    if (!precioOriginal || precioOriginal.value.trim() === "") errores.push(precioOriginal);
-
-    if (!nombreEmpresa || nombreEmpresa.value.trim() === "") errores.push(nombreEmpresa);
-    if (!descEmpresa || descEmpresa.value.trim() === "") errores.push(descEmpresa);
-    if (!enlaceEmpresa || enlaceEmpresa.value.trim() === "") errores.push(enlaceEmpresa);
-    if (!contactoEmpresa || contactoEmpresa.value.trim() === "") errores.push(contactoEmpresa);
-    if (!horarioEmpresa || horarioEmpresa.value.trim() === "") errores.push(horarioEmpresa);
-
-    // 4. Si hay errores, mostrarMensajeEstadoar y enfocar el primer campo vacío
-    if (errores.length > 0) {
-        mostrarMensajeEstado("Por favor, rellena todos los campos obligatorios para poder enviar el producto.");
-        errores[0].classList.add('campo-error');
-        errores[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        errores[0].focus();
-        return false;
-    }
-
-    // 5. Si todo está correcto, enviamos a Supabase
-    const textoOriginalBoton = elemento.innerText;
-    elemento.innerText = "Enviando producto...";
-    elemento.disabled = true;
-
-    try {
-        const fechaActual = new Date().toISOString();
-
-        const { error } = await window.supabase
-            .from('producto-empresa')
-            .insert([
-                {
-                    "fecha": fechaActual,
-                    "nombre-empresa": nombreEmpresa.value.trim(),
-                    "descripcion": descEmpresa.value.trim(),
-                    "link": enlaceEmpresa.value.trim(),
-                    "contacto": contactoEmpresa.value.trim(),
-                    "horario": horarioEmpresa.value.trim(),
-                    "nombre-producto": nombreProducto.value.trim(),
-                    "descripcion-producto": descProducto.value.trim(),
-                    "img-prod": urlImagenFinal,
-                    "link-prod": enlaceCompra.value.trim(),
-                    "precio-original": precioOriginal.value.trim()
-                }
-            ]);
-
-        if (error) throw error;
-
-        // Limpiar formulario
-        todosInputs.forEach(i => i.value = "");
-        todosTextareas.forEach(t => t.value = "");
-
-        if (imgPreview) {
-            imgPreview.src = "#";
-            const previewCont = vistaActual.querySelector('.preview-container');
-            if (previewCont) previewCont.style.display = 'none';
-        }
-
-        // Ir a la vista de éxito
-        vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-        if (typeof realizarBusqueda === 'function') realizarBusqueda();
-
-    } catch (error) {
-        console.error("Error al enviar los datos a la tabla producto-empresa:", error);
-        mostrarMensajeEstado("Error al enviar: " + (error.message || JSON.stringify(error)));
-    } finally {
-        elemento.innerText = textoOriginalBoton;
-        elemento.disabled = false;
-    }
-}
 
 // =========================================================================
 // SISTEMA DE MENSAJES DE ESTADO GLOBAL (Reemplazo de mostrarMensajeEstado)

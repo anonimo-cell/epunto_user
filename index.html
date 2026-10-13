@@ -22,8 +22,6 @@
         <p class="titulo-menu-acce-claro">Productos hechos para y por personas con Parkinson</p>
       </span>
       <div class="botones-login-container">
-        <button class="btn-login-header" data-vista="vista-empresa" tabindex="0"
-          onclick="cambiarEstadoslider(this)">Empresa</button>
         <!--id="btn-header-sesion"-->
         <button id="mi-boton-login" class="btn-login-header" onclick="gestionarClickLogin(this)">Iniciar sesión</button>
 
@@ -31,7 +29,6 @@
           onclick="cambiarEstadoslider(this)">Solicitar cuenta</button>
       </div>
     </div>
-    <!--BTN ERES EMPRESA-->
     <button id="btn-top-accesibilidad" class="btn-top-acce"
       onclick="document.getElementById('modal-accesibilidad').showModal()">
       <img src="svg/accesibilidad/acces.svg" alt="Icono de accesibilidad" class="cap-icon-acce-top">
@@ -78,12 +75,6 @@
     <!--MENÚ DE LATERAL IZQUIERDO-->
     <div class="lateral_izq">
       <div class="grid-lateral-izq">
-        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModalAyuda('modal-ayuda')">
-          <div class="cabecera-izq">
-            <img src="svg/lat_dech/ayuda.svg" class="cap-icon-izq" alt="Icono de ayuda">
-            <span class="btn-titulo-izq">Ayuda</span>
-          </div>
-        </div>
         <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModalInfo('modal-info')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/info.svg" class="cap-icon-izq" alt="Icono de Información">
@@ -100,6 +91,12 @@
           <div class="cabecera-izq">
             <img src="svg/lat_dech/contacto.svg" class="cap-icon-izq" alt="Icono de contacto">
             <span class="btn-titulo-izq">Contacto</span>
+          </div>
+        </div>
+        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModalAgradecimientos()">
+          <div class="cabecera-izq">
+            <img src="svg/lat_dech/agradecimientos.svg" class="cap-icon-izq" alt="Icono de agradecimientos">
+            <span class="btn-titulo-izq">Agradecimientos</span>
           </div>
         </div>
 
@@ -125,24 +122,6 @@
         <div class="btn-textos-contenedor-menu">
           <h3 class="btn-titulo-menu">Ver productos</h3>
           <p class="btn-frase-menu">Explora categorías y productos</p>
-        </div>
-      </div>
-      <div class="btn-menu" role="button" tabindex="0" data-vista="vista-problema" onclick="cambiarEstadoslider(this)">
-        <div class="btn-icono-contenedor-menu">
-          <img src="svg/menu/solucionar.png" class="cap-icon-menu" alt="Icono de cara confudida" aria-hidden="true">
-        </div>
-        <div class="btn-textos-contenedor-menu">
-          <h3 class="btn-titulo-menu">No encuentro lo que busco</h3>
-          <p class="btn-frase-menu">¿Tienes una dificultad que no has podido resolver?</p>
-        </div>
-      </div>
-      <div class="btn-menu" role="button" tabindex="0" data-vista="vista-probar" onclick="cambiarEstadoslider(this)">
-        <div class="btn-icono-contenedor-menu">
-          <img src="svg/menu/probar.svg" class="cap-icon-menu" alt="Icono de producto" aria-hidden="true">
-        </div>
-        <div class="btn-textos-contenedor-menu">
-          <h3 class="btn-titulo-menu">Probar un producto</h3>
-          <p class="btn-frase-menu">Prueba nuevos productos de apoyo</p>
         </div>
       </div>
     </div>
@@ -627,201 +606,6 @@
         </div>
       </div>
     </div>
-    <!--SUBIR formulario ideas empresa-->
-    <div id="vista-form-ideas" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-
-            <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(5)">Inicio Empresa</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-actual">Formulario Ideas</span>
-            </nav>
-
-            <div class="btn-volver" role="button" tabindex="0" onclick="regresarvolver(5)">
-              <div class="cabecera-linea-volver">
-                <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
-              </div>
-            </div>
-            <div class="cabecera-superior-icono">
-
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Formulario Empresa para solicitud de datos </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="acordeon-form">
-          <!--TITULO,IMAGEN, FILTRO-->
-          <div class="guia-card">
-            <div class="form-row">
-              <label>Nombre de la empresa:*
-                <input type="text" class="input-moderno" placeholder="Nombre de la empresa" maxlength="20"
-                  aria-label="Nombre de la empresa"></label>
-            </div>
-            <div class="form-row">
-              <label>Descripción de la empresa: *
-                <textarea class="input-moderno" placeholder="Breve descripción..." maxlength="300"
-                  aria-label="Breve descripción..."></textarea></label>
-            </div>
-            <div class="form-row">
-              <label>Enlace a la empresa: *
-                <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?" maxlength="80"
-                  aria-label="¿Cómo lo has comprado?"></textarea></label>
-            </div>
-
-            <div class="form-row">
-              <label>Contacto*
-                <textarea class="input-moderno" placeholder="Informanos de cómo ponernos en contacto con ustedes"
-                  maxlength="80" aria-label="Contacto"></textarea></label>
-            </div>
-
-            <div class="form-row">
-              <label>Horario de disponibilidad*
-                <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                  maxlength="80" aria-label="Informanos de cuando ponernos en contacto con ustedes"></textarea></label>
-            </div>
-          </div>
-          <div class="buscar-espacio">
-            <button type="button" data-vista="vista-publicado" onclick="validarYEnviarEmpresa(this)" class="btn-buscar">
-              Enviar datos
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="vista-form-validar" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(5)">Inicio Empresa</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-actual">Formulario Validar producto</span>
-            </nav>
-
-            <div class="btn-volver" role="button" tabindex="0" onclick="regresarvolver(5)">
-              <div class="cabecera-linea-volver">
-                <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
-              </div>
-            </div>
-            <div class="cabecera-superior-icono">
-
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Formulario Empresa para validación de producto </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="acordeon-form">
-          <!--TITULO,IMAGEN, FILTRO-->
-          <details id="info-p" open style="display: block;">
-            <summary>Información del producto</summary>
-            <div class="guia-card">
-              <div class="form-grid-ini">
-                <div class="col-left">
-                  <div class="form-row">
-                    <label class="titulo-form">Nombre del producto: *
-                      <input type="text" class="input-moderno" placeholder="Nombre del producto" maxlength="80"
-                        aria-label="Nombre del producto"></label>
-                  </div>
-                  <div class="form-row">
-                    <label>Descripción del producto: *
-                      <textarea class="input-moderno" placeholder="¿Para que sirve el producto?"
-                        aria-label="¿Para que sirve el producto?" maxlength="300"></textarea></label>
-                  </div>
-
-                </div>
-                <div class="col-right">
-                  <label class="titulo-form" for="imagen-p">Imagen del Proyecto:*</label>
-                  <div class="area-carga-imagen" id="imagen-p">
-                    <input type="file" class="file-input" accept="image/*" style="display:none;"
-                      aria-label="Subir imagen">
-                    <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
-                    <div class="preview-container" style="display:none;">
-                      <img class="img-preview" src="#" alt="Vista previa">
-                      <button type="button" class="btn-eliminar-foto">✕</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <label>Enlace de compra: *
-                  <textarea class="input-moderno"
-                    placeholder="¿Cón que enlace o forma de compra lo puede adquerir el usuario?"
-                    aria-label="¿Cón que enlace o forma de compra lo puede adquerir el usuario?"
-                    maxlength="400"></textarea></label>
-              </div>
-              <div class="form-row">
-                <label>Precio original *
-                  <textarea class="input-moderno" placeholder="Inserte el precio original"
-                    aria-label="Inserte el precio original" maxlength="80"></textarea></label>
-              </div>
-              <div class="siguiente">
-                <div class="btn-siguiente" role="button" tabindex="0" onclick="siguienteSeccion('info-emp')">
-                  <div class="cabecera-linea-volver">
-                    <img src="svg/volver/siguiente.svg" class="icon-btn-volver" alt="Icono de siguiente">
-                  </div>
-                </div>
-              </div>
-
-          </details>
-
-          <details id="info-emp" open style="display: block;">
-            <summary>Información de la empresa</summary>
-            <div class="guia-card">
-              <div class="form-row">
-                <label>Nombre de la empresa:*
-                  <input type="text" class="input-moderno" placeholder="Nombre de la empresa"
-                    aria-label="Nombre de la empresa" maxlength="20"></label>
-              </div>
-              <div class="form-row">
-                <label>Descripción de la empresa: *
-                  <textarea class="input-moderno" placeholder="Breve descripción..." aria-label="Breve descripción..."
-                    maxlength="180"></textarea></label>
-              </div>
-              <div class="form-row">
-                <label>Enlace a la empresa: *
-                  <textarea class="input-moderno" placeholder="¿Cómo lo has comprado?"
-                    aria-label="¿Cómo lo has comprado?" maxlength="80"></textarea></label>
-              </div>
-
-              <div class="form-row">
-                <label>Contacto*
-                  <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                    aria-label="Informanos de cuando ponernos en contacto con ustedes"
-                    maxlength="80"></textarea></label>
-              </div>
-
-              <div class="form-row">
-                <label>Horario de disponibilidad*
-                  <textarea class="input-moderno" placeholder="Informanos de cuando ponernos en contacto con ustedes"
-                    aria-label="Informanos de cuando ponernos en contacto con ustedes" maxlength="80"></textarea>
-                </label>
-              </div>
-              <div class="siguiente">
-                <div class="btn-siguiente" role="button" tabindex="0" onclick="siguienteSeccion('seccion-filt')">
-                  <div class="cabecera-linea-volver">
-                    <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de siguiente">
-                  </div>
-                </div>
-              </div>
-          </details>
-
-
-        </div>
-        <div class="buscar-espacio">
-          <button type="button" data-vista="vista-publicado-empresa" onclick="validarYEnviarProductoEmpresa(this)"
-            class="btn-buscar">
-            Enviar producto
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!--SUBIR PUBLICADO-->
     <div id="vista-publicado" class="subvista-contenido" style="display: none;">
@@ -853,38 +637,6 @@
         <div class="buscar-espacio">
           <button id="btn-volver-publicado" type="button" onclick="regresarvolver(2)" class="btn-buscar">
             Subir más productos
-          </button>
-        </div>
-
-      </div>
-    </div>
-    <div id="vista-publicado-dificultad" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <!-- CABECERA MANTENIDA IGUAL -->
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <nav class="migas-pan">
-              <nav class="migas-pan">
-                <span class="miga-enlace" onclick="regresarvolver(3)">Inicio No encuentro lo que busco</span>
-                <span class="miga-separador">&rarr;</span>
-                <span class="miga-enlace" id="miga-tipo-formulario">Formulario</span>
-                <span class="miga-separador">&rarr;</span>
-                <span class="miga-actual">Formulario enviado</span>
-              </nav>
-            </nav>
-
-          </div>
-        </div>
-
-        <!-- TEXTO DINÁMICO (AQUÍ ESTÁ EL ID) -->
-        <div class="categorias">
-          <h1 id="texto-exito-publicado" class="texto-exito-centrado">Formulario enviado con exito</h1>
-        </div>
-
-        <!-- BOTÓN DINÁMICO (AQUÍ ESTÁ EL ID Y LA NUEVA FUNCIÓN) -->
-        <div class="buscar-espacio">
-          <button id="btn-volver-publicado" type="button" onclick="regresarvolver(3)" class="btn-buscar">
-            Enviar otro formulario
           </button>
         </div>
 
@@ -922,218 +674,7 @@
 
       </div>
     </div>
-    <div id="vista-publicado-empresa" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <!-- CABECERA MANTENIDA IGUAL -->
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <nav class="migas-pan">
-              <nav class="migas-pan">
-                <span class="miga-actual">Empresa</span>
-                <span class="miga-separador">&rarr;</span>
-                <span class="miga-actual">Formulario ideas</span>
-                <span class="miga-separador">&rarr;</span>
-                <span class="miga-actual">Confirmación solicitud</span>
-              </nav>
-            </nav>
-
-          </div>
-        </div>
-
-        <!-- TEXTO DINÁMICO (AQUÍ ESTÁ EL ID) -->
-        <div class="categorias">
-          <h1 id="texto-exito-publicado" class="texto-exito-centrado">Formulario de empresa enviado con exito</h1>
-          <h3>Nos pondremos en contacto con ustedes segun el horario que han indicado</h3>
-        </div>
-
-        <!-- BOTÓN DINÁMICO (AQUÍ ESTÁ EL ID Y LA NUEVA FUNCIÓN) -->
-        <div class="buscar-espacio">
-          <button id="btn-volver-publicado" type="button" onclick="regresarvolver(1)" class="btn-buscar">
-            Volver a inicio
-          </button>
-        </div>
-
-      </div>
-    </div>
-    <!--VISTA PROBLEMA-->
-    <div id="vista-problema" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-
-          <div class="grid-linea-superior">
-
-            <nav class="migas-pan">
-              <span class="miga-actual">Inicio No encuentro lo que busco</span>
-            </nav>
-
-            <div class="cabecera-superior-icono">
-              <img src="svg/menu/solucionar.png" class="cap-icon-linea-superior" alt="Icono de cara confudida"
-                aria-hidden="true">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">No encuentro lo que busco </h1>
-                </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="problema-texto">
-          <div class="btn-frase-problema">
-            <p>Cuentanos que dificultad has tenido y no has conseguido resolver</p>
-            <p>Este formulario es totalmente anonimo, nadie va a saber que lo has escrito tú</p>
-            <p>Nosotros solo le mandaremos el problema que has tenido a las empresas para que fabriquen un nuevo
-              producto</p>
-            <p>Tambien puedes poner alguna idea que tengas para resolver un problema y se lo diremos a las empresas</p>
-          </div>
-        </div>
-      </div>
-      <div class="buscar-espacio">
-        <button class="btn-buscar" onclick="comprobarSesionYAbrirProblema(this)"
-          data-vista="vista-formulario-problema">Rellenar formulario</button>
-      </div>
-    </div>
-    <!--SUBIR FORMULARIO PROBLEMA -->
-    <div id="vista-formulario-problema" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-
-            <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(3)">Inicio No encuentro lo que busco</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-actual">Rellenar formulario</span>
-
-            </nav>
-
-            <div class="btn-volver" role="button" tabindex="0" onclick="regresarvolver(3)">
-              <div class="cabecera-linea-volver">
-                <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
-              </div>
-            </div>
-            <div class="cabecera-superior-icono">
-              <img src="svg/menu/solucion.svg" class="cap-icon-linea-superior" alt="Icono de ojo" aria-hidden="true">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Rellenar formulario</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="acordeon-form">
-          <!--TITULO,IMAGEN, FILTRO-->
-          <div class="guia-card">
-            <div class="form-row">
-              <label>Cuentanos sobre tu dificultad:*
-                <input type="text" class="input-moderno" placeholder="Título del producto" maxlength="300"
-                  aria-label="Título del producto" maxlength="300"></label>
-            </div>
-            <div class="form-row">
-              <label for="sele-categoria">A qué categoría dirías que pertenece tu dificultad:*</label>
-              <div class="contenedor-categoria" id="sele-categoria">
-                <!-- Nivel 1 -->
-                <button type="button" class="btn-cate" onclick="abrirModalCate1('-prob')">
-                  <span class="btn-cate-txt">Nivel 1*</span>
-                  <span id="valor-n1-prob" class="btn-sele-filt">No seleccionada</span>
-                  <img id="icono-elegido-n1-prob" class="cap-icon-cate" src="" alt="Icono Nivel 1"
-                    style="display: none;">
-                </button>
-                <!-- Nivel 2 -->
-                <button type="button" class="btn-cate" onclick="abrirModalNivel2('-prob')">
-                  <span class="btn-cate-txt">Nivel 2*</span>
-                  <span id="valor-n2-prob" class="btn-sele-filt">No seleccionada</span>
-                  <img id="icono-elegido-n2-prob" class="cap-icon-cate" src="" alt="Icono Nivel 2"
-                    style="display: none;">
-                </button>
-                <!-- Nivel 3 -->
-                <button type="button" class="btn-cate" onclick="abrirModalNivel3('-prob')">
-                  <span class="btn-cate-txt">Nivel 3*</span>
-                  <span id="valor-n3-prob" class="btn-sele-filt">No seleccionada</span>
-                  <img id="icono-elegido-n3-prob" class="cap-icon-cate" src="" alt="Icono Nivel 3"
-                    style="display: none;">
-                </button>
-              </div>
-            </div>
-            <div class="form-row">
-              <label>¿Se te ha ocurrido alguna idea para solucionarlo?:
-                <textarea class="input-moderno" placeholder="Cuentanosla porfavor" aria-label="Cuentanosla porfavor"
-                  maxlength="300"></textarea></label>
-            </div>
-          </div>
-          <div class="buscar-espacio">
-            <button type="button" data-vista="vista-publicado-dificultad" onclick="validarYPublicar(this)"
-              class="btn-buscar">Enviar formulario </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--VISTA PROBAR-->
-    <div id="vista-probar" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <div class="cabecera-superior-icono">
-              <img src="svg/menu/probar.svg" class="cap-icon-linea-superior" alt="Icono de producto" aria-hidden="true">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Probar un producto </h1>
-                </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="problema-texto">
-          <div class="btn-frase-problema">
-            <p>Aquí verás productos de apoyo e ideas que han hecho las empresas para que tú les des tu opinión</p>
-            <p>Las empresas te lo dejarán probar a cambio de que tú luego nos des su opinión</p>
-            <p>Tambien verás ideas de productos que podrás decir si te parecen buenas o malas</p>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="buscar-espacio">
-        <button type="button" class="btn-buscar" onclick="abrirCatalogoProductosProbar(this)">
-          Ver catálogo de productos
-        </button>
-      </div>
-    </div>
-    <!--VISTA EMPRESA-->
-    <div id="vista-empresa" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <div class="cabecera-superior-icono">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Empresa</h1>
-                </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="problema-texto">
-          <div class="btn-frase-problema">
-            <p>Hola, en este portal damos facilitamos a las empresas el diseño centrado en el usuario para los productos
-              de apoyo.
-              ¿En que te podemos ayudar?
-            </p>
-          </div>
-        </div>
-
-        <div class="slider-subir">
-          <div class="btn-subir-emp" role="button" tabindex="0" data-vista="vista-form-ideas"
-            onclick="cambiarEstadoslider(this)">
-            <span class="btn-titulo-subir">Ideas de diseño</span>
-            <span class="btn-frase-subir">Gracias a nuestros formularios anónimos, hemos recopilado ideas y retos reales
-              validados por usuarios de la comunidad parkinson</span>
-          </div>
-          <div class="btn-subir-emp" role="button" tabindex="0" data-vista="vista-form-validar"
-            onclick="cambiarEstadoslider(this)">
-            <span class="btn-titulo-subir">Validar un producto</span>
-            <span class="btn-frase-subir">Ofrecemos la opción de poner en contacto a usuarios reales de la comunidad
-              para
-              validar, ideas, prototipos y productos</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    
     <!--VISTA PRODUCTO DE BAJO COSTE-->
     <div id="vista-detalle-verproducto" class="subvista-contenido" style="display: none;">
       <div class="contenedor-dinamico">
@@ -1748,7 +1289,7 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(4)">Inicio Probar productos</span>
+              <span class="miga-enlace" onclick="regresarvolver(1)">Inicio Ver Productos</span>
               <span class="miga-separador">&rarr;</span>
               <span class="miga-actual">Catálogo de productos</span>
             </nav>
@@ -1761,7 +1302,7 @@
             </div>
 
             <div class="cabecera-superior-icono">
-              <img id="icono-dinamico" src="svg/menu/probar.svg" class="cap-icon-linea-superior"
+              <img id="icono-dinamico" src="svg/menu/ver.png" class="cap-icon-linea-superior"
                 alt="Icono de la categoría" aria-hidden="true">
               <div class="text-linea-superior">
                 <h1 id="titulo-dinamico" class="titulo-linea-superior">Catálogo de productos</h1>
@@ -1809,120 +1350,8 @@
         </div>
       </div>
     </div>
-    <!-- ========================================== -->
-    <!-- NUEVA VISTA EXCLUSIVA: CATÁLOGO DE PRODUCTOS PROBAR -->
-    <!-- ========================================== -->
-    <div id="vista-catalogo-productosprobar" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-            <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(4)">Inicio Probar productos</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-actual">Catálogo de productos a probar</span>
-            </nav>
-
-            <div class="btn-volver" role="button" tabindex="0" onclick="regresarvolver(4)">
-              <div class="cabecera-linea-volver">
-                <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
-              </div>
-            </div>
-
-            <div class="cabecera-superior-icono">
-              <img src="svg/menu/probar.svg" class="cap-icon-linea-superior" alt="Icono de probar" aria-hidden="true">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Catálogo de productos a probar</h1>
-              </div>
-            </div>
-          </div>
-          <!-- (Sin filtros de bajo coste / comercializado, totalmente independiente) -->
-        </div>
-
-        <div class="categorias">
-          <div class="grid-productos" id="contenedor-productosprobar-dinamico">
-            <!-- Las tarjetas de 'productosprobar' aparecerán aquí automáticamente -->
-          </div>
-        </div>
-      </div>
-    </div>
 
 
-    <!-- VISTA INDIVIDUAL EXCLUSIVA: PRODUCTO A PROBAR -->
-    <!-- ========================================== -->
-    <!-- ========================================== -->
-    <!-- VISTA INDIVIDUAL EXCLUSIVA: PRODUCTO A PROBAR -->
-    <!-- ========================================== -->
-    <div id="vista-detalle-productosprobar" class="subvista-contenido" style="display: none;">
-      <div class="contenedor-dinamico">
-        <div class="linea_superior">
-          <div class="grid-linea-superior">
-
-            <nav class="migas-pan">
-              <span class="miga-enlace" onclick="regresarvolver(4)">Inicio Probar productos</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-enlace" onclick="regresarCatalogoProductosProbar()">Catálogo</span>
-              <span class="miga-separador">&rarr;</span>
-              <span class="miga-actual" id="miga-probar-titulo">Producto</span>
-            </nav>
-
-            <div class="btn-volver" role="button" tabindex="0" onclick="regresarvolver(4)">
-              <div class="cabecera-linea-volver">
-                <img src="svg/volver/volver.svg" class="icon-btn-volver" alt="Icono de retroceder">
-
-              </div>
-            </div>
-
-            <div class="cabecera-superior-icono">
-              <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior" id="cabecera-probar-titulo">Cargando...</h1>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Contenedor detalle card sin los badges naranjas superiores -->
-        <div class="detalle-card" style="text-align: left; margin-top: 20px; padding: 20px;">
-
-          <!-- Imagen central -->
-          <div style="text-align: center; margin-bottom: 25px;">
-            <img id="detalle-probar-imagen" src=""
-              style="max-height: 100%; height: 400px; border-radius: 10px; object-fit: contain;" alt="detalle-imagen">
-          </div>
-
-          <!-- Sección Descripción -->
-          <div style="margin-bottom: 25px;">
-            <h3 class="txt-detalle">Descripción</h3>
-            <p id="detalle-probar-descripcion" style="line-height: 1.5;"></p>
-          </div>
-
-          <!-- Sección Fabricante -->
-          <div style="margin-bottom: 25px;" id="seccion-probar-fabricante">
-            <h3 class="txt-detalle">Fabricante</h3>
-            <p id="detalle-probar-fabricante" style="line-height: 1.5;"></p>
-          </div>
-
-          <!-- Sección Precio -->
-          <div style="margin-bottom: 25px;" id="seccion-probar-precio">
-            <h3 class="txt-detalle">Precio</h3>
-            <p id="detalle-probar-precio" style="line-height: 1.5;"></p>
-          </div>
-          <div class="buscar-espacio">
-            <button type="button" class="btn-buscar" onclick="comprobarSesionYContactar(event)">
-              Quiero probar este producto
-            </button>
-          </div>
-
-          <!-- Botón Contactar con validación de sesión -->
-
-
-        </div>
-      </div>
-    </div>
-
-    <!--VISTA SOLICITUD -->
     <!--VISTA SOLICITUD -->
     <div id="vista-solicitud" class=" subvista-contenido" style="display: none;">
       <div class="contenedor-dinamico">
@@ -2049,9 +1478,6 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- DIÁLOGO FLOTANTE DE INICIO DE SESIÓN -->
-  <!-- ========================================== -->
-  <!-- ========================================== -->
   <!-- DIÁLOGO FLOTANTE DE INICIO DE SESIÓN (ESTILO MODAL ACCESIBLE) -->
   <!-- ========================================== -->
   <dialog id="modal-login" class="modal-accesible"
@@ -2101,28 +1527,6 @@
     </div>
   </dialog>
 
-  <dialog id="modal-contactar-pro" class="modal-accesible">
-    <div class="modal-cabecera">
-      <div class="btn-cabecera-linea-modal">
-        <span class="btn-titulo-dialog">Contactar para probar el producto de apoyo</span>
-        <img src="svg/lat_dech/info.svg" class="cap-icon-modal" alt="Icono de Información">
-      </div>
-      <button class="btn-cerrar-modal" title="Cerrar ventana" onclick="cerrarModalInfo()">×</button>
-    </div>
-    <div class="modal-cuerpo">
-      <p>Si pulsas el botón de abajo, nos pondremos en contacto con la empresa para que te deje probar su producto de
-        manera gratuita</p>
-      <p>A cambio tendras que darles tu opinion sincera sobre el producto, a ellos les ayudaras para mejorarlo.
-        Ellos te enviaran el producto, por eso antes te contactaremos para que nos des una dirección.
-        Cuando hablemos con ellos, te contactaremos para decirte en que plazo te llegara el producto y tendras que
-        mandarnos a nosotros tu opinión. Nosotros se lo diremos a ellos.
-        Todo será un proceso anonimo, solo nosotros sabremos tu identidad
-      </p>
-      <button class="side-btn-acce" style="margin-top:10px;" onclick="apuntarUsuarioAProbar(this)">Quiero probar este
-        producto</button>
-    </div>
-  </dialog>
-
   <!--DIALOGOS DERECHA-->
   <dialog id="modal-info" class="modal-accesible">
     <div class="modal-cabecera">
@@ -2147,41 +1551,16 @@
     </div>
   </dialog>
 
-  <dialog id="modal-ayuda" class="modal-accesible">
+  <dialog id="modal-agradecimientos" class="modal-accesible">
     <div class="modal-cabecera">
       <div class="btn-cabecera-linea-modal">
-        <span class="btn-titulo-dialog">Ayuda</span>
-        <img src="svg/lat_dech/ayuda.svg" class="cap-icon-modal" alt="Icono de ayuda">
+        <span class="btn-titulo-dialog">Agradecimientos</span>
+        <img src="svg/lat_dech/agradecimientos.svg" class="cap-icon-modal" alt="Icono de agradecimientos">
       </div>
-      <button class="btn-cerrar-modal" title="Cerrar ventana" onclick="cerrarModalAyuda()">×</button>
+      <button type="button" class="btn-cerrar-modal" title="Cerrar ventana" onclick="cerrarModal(this)">×</button>
     </div>
     <div class="modal-cuerpo">
-      <h4>Ver productos de apoyo</h4>
-      <p> Podrás ver productos de apoyo que hayan recomendado otras personas relacionadas con el Parkinson en la
-        seccion
-        "Ver".</p>
-      <p> Los productos que verás pueden ser pueden vender o pueden ser tutoriales caseros que hayan hecho otras
-        personas.</p>
-      <p> Para encontrarlos tienes dos opciones o buscarlos por necesidades con 3 niveles o buscarlos con palabras</p>
-
-      <h4>Subir productos de apoyo</h4>
-      <p> Podrás subir productos de apoyo que te hayan servido o subir un tutorial de un producto casero que te haya
-        ayudado con un sintoma de Parkinson</p>
-      <p>Para ello selecciona en el menu la pestaña "Subir"</p>
-
-      <h4>Necesitas una solución nueva</h4>
-      <p> Si tienes alguna dificultad que no has conseguido resolver por el Parkinson, rellena nuestro formulario
-        anonimo en la seccion "Solución Nueva"</p>
-      <p>Nosotros nos pondremos en contacto con empresas para que diseñen un nuevo producto de apoyo que solucione tu
-        dificultad</p>
-      <p>Tu voz es importante</p>
-
-      <h4>Probar una solución nueva</h4>
-      <p>¿Te apetece probar un nuevo producto de apoyo? Muchas veces las empresas necesitan validad producto de apoyo
-        para personas con Parkinson </p>
-      <p>Ellas necesitan vuestra opinion para conseguir un producto que funcione, si quieres probarlos pulsa en la
-        pestaña "Probar una solución nueva"</p>
-
+      <p>Queremos dar las gracias a todas las personas que han hecho posible EPunto.</p>
     </div>
   </dialog>
 
@@ -2576,14 +1955,6 @@
 
       <!-- Botones adaptados para el modal -->
       <div class="side-btn-dech" style="max-width: 100%; border-radius: 12px; height: 55px;"
-        onclick="document.getElementById('modal-menu-ayuda').close(); abrirModalAyuda('modal-ayuda')">
-        <div class="cabecera-izq">
-          <img src="svg/lat_dech/ayuda.svg" class="cap-icon-izq" alt="Icono de ayuda">
-          <span class="btn-titulo-izq" style="font-size: 1rem;">Ayuda</span>
-        </div>
-      </div>
-
-      <div class="side-btn-dech" style="max-width: 100%; border-radius: 12px; height: 55px;"
         onclick="document.getElementById('modal-menu-ayuda').close(); abrirModalInfo('modal-info')">
         <div class="cabecera-izq">
           <img src="svg/lat_dech/info.svg" class="cap-icon-izq" alt="Icono de Información">
@@ -2604,6 +1975,14 @@
         <div class="cabecera-izq">
           <img src="svg/lat_dech/contacto.svg" class="cap-icon-izq" alt="Icono de contacto">
           <span class="btn-titulo-izq" style="font-size: 1rem;">Contacto</span>
+        </div>
+      </div>
+
+      <div class="side-btn-dech" style="max-width: 100%; border-radius: 12px; height: 55px;"
+        onclick="document.getElementById('modal-menu-ayuda').close(); abrirModalAgradecimientos()">
+        <div class="cabecera-izq">
+          <img src="svg/lat_dech/agradecimientos.svg" class="cap-icon-izq" alt="Icono de agradecimientos">
+          <span class="btn-titulo-izq" style="font-size: 1rem;">Agradecimientos</span>
         </div>
       </div>
 

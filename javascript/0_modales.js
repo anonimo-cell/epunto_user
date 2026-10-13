@@ -35,22 +35,13 @@ function cerrarModalLogin() {
         modal.close();
     }
 }
-//para ayuda
-function abrirModalAyuda() {
-    const modal = document.getElementById("modal-ayuda");
+//para agradecimientos
+function abrirModalAgradecimientos() {
+    const modal = document.getElementById("modal-agradecimientos");
     if (modal) {
         modal.showModal(); // Abre el diálogo de forma nativa y accesible
-        console.log("Modal de información abierto.");
     } else {
-        console.error("No se encontró el elemento HTML con el id 'modal-ayuda'.");
-    }
-}
-
-function cerrarModalAyuda() {
-    const modal = document.getElementById("modal-ayuda");
-    if (modal) {
-        modal.close(); // Cierra el diálogo nativo
-        console.log("Modal de información cerrado.");
+        console.error("No se encontró el elemento HTML con el id 'modal-agradecimientos'.");
     }
 }
 

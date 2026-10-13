@@ -59,13 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    if (typeof window.regresarCatalogoProductosProbar === 'function') {
-        window.regresarCatalogoProductosProbarOriginal = window.regresarCatalogoProductosProbar;
-        window.regresarCatalogoProductosProbar = function() {
-            history.back(); 
-        };
-    }
-
     // =====================================================================
     // 4. 🌟 NUEVO: REGISTRAR AVANCES LEYENDO DIRECTAMENTE EL HTML 🌟
     // =====================================================================
@@ -140,14 +133,8 @@ function ejecutarRegresoVisual(vistaAnteriorId) {
     document.querySelectorAll('.btn-login-header').forEach(btn => btn.classList.remove('active'));
 
     let vistaMenuPadre = 'vista-ver'; 
-    if (vistaAnteriorId === 'vista-empresa' || vistaAnteriorId.includes('form-')) {
-        vistaMenuPadre = 'vista-empresa';
-    } else if (vistaAnteriorId === 'vista-subir' || vistaAnteriorId.includes('prod-')) {
+    if (vistaAnteriorId === 'vista-subir' || vistaAnteriorId.includes('prod-')) {
         vistaMenuPadre = 'vista-subir';
-    } else if (vistaAnteriorId === 'vista-problema' || vistaAnteriorId === 'vista-formulario-problema') {
-        vistaMenuPadre = 'vista-problema';
-    } else if (vistaAnteriorId === 'vista-probar' || vistaAnteriorId.includes('probar')) {
-        vistaMenuPadre = 'vista-probar';
     } else if (vistaAnteriorId.includes('solicitud')) {
         vistaMenuPadre = 'vista-solicitud';
     }

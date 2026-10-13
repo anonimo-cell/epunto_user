@@ -112,90 +112,6 @@ async function abrirCatalogoProductos(boton) {
     if (typeof realizarBusqueda === 'function') realizarBusqueda();
 }
 // =========================================================================
-// CATÁLOGO EXCLUSIVO PARA PRODUCTOS A PROBAR (TABLA: producto-empresa)
-// =========================================================================
-async function abrirCatalogoProductosProbar(elemento) {
-    console.log("Abriendo catálogo exclusivo de productos de empresa a probar...");
-
-    const idVistasPrincipales = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com',
-        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
-        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-        'vista-detalle-verproductocom', 'vista-catalogo-productosprobar'
-    ];
-
-    idVistasPrincipales.forEach(id => {
-        const vista = document.getElementById(id);
-        if (vista) vista.style.display = 'none';
-    });
-
-    const vistaMostrar = document.getElementById('vista-catalogo-productosprobar');
-    if (vistaMostrar) vistaMostrar.style.display = 'flex';
-
-    const contenedor = document.getElementById('contenedor-productosprobar-dinamico');
-    if (!contenedor) return;
-
-    contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #666;">Cargando productos... ⏳</h2></div>';
-
-    try {
-        const { data, error } = await window.supabase
-            .from('producto-empresa')
-            .select('*')
-            .eq('verificacion', 1);
-
-        if (error) throw error;
-
-        contenedor.innerHTML = '';
-
-        if (!data || data.length === 0) {
-            contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #666;">No hay productos para probar actualmente.</h2></div>';
-            return;
-        }
-
-        data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-
-        data.forEach(item => {
-            // AQUÍ EXTRAEMOS EL ID
-            const idProducto = item.id; 
-            const nombre = item['nombre-producto'] || 'Producto sin nombre';
-            const fecha = item.fecha || '';
-            const imagen = item['img-prod'] || 'svg/subir/comprar.png';
-            const descripcion = item['descripcion-producto'] || '';
-            const precio = item['precio-original'] || '';
-            const fabricante = item['nombre-empresa'] || 'Desconocido';
-            const link = item['link-prod'] || '#';
-
-            const nombreSeguro = nombre.replace(/'/g, "\\'");
-            const descripcionSegura = descripcion.replace(/'/g, "\\'");
-            const fabricanteSeguro = fabricante.replace(/'/g, "\\'");
-
-            // AQUÍ SE LO PASAMOS EN PRIMER LUGAR ('${idProducto}')
-            const tarjetaHTML = `
-                <button class="btn-producto" onclick="verDetalleProductoProbar('${idProducto}', '${nombreSeguro}', '${fecha}', '${imagen}', '${descripcionSegura}', '${precio}', '${fabricanteSeguro}', '${link}')" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 15px; cursor: pointer;">
-                  <span class="prod-titulo" style="font-size: 1.1rem; margin-bottom: 8px;">${nombre}</span>
-                  <div style="width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; border-radius: 6px; margin-bottom: 10px; overflow: hidden;">
-                    <img src="${imagen}" class="prod-img" alt="${nombre}" style="width: 100%; height: 100%; object-fit: contain;">
-                  </div>
-                  <div class="prod-etiquetas" style="margin-top: auto; display: flex; align-items: center; gap: 6px;">
-                    <img src="svg/filtro/difi.svg" alt="Icono" style="width: 16px; height: 16px;">
-                    <span style="font-size: 0.9rem; color: #555;">Fabricante: ${fabricante}</span>
-                  </div>
-                </button>
-            `;
-
-            contenedor.insertAdjacentHTML('beforeend', tarjetaHTML);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar la tabla producto-empresa:", error);
-        contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #d93025;">Hubo un error al cargar los productos.</h2></div>';
-    }
-}
-
-// =========================================================================
 function abrirDetalleVerProducto(productoJSON) {
     // 1. Decodificamos los datos que vienen del botón
     const prod = JSON.parse(decodeURIComponent(productoJSON));
@@ -470,107 +386,6 @@ function abrirDetalleVerProducto(productoJSON) {
 // Función 1: Se ejecuta al hacer clic en los botones del slider
 
 
-// =========================================================================
-// 1. ABRIR VISTA INDIVIDUAL DE PRODUCTO A PROBAR
-// =========================================================================
-function verDetalleProductoProbar(id, nombre, fecha, imagen, descripcion, precio, fabricante, link) {
-    // GUARDAMOS EL ID DEL PRODUCTO PARA APUNTARNOS LUEGO
-    window.productoActualId = id;
-
-    console.log("Abriendo detalle individual de producto a probar:", nombre);
-
-    const idVistasPrincipales = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com',
-        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
-        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-        'vista-detalle-verproductocom', 'vista-catalogo-productosprobar', 'vista-catalogo-dificultades',
-        'vista-detalle-productosprobar'
-    ];
-
-    idVistasPrincipales.forEach(vistaId => {
-        const vista = document.getElementById(vistaId);
-        if (vista) vista.style.display = 'none';
-    });
-
-    const vistaDetalle = document.getElementById('vista-detalle-productosprobar');
-    if (vistaDetalle) vistaDetalle.style.display = 'flex';
-
-    const elCabecera = document.getElementById('cabecera-probar-titulo');
-    const elMiga = document.getElementById('miga-probar-titulo');
-    if (elCabecera) elCabecera.innerText = nombre || 'Detalle del producto';
-    if (elMiga) elMiga.innerText = nombre || 'Producto';
-
-    const elImagen = document.getElementById('detalle-probar-imagen');
-    if (elImagen) elImagen.src = imagen || 'svg/subir/comprar.png';
-
-    const elDesc = document.getElementById('detalle-probar-descripcion');
-    if (elDesc) elDesc.innerText = descripcion || 'Sin descripción disponible.';
-
-    const elFab = document.getElementById('detalle-probar-fabricante');
-    if (elFab) elFab.innerText = fabricante || 'Desconocido';
-
-    const elPrecio = document.getElementById('detalle-probar-precio');
-    if (elPrecio) elPrecio.innerText = precio || 'Consultar proveedor';
-}
-// =========================================================================
-// 2. REGRESAR AL CATÁLOGO DE PRODUCTOS A PROBAR DESDE EL DETALLE
-// =========================================================================
-function regresarCatalogoProductosProbar() {
-    const idVistasPrincipales = [
-        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com',
-        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
-        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto',
-        'vista-detalle-verproductocom', 'vista-catalogo-dificultades',
-        'vista-detalle-productosprobar'
-    ];
-
-    idVistasPrincipales.forEach(id => {
-        const vista = document.getElementById(id);
-        if (vista) vista.style.display = 'none';
-    });
-
-    const vistaCatalogo = document.getElementById('vista-catalogo-productosprobar');
-    if (vistaCatalogo) vistaCatalogo.style.display = 'flex';
-}
-
-// =========================================================================
-// 3. ACTUALIZAR LA RENDERIZACIÓN DE TARJETAS EN EL CATÁLOGO
-// =========================================================================
-// En tu función `abrirCatalogoProductosProbar`, asegúrate de que el evento onclick 
-// de la tarjeta llame a `verDetalleProductoProbar` de la siguiente manera:
-/*
-    data.forEach(item => {
-        const nombre = item.nombre || 'Producto sin nombre';
-        const imagen = item.imagen || 'svg/subir/comprar.png';
-        const fabricante = item.fabricante || 'Desconocido';
-        const link = item.link || '#';
-
-        // Escapamos las comillas simples por seguridad en el paso de parámetros
-        const nombreSeguro = nombre.replace(/'/g, "\\'");
-        const fabricanteSeguro = fabricante.replace(/'/g, "\\'");
-
-        const tarjetaHTML = `
-            <button class="btn-producto" onclick="verDetalleProductoProbar('${nombreSeguro}', '${imagen}', '${fabricanteSeguro}', '${link}')" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 15px; cursor: pointer;">
-              <span class="prod-titulo" style="font-size: 1.1rem; margin-bottom: 8px;">${nombre}</span>
-              <div style="width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; border-radius: 6px; margin-bottom: 10px; overflow: hidden;">
-                <img src="${imagen}" class="prod-img" alt="${nombre}" style="width: 100%; height: 100%; object-fit: contain;">
-              </div>
-              <div class="prod-etiquetas" style="margin-top: auto; display: flex; align-items: center; gap: 6px;">
-                <img src="svg/filtro/difi.svg" alt="Icono" style="width: 16px; height: 16px;">
-                <span style="font-size: 0.9rem; color: #555;">Fabricante: ${fabricante}</span>
-              </div>
-            </button>
-        `;
-
-        contenedor.insertAdjacentHTML('beforeend', tarjetaHTML);
-    });
-*/
 function cambiarOpcionCatalogo(botonPulsado, opcionElegida) {
     const contenedor = botonPulsado.closest('.contenedor-slider-filtros');
     const botones = contenedor.querySelectorAll('button');
@@ -687,86 +502,7 @@ function alternarValoracion(botonPulsado, opcion) {
     }
 }
 // =========================================================================
-// 1. VALIDACIÓN PARA EL BOTÓN CONTACTAR
-// =========================================================================
-// =========================================================================
-// VALIDACIÓN PARA EL BOTÓN CONTACTAR Y APERTURA DE MODAL PRO
-// =========================================================================
-// Variable global para recordar el producto actual
-let productoActualSeleccionado = null;
-
-function comprobarSesionYContactar(event, link) {
-    if (event) {
-        event.preventDefault();
-    }
-
-    const estadoSesion = sessionStorage.getItem('sesionIniciada');
-
-    if (estadoSesion !== '1') {
-        const modalLogin = document.getElementById('modal-login');
-        if (modalLogin) {
-            modalLogin.showModal();
-        }
-        return false;
-    }
-
-    //  AQUÍ CAPTURAMOS EL TÍTULO DEL PRODUCTO DESDE EL BOTÓN O SU CONTENEDOR
-    // Buscamos el elemento de título dentro de la tarjeta o vista de detalle actual
-    const tarjetaProducto = event.target.closest('.guia-card, .vista-detalle, div');
-    if (tarjetaProducto) {
-        const elementoTitulo = tarjetaProducto.querySelector('h1, h2, h3, .titulo-producto');
-        if (elementoTitulo) {
-            productoActualSeleccionado = elementoTitulo.innerText.trim();
-        }
-    }
-
-    // Si no lo encuentra por ahí, intentamos buscar el título principal de la vista activa de detalle
-    if (!productoActualSeleccionado) {
-        const tituloGeneral = document.querySelector('.subvista-contenido[style*="display: flex"] h1, .subvista-contenido[style*="display: block"] h1');
-        if (tituloGeneral) {
-            productoActualSeleccionado = tituloGeneral.innerText.trim();
-        }
-    }
-
-    console.log("Producto identificado para probar:", productoActualSeleccionado);
-
-    // Abrimos tu diálogo
-    const modalContactarPro = document.getElementById('modal-contactar-pro');
-    if (modalContactarPro) {
-        modalContactarPro.showModal();
-    }
-
-    return true;
-}
-
-// Función auxiliar por si quieres asegurar que el botón de cerrar del diálogo funcione
-function cerrarModalInfo() {
-    const modalContactarPro = document.getElementById('modal-contactar-pro');
-    if (modalContactarPro) {
-        modalContactarPro.close();
-    }
-}
-
-// =========================================================================
-// 2. VALIDACIÓN PARA EL BOTÓN RELLENAR INFORME ("No encuentro lo que busco")
-// =========================================================================
-function comprobarSesionYAbrirProblema(elemento) {
-    const estadoSesion = sessionStorage.getItem('sesionIniciada');
-
-    if (estadoSesion !== '1') {
-        const modalLogin = document.getElementById('modal-login');
-        if (modalLogin) {
-            modalLogin.showModal();
-        }
-        return;
-    }
-    if (typeof cambiarEstadoslider === 'function') {
-        cambiarEstadoslider(elemento);
-    }
-}
-
-// =========================================================================
-// 3. VALIDACIÓN PARA LOS BOTONES DE SUBIDA DE PRODUCTO
+// VALIDACIÓN PARA LOS BOTONES DE SUBIDA DE PRODUCTO
 // =========================================================================
 function comprobarSesionYAbrirSubida(elemento) {
     const estadoSesion = sessionStorage.getItem('sesionIniciada');
@@ -785,7 +521,7 @@ function comprobarSesionYAbrirSubida(elemento) {
 
 
 // =========================================================================
-// 4. INICIO DE SESIÓN EN EL MODAL FLOTANTE
+// INICIO DE SESIÓN EN EL MODAL FLOTANTE
 // =========================================================================
 async function simularInicioSesionModal() {
     const usuarioInput = document.getElementById('login-usuario-modal').value.trim();
@@ -839,14 +575,6 @@ async function simularInicioSesionModal() {
             }
             vistaIntencionSubida = null;
         }
-        else if (typeof vistaIntencion !== 'undefined' && vistaIntencion === 'vista-formulario-problema') {
-            document.querySelectorAll('.subvista-contenido').forEach(v => v.style.display = 'none');
-            const vistaProblemaForm = document.getElementById('vista-formulario-problema');
-            if (vistaProblemaForm) {
-                vistaProblemaForm.style.display = 'flex';
-            }
-            vistaIntencion = null;
-        }
 
     } catch (e) {
         console.error("Error de inicio de sesión:", e.message);
@@ -854,73 +582,5 @@ async function simularInicioSesionModal() {
             mensajeError.style.display = 'block';
             mensajeError.innerText = "Usuario o contraseña incorrectos";
         }
-    }
-}
-// =========================================================================
-// REGISTRAR USUARIO INTERESADO EN PROBAR UN PRODUCTO (Columna jsonb)
-// =========================================================================
-// =========================================================================
-// REGISTRAR USUARIO INTERESADO EN PROBAR UN PRODUCTO (Columna jsonb)
-// =========================================================================
-async function apuntarUsuarioAProbar(boton) {
-    const estadoSesion = sessionStorage.getItem('sesionIniciada');
-    if (estadoSesion !== '1') {
-        mostrarMensajeEstado("Debes iniciar sesión para realizar esta acción.");
-        cerrarModalInfo();
-        return;
-    }
-
-    const nombreUsuarioActual = sessionStorage.getItem('nombreUsuario') || sessionStorage.getItem('usuarioLogueado') || "Usuario Anónimo";
-
-    // UTILIZAMOS EL ID QUE GUARDAMOS AL ABRIR EL PRODUCTO
-    if (!window.productoActualId) {
-        mostrarMensajeEstado("No se ha podido identificar el producto. Por favor, vuelve atrás y entra de nuevo.");
-        cerrarModalInfo();
-        return;
-    }
-
-    boton.innerText = "Apuntando...";
-    boton.disabled = true;
-
-    try {
-        // BUSCAMOS POR EL ID ÚNICO
-        const { data: productoData, error: errorBusqueda } = await window.supabase
-            .from('producto-empresa')
-            .select('id, "usuario-solicitante"')
-            .eq('id', window.productoActualId)
-            .single();
-
-        if (errorBusqueda) throw errorBusqueda;
-
-        let listaUsuariosProbar = productoData["usuario-solicitante"] || [];
-        if (!Array.isArray(listaUsuariosProbar)) {
-            listaUsuariosProbar = [];
-        }
-
-        if (listaUsuariosProbar.includes(nombreUsuarioActual)) {
-            mostrarMensajeEstado("¡Ya te habías apuntado anteriormente para probar este producto!");
-            cerrarModalInfo();
-            return;
-        }
-
-        listaUsuariosProbar.push(nombreUsuarioActual);
-
-        // ACTUALIZAMOS MEDIANTE EL ID
-        const { error: errorActualizar } = await window.supabase
-            .from('producto-empresa')
-            .update({ "usuario-solicitante": listaUsuariosProbar })
-            .eq('id', window.productoActualId);
-
-        if (errorActualizar) throw errorActualizar;
-
-        mostrarMensajeEstado("¡Te has apuntado con éxito! Nos pondremos en contacto contigo pronto.");
-        cerrarModalInfo();
-
-    } catch (error) {
-        console.error("Error al registrar usuario para probar:", error);
-        mostrarMensajeEstado("Hubo un error al procesar tu solicitud. Inténtalo de nuevo.");
-    } finally {
-        boton.innerText = "Quiero probar este producto";
-        boton.disabled = false;
     }
 }
