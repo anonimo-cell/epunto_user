@@ -2,32 +2,29 @@
 // CONFIGURACIÓN GLOBAL Y MEMORIA
 // ==========================================
 let categoriaSeleccionada = null;
-let ultimaPestanaUsuario = "ver";
 let opcionSubirSeleccionada = null;
-
-const LISTA_SUBCATEGORIAS = ['alimentación', 'higiene', 'ocio', 'cotidianas', 'movilidad', 'aprendizaje', 'ejercicios', 'organización', 'vestirse', 'comunicación', 'otros'];
-
-// Guardamos las subcategorías normalizadas en un Set para búsquedas ultra rápidas
-const SUBCATEGORIAS_NORMALIZADAS = LISTA_SUBCATEGORIAS.map(cat => `vista-${normalizarTexto(cat)}`);
 
 // ==========================================
 // FUNCIONES DE UTILIDAD (HELPERS)
 // ==========================================
-function normalizarTexto(texto) {
-    return texto.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+// Oculta todas las vistas (.subvista-contenido)
+function ocultarTodasLasVistas() {
+    document.querySelectorAll('.subvista-contenido').forEach(vista => vista.style.display = 'none');
 }
 
-function ocultarElementosPorId(ids) {
-    ids.forEach(id => {
-        const elemento = document.getElementById(id);
-        if (elemento) elemento.style.display = 'none';
-    });
+// Devuelve la vista que se está mostrando ahora mismo (o undefined si no hay ninguna)
+function obtenerVistaVisible() {
+    return Array.from(document.querySelectorAll('.subvista-contenido'))
+        .find(vista => vista.style.display === 'flex' || vista.style.display === 'block');
 }
 
-function gestionarClasesActivas(elementoActivo, selectorHermanos) {
-    const hermanos = elementoActivo.parentElement.querySelectorAll(selectorHermanos);
-    hermanos.forEach(btn => btn.classList.remove('active'));
-    elementoActivo.classList.add('active');
+// Oculta todas las vistas y muestra solo la indicada
+function mostrarVista(idVista) {
+    ocultarTodasLasVistas();
+    const vista = document.getElementById(idVista);
+    if (vista) vista.style.display = 'flex';
+    return vista;
 }
 
 function reiniciarCategorias() {

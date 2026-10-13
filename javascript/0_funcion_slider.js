@@ -1,54 +1,36 @@
 // Variable global única para recordar el ID de la vista seleccionada por el usuario
 let vistaObjetivoSeleccionada = null;
 
-// ==========================================
-// 1. GESTIÓN DE PESTAÑAS PRINCIPALES
-// ==========================================
-// ==========================================
-// 1. GESTIÓN DE PESTAÑAS PRINCIPALES
-// ==========================================
-// ==========================================
-// 1. GESTIÓN DE PESTAÑAS PRINCIPALES
-// ==========================================
+// Historial de vistas visitadas (para el botón "Volver")
+let historialVistas = [];
 
-// ==========================================
-// 1. GESTIÓN DE PESTAÑAS PRINCIPALES (Y BOTÓN SOLICITUD)
-// ==========================================
-// ==========================================
-// 1. GESTIÓN DE PESTAÑAS PRINCIPALES
-// ==========================================
+// Apaga todos los botones del menú inferior y de la cabecera
+function apagarBotonesMenu() {
+    document.querySelectorAll('.multi-slider .btn-menu, .btn-login-header').forEach(btn => {
+        btn.classList.remove('active');
+    });
+}
+
+// Quita la marca de seleccionado a los botones de categoría
+function limpiarCategoriasActivas() {
+    document.querySelectorAll('.btn-cate-1, .btn-cate').forEach(btn => btn.classList.remove('activ-cate'));
+}
+
 // ==========================================
 // 1. GESTIÓN DE PESTAÑAS PRINCIPALES
 // ==========================================
 function cambiarEstadoslider(elemento) {
     const idVistaDestino = elemento ? elemento.getAttribute('data-vista') : null;
 
-    // === GUARDAR LA VISTA ACTUAL EN TU HISTORIAL ===
+    // Guardamos la vista actual en el historial antes de ir al login
     if (idVistaDestino === 'vista-login') {
-        const vistasAbiertas = document.querySelectorAll('.subvista-contenido');
-        vistasAbiertas.forEach(vista => {
-            if (vista.style.display === 'flex' || vista.style.display === 'block') {
-                if (typeof historialVistas !== 'undefined') {
-                    historialVistas.push(vista.id);
-                }
-            }
-        });
+        const vistaAbierta = obtenerVistaVisible();
+        if (vistaAbierta) historialVistas.push(vistaAbierta.id);
     }
 
-    // ==========================================
-    // 1. APAGAR ABSOLUTAMENTE TODOS LOS BOTONES
-    // ==========================================
-    // Apagamos los 4 botones del menú inferior
-    document.querySelectorAll('.multi-slider .btn-menu').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    // 1. Apagamos todos los botones y encendemos el que corresponde
+    apagarBotonesMenu();
 
-    // Apagamos los botones de la cabecera (Solicitar cuenta, Iniciar sesión)
-    document.querySelectorAll('.btn-login-header').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // 🌟 GESTIÓN INTELIGENTE DE BOTONES ACTIVOS 🌟
     if (elemento) {
         const esBotonInterno = elemento.closest('.slider-subir') ||
             elemento.classList.contains('btn-subir');
@@ -59,366 +41,109 @@ function cambiarEstadoslider(elemento) {
         }
         // Si navegamos por un submenú, buscamos a su padre y lo encendemos
         else {
-            let vistaMenuPadre = 'vista-ver';
-
-            if (elemento.closest('#vista-subir') || (idVistaDestino && idVistaDestino.includes('prod-'))) {
-                vistaMenuPadre = 'vista-subir';
-            }
-
-            // Encendemos el padre correcto
+            const vistaMenuPadre = (elemento.closest('#vista-subir') || (idVistaDestino && idVistaDestino.includes('prod-')))
+                ? 'vista-subir'
+                : 'vista-ver';
             const botonMenuPadre = document.querySelector(`.multi-slider .btn-menu[data-vista="${vistaMenuPadre}"]`);
             if (botonMenuPadre) botonMenuPadre.classList.add('active');
         }
     }
 
-    // ==========================================
-    // 2. GESTIÓN DE VISTAS (Mostrar/Ocultar)
-    // ==========================================
-    const idVistasPrincipales = [
-        'vista-ver', 'vista-subir',
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-prod-com',
-        'vista-login', 'vista-solicitud', 'vista-productos-final',
-        'vista-detalle-producto', 'vista-detalle-verproducto',
-        'vista-detalle-verproductocom', 'vista-publicado-solicitud'
-    ];
-
-    idVistasPrincipales.forEach(id => {
-        const vista = document.getElementById(id);
-        if (vista) vista.style.display = 'none';
-    });
-
+    // 2. Mostramos la vista destino
+    ocultarTodasLasVistas();
     if (idVistaDestino) {
         const vistaMostrar = document.getElementById(idVistaDestino);
-        if (vistaMostrar) {
-            vistaMostrar.style.display = 'flex';
-        }
+        if (vistaMostrar) vistaMostrar.style.display = 'flex';
     }
 
-    if (typeof reiniciarCategorias === 'function') reiniciarCategorias();
-    window.vistaObjetivoSeleccionada = null;
-    if (typeof opcionSubirSeleccionada !== 'undefined') window.opcionSubirSeleccionada = null;
+    reiniciarCategorias();
+    vistaObjetivoSeleccionada = null;
+    opcionSubirSeleccionada = null;
 }
 
 
 // ==========================================
-// 2. SELECCIÓN DE CATEGORÍA / SUBCATEGORÍA
+// 2. SELECCIÓN DE CATEGORÍA (NAVEGACIÓN DIRECTA)
 // ==========================================
-/**
- * Guarda el ID de la vista destino directamente desde el atributo data-vista del HTML.
- * @param {HTMLElement} elemento - El botón que recibió el clic.
- */
-// ==========================================
-// 2. SELECCIÓN DE CATEGORÍA / SUBCATEGORÍA (NAVEGACIÓN DIRECTA)
-// ==========================================
-
-/**
- * Guarda el ID de la vista destino y navega inmediatamente (Nivel 1)
- * @param {HTMLElement} elemento - El botón que recibió el clic.
- */
 function seleccionarCategoria1(elemento) {
-    const botonesCategoria = elemento.parentElement.querySelectorAll('.btn-cate-1');
-    const idVistaDestino = elemento.getAttribute('data-vista');
-
-    //  SISTEMA DE BLOQUEO POR SESIÓN 
-    if (idVistaDestino === 'vista-prod-baj' || idVistaDestino === 'vista-prod-com') {
-        const estadoSesion = localStorage.getItem('sesionIniciada');
-        if (estadoSesion !== '1') {
-            mostrarMensajeEstado("¡Hola! Para poder subir un producto, necesitas iniciar sesión primero.");
-
-            // === ESTA ES LA LÍNEA MÁGICA NUEVA ===
-            // Guardamos a dónde quería ir antes de mandarle al login
-            if (typeof vistaIntencion !== 'undefined') {
-                vistaIntencion = idVistaDestino;
-            }
-
-            const btnLogin = document.querySelector('[data-vista="vista-login"]');
-            if (btnLogin) cambiarEstadoslider(btnLogin);
-            return;
-        }
-    }
-    // Quita la clase activa a los botones del mismo grupo
-    botonesCategoria.forEach(btn => btn.classList.remove('activ-cate'));
-
-    // Añade la clase activa al botón pulsado
+    elemento.parentElement.querySelectorAll('.activ-cate').forEach(btn => btn.classList.remove('activ-cate'));
     elemento.classList.add('activ-cate');
 
-    // Leemos directamente el atributo "data-vista" del botón
     vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-
-    console.log("ID de vista destino guardado en memoria:", vistaObjetivoSeleccionada);
-
-    // NAVEGACIÓN AUTOMÁTICA: Ejecuta la búsqueda de inmediato al hacer clic
     realizarBusqueda();
 }
 
-// Variable global para el segundo nivel de profundidad
-let subVistaObjetivoSeleccionada = null;
-
-/**
- * Guarda el ID de la subvista destino y navega inmediatamente (Nivel 2)
- */
-function seleccionarCategoria2(elemento) {
-    const botonesCategoria = elemento.parentElement.querySelectorAll('.btn-cate');
-
-    // Quita la clase activa a los botones del mismo grupo interno
-    botonesCategoria.forEach(btn => btn.classList.remove('activ-cate'));
-
-    // Añade la clase activa al botón pulsado
-    elemento.classList.add('activ-cate');
-
-    // Guardamos el destino en nuestra variable de memoria
-    vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-
-    console.log("ID de subvista destino (Nivel 2) guardado:", vistaObjetivoSeleccionada);
-
-    // NAVEGACIÓN AUTOMÁTICA: Ejecuta la búsqueda de inmediato al hacer clic
-    realizarBusqueda();
-}
 // ==========================================
-// 3. EJECUCIÓN DE BÚSQUEDA / NAVEGACIÓN INTERNA (MEJORADA)
+// 3. NAVEGACIÓN INTERNA
 // ==========================================
-// Debe estar fuera de las funciones para que no se borre al cambiar de pantalla
-// 1. REGISTRO GLOBAL (Ponlo arriba del todo en tu archivo JS, fuera de cualquier función)
-let historialVistas = [];
-
-
-// 2. TU FUNCIÓN DE BUSCAR MODIFICADA (Reemplaza la que tenías antes por esta)
 function realizarBusqueda() {
     if (!vistaObjetivoSeleccionada) {
         mostrarMensajeEstado("Selecciona una opción antes de continuar.");
         return;
     }
 
-    console.log("Cambiando a la vista en pantalla:", vistaObjetivoSeleccionada);
-
     const vistaDestino = document.getElementById(vistaObjetivoSeleccionada);
-
-    if (vistaDestino) {
-
-        try {
-            if (typeof historialVistas === 'undefined') {
-                window.historialVistas = [];
-            }
-
-            const todasLasVistas = [
-                'vista-ver', 'vista-subir',
-                //vistas de ver nivel 1
-                'vista-autonomia', 'vista-ocio', 'vista-productividaductividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
-                'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login', 'vista-solicitud'
-                , 'vista-detalle-producto', 'vista-detalle-verproducto'
-                //vistas de alimentacion a borrar
-
-            ];
-
-            const vistaActualId = todasLasVistas.find(id => {
-                const el = document.getElementById(id);
-                return el && el.style.display === 'flex';
-            });
-
-            if (vistaActualId && vistaActualId !== vistaObjetivoSeleccionada) {
-                historialVistas.push(vistaActualId);
-                console.log(`Historial guardado: Venimos de '${vistaActualId}' hacia '${vistaObjetivoSeleccionada}'`);
-            }
-        } catch (errorHistorial) {
-            console.error("Error guardando el historial de navegación:", errorHistorial);
-        }
-
-        // Apagar vistas anteriores
-        const todasLasVistas = [
-            'vista-ver', 'vista-subir',
-            //vistas de ver nivel 1
-            'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-            'vista-higiene', 'vista-movilidad', 'vista-vestir', , 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
-            , 'vista-solicitud', 'vista-productos-final', 'vista-detalle-producto', 'vista-detalle-verproducto',
-            'vista-comunica'
-            //vistas de alimentacion a borrar
-
-        ];
-
-        todasLasVistas.forEach(id => {
-            const vistaAnterior = document.getElementById(id);
-            if (vistaAnterior) {
-                vistaAnterior.style.display = 'none';
-            }
-        });
-
-        if (typeof SUBCATEGORIAS_NORMALIZADAS !== 'undefined') {
-            ocultarElementosPorId(SUBCATEGORIAS_NORMALIZADAS);
-        }
-
-        // Mostrar nueva vista
-        vistaDestino.style.display = 'flex';
-
-    } else {
+    if (!vistaDestino) {
         console.warn(`El elemento HTML con ID '${vistaObjetivoSeleccionada}' no existe.`);
         mostrarMensajeEstado("Esta sección aún no ha sido implementada en el HTML.");
-    }
-}
-
-
-// 3. TU FUNCIÓN PARA EL BOTÓN "VOLVER" (Añádela aquí abajo si no la tenías ya)
-function regresarAnterior() {
-    console.log("Ejecutando retorno a la vista anterior...");
-
-    if (!historialVistas || historialVistas.length === 0) {
-        console.log("No hay historial previo. Volviendo al inicio por defecto.");
-        regresarvolver(); // Llama a tu función de inicio si no hay historial
         return;
     }
 
-    const vistaAnteriorId = historialVistas.pop();
-
-    const todasLasVistas = [
-        'vista-ver', 'vista-subir',
-        //vistas de ver nivel 1
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros', 'vista-movilidad', 'vista-comunica',
-        'vista-higiene', 'vista-vestir', 'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login'
-        , 'vista-solicitud', 'vista-productos-final', 'vista-detalle-producto', 'vista-detalle-verproducto'
-        //vistas de alimentacion a borrar
-
-    ];
-
-    todasLasVistas.forEach(id => {
-        const vista = document.getElementById(id);
-        if (vista) vista.style.display = 'none';
-    });
-
-    if (typeof SUBCATEGORIAS_NORMALIZADAS !== 'undefined' && Array.isArray(SUBCATEGORIAS_NORMALIZADAS)) {
-        ocultarElementosPorId(SUBCATEGORIAS_NORMALIZADAS);
+    // Guardamos en el historial la vista de la que venimos
+    const vistaActual = obtenerVistaVisible();
+    if (vistaActual && vistaActual.id !== vistaObjetivoSeleccionada) {
+        historialVistas.push(vistaActual.id);
     }
 
-    const vistaDestino = document.getElementById(vistaAnteriorId);
-    if (vistaDestino) {
-        vistaDestino.style.display = 'flex';
-        console.log(`Regresó con éxito a: ${vistaAnteriorId}`);
-    }
-
-    // =======================================================================
-    // SOLUCIÓN: Limpieza de clases activas en botones nivel 1 y nivel 2 al ir atrás
-    // =======================================================================
-    document.querySelectorAll('.btn-cate-1, .btn-cate').forEach(btn => {
-        btn.classList.remove('activ-cate');
-    });
+    ocultarTodasLasVistas();
+    vistaDestino.style.display = 'flex';
 }
 
-// Mantener compatibilidad de nombres por si tus botones antiguos de formularios aún llaman a estas funciones:
+
+// Botón "Volver": regresa a la vista anterior del historial
+function regresarAnterior() {
+    if (historialVistas.length === 0) {
+        regresarvolver(); // Sin historial: volvemos al inicio
+        return;
+    }
+
+    mostrarVista(historialVistas.pop());
+    limpiarCategoriasActivas();
+}
 
 
-
 // ==========================================
-// 4. LIMPIEZA Y RETORNO (VOLVER)
-// ==========================================
-/**
- * Restaura el estado visual y regresa al menú o cuadrícula inicial.
- */
-// ==========================================
-// 4. LIMPIEZA Y RETORNO (VOLVER) - VERSIÓN ULTRA ROBUSTA
-// ==========================================
-/**
- * Restaura el estado visual y regresa al menú o cuadrícula inicial de forma segura.
- */
-// ==========================================
-// 4. LIMPIEZA Y RETORNO (VOLVER FORZADO A 'VER')
-// ==========================================
-// ==========================================
-// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 Y 2)
-// ==========================================
-// ==========================================
-// 4. LIMPIEZA Y RETORNO UNIFICADO CON PARÁMETROS (1 Y 2)
+// 4. LIMPIEZA Y RETORNO AL MENÚ (1 = Ver, 2 = Subir)
 // ==========================================
 function regresarvolver(opcion) {
-    console.log("Ejecutando retorno dinámico al menú con opción:", opcion);
+    const idDestino = opcion === 2 ? 'vista-subir' : 'vista-ver';
+    mostrarVista(idDestino);
 
-    // 1. Ocultamos explícitamente todas las subvistas
-    const subvistasCategorias = [
-        'vista-ver', 'vista-subir',
-        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
-        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
-        'vista-prod-baj', 'vista-publicado', 'vista-prod-com', 'vista-login',
-        'vista-solicitud', 'vista-productos-final',
-        'vista-detalle-producto', 'vista-detalle-verproducto', 'vista-publicado-solicitud'
-    ];
-
-    subvistasCategorias.forEach(id => {
-        const vista = document.getElementById(id);
-        if (vista) vista.style.display = 'none';
-    });
-
-    if (typeof SUBCATEGORIAS_NORMALIZADAS !== 'undefined' && Array.isArray(SUBCATEGORIAS_NORMALIZADAS)) {
-        ocultarElementosPorId(SUBCATEGORIAS_NORMALIZADAS);
-    }
-    if (typeof ocultarElementosPorId === 'function') {
-        ocultarElementosPorId(['sub_comercializado', 'sub_bajocoste', 'vista-sub_comercializado', 'vista-sub_bajocoste']);
-    }
-
-    // 3. Diccionario/Switch para decidir el destino
-    let idDestino = '';
-    switch (opcion) {
-        case 1: idDestino = 'vista-ver'; break;
-        case 2: idDestino = 'vista-subir'; break;
-        default: idDestino = 'vista-ver'; break;
-    }
-
-    // 4. Mostramos la vista elegida
-    const vistaDestino = document.getElementById(idDestino);
-    if (vistaDestino) {
-        vistaDestino.style.display = 'flex';
-    }
-
-    // 5. APAGAR TODOS LOS BOTONES (Abajo y arriba)
-    document.querySelectorAll('.multi-slider .btn-menu').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.btn-login-header').forEach(btn => btn.classList.remove('active'));
-
-    // 6. ENCENDER SOLO EL CORRECTO
+    // Encendemos solo el botón del menú correspondiente
+    apagarBotonesMenu();
     const btnInferior = document.querySelector(`.multi-slider .btn-menu[data-vista="${idDestino}"]`);
     if (btnInferior) btnInferior.classList.add('active');
 
-    // 7. Limpieza absoluta de estados en memoria
-    if (typeof reiniciarCategorias === 'function') reiniciarCategorias();
-    window.vistaObjetivoSeleccionada = null;
-    if (typeof opcionSubirSeleccionada !== 'undefined') window.opcionSubirSeleccionada = null;
-
-    document.querySelectorAll('.btn-cate-1, .btn-cate').forEach(btn => {
-        btn.classList.remove('activ-cate');
-    });
+    // Limpieza de estados en memoria
+    reiniciarCategorias();
+    vistaObjetivoSeleccionada = null;
+    opcionSubirSeleccionada = null;
+    limpiarCategoriasActivas();
 }
 
 
 // ==========================================
-// INICIALIZACIÓN AUTOMÁTICA
-// ==========================================
-// ==========================================
-// INICIALIZACIÓN AUTOMÁTICA POR DEFECTO (REPARADA)
+// INICIALIZACIÓN: vista "Ver" por defecto
 // ==========================================
 window.addEventListener("DOMContentLoaded", () => {
-    // 1. Buscamos el contenedor que tiene el título "Ver" dentro del slider
-    const botonVerPorDefecto = Array.from(document.querySelectorAll('.multi-slider div, .multi-slider button'))
-        .find(btn => {
-            const titulo = btn.querySelector('.btn-titulo');
-            const textoCaja = titulo ? titulo.innerText : btn.innerText;
-            return textoCaja.toLowerCase().trim() === 'ver';
-        });
-
-    // 2. ¡CORRECCIÓN! Ejecutamos la función moderna que entiende tus nuevos botones div
-    if (botonVerPorDefecto) {
-        cambiarEstadoslider(botonVerPorDefecto); // <-- Antes decía cambiarEstado
-        console.log("Vista 'Ver' cargada por defecto correctamente a través del slider.");
+    const botonVer = document.querySelector('.multi-slider .btn-menu[data-vista="vista-ver"]');
+    if (botonVer) {
+        cambiarEstadoslider(botonVer);
     } else {
-        // Plan B: Rescate directo si el HTML no estuviera listo
-        const vistaVer = document.getElementById('vista-ver');
-        if (vistaVer) vistaVer.style.display = 'flex';
+        mostrarVista('vista-ver');
     }
 });
 
-
-// La variable global sigue recordando cuál está activa
-let categoriaSeleccionada_ali = null;
-
-
-// =========================================================================
-// VALIDACIÓN INTEGRAL EN BLOQUE (mostrarMensajeEstadoA ÚNICA Y SCROLL AL PRIMERO)
 
 // =========================================================================
 // VALIDACIÓN INTEGRAL EN BLOQUE Y SUBIDA A SUPABASE
@@ -765,7 +490,6 @@ async function validarYPublicar(elemento) {
     }
 
 
-
     // C.3) Para otras pantallas genéricas
     else {
         vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
@@ -826,35 +550,7 @@ document.querySelectorAll('.btn-sele-filt').forEach(span => {
     observadorTextos.observe(span, { characterData: true, childList: true, subtree: true });
 });
 
-function cambiarOpcionCatalogo(botonPulsado, opcionElegida) {
-    console.log("¡Botón pulsado!", opcionElegida); // Esto te dirá en la consola si la función reacciona
-
-    const contenedor = botonPulsado.closest('.contenedor-slider-filtros');
-    const botones = contenedor.querySelectorAll('button');
-
-    // Apagamos todos
-    botones.forEach(btn => {
-        btn.classList.remove('active-filtro');
-    });
-
-    // Encendemos solo el pulsado
-    botonPulsado.classList.add('active-filtro');
-
-    // Aplicamos el valor (1 o 0)
-    if (opcionElegida === 'comercializado') {
-        tipoFiltroGlobal = 1;
-    } else {
-        tipoFiltroGlobal = 0;
-    }
-
-    // Filtrar tarjetas
-    if (typeof renderizarProductosFiltrados === 'function') {
-        renderizarProductosFiltrados();
-    }
-}
-
-// A. Función para añadir filas (máximo 10)
-// A. Función para añadir filas (máximo 10) con condición para el primer material
+// A. Función para añadir filas de materiales (el primero no lleva botón de borrar)
 function agregarFilaMaterial() {
     const contenedor = document.getElementById('lista-materiales');
     const totalMateriales = contenedor.querySelectorAll('.material-item').length;
@@ -890,7 +586,6 @@ document.addEventListener('DOMContentLoaded', () => {
         agregarFilaMaterial();
     }
 });
-
 
 
 // =========================================================================
@@ -985,10 +680,6 @@ function limpiarFormulariosCompletos() {
 }
 
 
-
-// =========================================================================
-// BÚSQUEDA DE PRODUCTOS POR TEXTO (BARRA DE BÚSQUEDA)
-// =========================================================================
 // =========================================================================
 // BÚSQUEDA DE PRODUCTOS POR TEXTO (INTELIGENTE / CONTEXTUAL)
 // =========================================================================
@@ -1090,19 +781,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         inputElement.value = "";
     }
 }
-// =========================================================================
-// VALIDACIÓN GLOBAL: FORMULARIO "SOLICITAR CUENTA" (DISEÑO PLANO)
-// =========================================================================
 
-// =========================================================================
-// VALIDACIÓN GLOBAL: FORMULARIO "SOLICITAR CUENTA" Y SUBIDA A SUPABASE
-// =========================================================================
-// =========================================================================
-// VALIDACIÓN GLOBAL: FORMULARIO "SOLICITAR CUENTA" Y SUBIDA A SUPABASE
-// =========================================================================
-// =========================================================================
-// VALIDACIÓN GLOBAL: CREAR CUENTA EN SUPABASE AUTH Y TABLA 'usuarios'
-// =========================================================================
 // =========================================================================
 // VALIDACIÓN GLOBAL: CREAR CUENTA EN SUPABASE AUTH Y TABLA 'usuarios'
 // =========================================================================
@@ -1239,7 +918,6 @@ async function validarFormularioSolicitud(elemento) {
         elemento.disabled = false;
     }
 }
-
 
 
 // =========================================================================

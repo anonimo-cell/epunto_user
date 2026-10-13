@@ -29,14 +29,7 @@ async function abrirCatalogoProductos(boton) {
     // 3. ACTUALIZACIÓN DINÁMICA DE MIGAS DE PAN
     const navMigasCatalogo = document.querySelector('#vista-productos-final .migas-pan');
     if (navMigasCatalogo) {
-        let vistaOrigen = boton.closest('.subvista-contenido');
-        if (!vistaOrigen) {
-            document.querySelectorAll('.subvista-contenido').forEach(v => {
-                if (window.getComputedStyle(v).display !== 'none') {
-                    vistaOrigen = v;
-                }
-            });
-        }
+        const vistaOrigen = boton.closest('.subvista-contenido') || obtenerVistaVisible();
 
         let migasArray = [
             `<span class="miga-enlace" onclick="regresarvolver(1)">Inicio Ver Productos</span>`
@@ -56,7 +49,17 @@ async function abrirCatalogoProductos(boton) {
         navMigasCatalogo.innerHTML = migasArray.join('<span class="miga-separador">&rarr;</span>');
     }
 
-    // 4. CARGAMOS DESDE SUPABASE
+    // 4. Encendemos el botón seleccionado y navegamos YA, sin esperar a la base de datos
+    //    (la vista muestra "Cargando..." mientras llegan los productos)
+    boton.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('activ-cate'));
+    boton.classList.add('activ-cate');
+
+    cerrarModal(boton);
+
+    vistaObjetivoSeleccionada = 'vista-productos-final';
+    realizarBusqueda();
+
+    // 5. CARGAMOS DESDE SUPABASE
     const contenedorProductos = document.getElementById('contenedor-productos-dinamico');
 
     if (contenedorProductos) {
@@ -99,29 +102,18 @@ async function abrirCatalogoProductos(boton) {
             `;
         }
     }
-
-    // 5. Encendemos visualmente el botón seleccionado y navegamos
-    const hermanos = boton.parentElement.querySelectorAll('button');
-    hermanos.forEach(b => b.classList.remove('activ-cate'));
-    boton.classList.add('activ-cate');
-
-    cerrarModal(boton);
-
-    vistaObjetivoSeleccionada = 'vista-productos-final';
-    if (typeof realizarBusqueda === 'function') realizarBusqueda();
 }
 // =========================================================================
-function abrirDetalleVerProducto(productoJSON) {
-    // 1. Decodificamos los datos que vienen del botón
-    const prod = JSON.parse(decodeURIComponent(productoJSON));
+function abrirDetalleVerProducto(indiceProducto) {
+    // 1. Recuperamos el producto de la lista ya descargada (la tarjeta solo pasa su posición)
+    const prod = productosGlobales[indiceProducto];
+    if (!prod) return;
 
     // Guardamos el ID global para las valoraciones en Supabase
     window.productoActualId = prod.id;
 
     // 2. Ocultamos todas las vistas primero
-    document.querySelectorAll('.subvista-contenido').forEach(vista => {
-        vista.style.display = 'none';
-    });
+    ocultarTodasLasVistas();
 
     if (typeof historialVistas !== 'undefined') {
         historialVistas.push('vista-productos-final');
@@ -325,7 +317,7 @@ function abrirDetalleVerProducto(productoJSON) {
                 if (listaPasos.length > 0) {
                     const pasosPermitidos = listaPasos.slice(0, 10);
 
-                    pasosPermitidos.forEach((paso, index) => {
+                    contenedorPasos.innerHTML = pasosPermitidos.map((paso, index) => {
                         let pasoHTML = `
                             <div style="margin-bottom: 25px; width: 100%; box-sizing: border-box;">
                                 <h4 style="color: #024389; margin-bottom: 8px; font-weight: bold; font-size: 1.2rem;">
@@ -346,8 +338,8 @@ function abrirDetalleVerProducto(productoJSON) {
                             `;
                         }
                         pasoHTML += `</div>`;
-                        contenedorPasos.innerHTML += pasoHTML;
-                    });
+                        return pasoHTML;
+                    }).join('');
                 } else {
                     contenedorPasos.innerHTML = "<p>No hay pasos especificados para este producto.</p>";
                 }
@@ -409,14 +401,12 @@ function cambiarOpcionCatalogo(botonPulsado, opcionElegida) {
 // Función 2: Filtra la lista de Supabase y crea el HTML
 function renderizarProductosFiltrados() {
     const contenedorProductos = document.getElementById('contenedor-productos-dinamico');
-    contenedorProductos.innerHTML = ""; // Vaciamos la pantalla
-
     const productosFiltrados = productosGlobales.filter(prod => prod.producto == tipoFiltroGlobal);
 
     if (productosFiltrados && productosFiltrados.length > 0) {
-        // Si hay productos con ese número, los pintamos
-        productosFiltrados.forEach(prod => {
-            const prodCodificado = encodeURIComponent(JSON.stringify(prod));
+        // Si hay productos con ese número, los pintamos (todo el HTML de golpe, una sola escritura en el DOM)
+        contenedorProductos.innerHTML = productosFiltrados.map(prod => {
+            const indiceProducto = productosGlobales.indexOf(prod);
 
             // Comprobamos si es comercializado (1) para ocultar dificultad y tiempo
             const esComercializado = prod.producto == 1;
@@ -432,16 +422,16 @@ function renderizarProductosFiltrados() {
                   `;
 
             const tarjetaHTML = `
-                <button class="btn-producto" onclick="abrirDetalleVerProducto('${prodCodificado}')">
+                <button class="btn-producto" onclick="abrirDetalleVerProducto(${indiceProducto})">
                   <span class="prod-titulo">${prod.titulo}</span>
-                  <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="${prod.titulo}">
+                  <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="${prod.titulo}" loading="lazy" decoding="async">
                   <div class="prod-etiquetas">
                     ${etiquetasHTML}
                   </div>
                 </button>
             `;
-            contenedorProductos.innerHTML += tarjetaHTML;
-        });
+            return tarjetaHTML;
+        }).join('');
     } else {
         // Si no hay ninguno, mostramos este mensaje
         contenedorProductos.innerHTML = `
@@ -495,9 +485,6 @@ function alternarValoracion(botonPulsado, opcion) {
             botonPulsado.innerText = "Le has dado a no útil"; // Texto cuando está activo "No me gusta"
         }
 
-        console.log("Valoración seleccionada:", opcion);
-    } else {
-        console.log("Valoración retirada.");
     }
 }
 // =========================================================================
@@ -561,11 +548,7 @@ async function simularInicioSesionModal() {
         cerrarModal('modal-login');
 
         if (typeof vistaIntencionSubida !== 'undefined' && vistaIntencionSubida) {
-            document.querySelectorAll('.subvista-contenido').forEach(v => v.style.display = 'none');
-            const vistaFormulario = document.getElementById(vistaIntencionSubida);
-            if (vistaFormulario) {
-                vistaFormulario.style.display = 'flex';
-            }
+            mostrarVista(vistaIntencionSubida);
             vistaIntencionSubida = null;
         }
 

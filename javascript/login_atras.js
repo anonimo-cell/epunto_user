@@ -2,24 +2,8 @@
 // SISTEMA DEFINITIVO DEL BOTÓN DE CABECERA (LOGIN / LOGOUT) Y SESIÓN TEMPORAL
 // =========================================================================
 
-let vistaAntesDelLogin = 'vista-ver';
 let vistaIntencion = null;
 
-document.addEventListener('click', function (event) {
-    const botonIrALogin = event.target.closest('[data-vista="vista-login"]');
-    if (botonIrALogin) {
-        const vistasAbiertas = document.querySelectorAll('.subvista-contenido');
-        vistasAbiertas.forEach(vista => {
-            if (window.getComputedStyle(vista).display !== 'none') {
-                vistaAntesDelLogin = vista.id;
-            }
-        });
-    }
-}, true);
-
-// =========================================================================
-// MOSTRAR / OCULTAR CONTRASEÑA EN FORMULARIO SOLICITUD
-// =========================================================================
 // =========================================================================
 // MOSTRAR / OCULTAR CONTRASEÑA INDEPENDIENTE
 // =========================================================================
@@ -108,5 +92,4 @@ function seleccionarPerfilFormulario(botonPulsado) {
     }
     botonPulsado.classList.add('activ-cate');
     perfilSeleccionadoSolicitud = botonPulsado.getAttribute('data-perfil');
-    console.log("Has seleccionado el perfil: " + perfilSeleccionadoSolicitud);
 }

@@ -40,7 +40,7 @@ document.querySelectorAll('#btn-reducir').forEach(btn => {
 // 3. Alto Contraste / Blanco y negro (afecta tanto al lateral como al modal)
 document.querySelectorAll('#btn-contraste').forEach(btn => {
     btn.addEventListener('click', (e) => {
-        document.body.classList.toggle('alto-contraste');
+        document.documentElement.classList.toggle('alto-contraste');
         e.currentTarget.blur();
     });
 });
@@ -49,7 +49,7 @@ document.querySelectorAll('#btn-contraste').forEach(btn => {
 document.querySelectorAll('#btn-restablecer').forEach(btn => {
     btn.addEventListener('click', (e) => {
         cambiarTamanoFuente(100);
-        document.body.classList.remove('alto-contraste');
+        document.documentElement.classList.remove('alto-contraste');
         e.currentTarget.blur();
     });
 });

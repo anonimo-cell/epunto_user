@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // B) VISTAS (Navegación entre categorías como higiene, autonomía, etc.)
         if (event.state && event.state.vista) {
-            console.log("Botón atrás nativo pulsado. Volviendo a:", event.state.vista);
             
             if (event.state.vista === 'menu-raiz') {
                 if (typeof window.regresarvolverOriginal === 'function') window.regresarvolverOriginal(1);
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             ejecutarRegresoVisual(event.state.vista);
         } else {
-            console.log("Sin estado definido. Volviendo a inicio.");
             if (typeof window.regresarvolverOriginal === 'function') window.regresarvolverOriginal(1);
             else if (typeof window.regresarvolver === 'function') window.regresarvolver(1);
         }
@@ -76,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             busquedaOrg.apply(this, arguments);
             
             // Inmediatamente después, miramos qué pantalla se ha encendido en el HTML
-            const vistaActiva = Array.from(document.querySelectorAll('.subvista-contenido')).find(v => v.style.display === 'flex' || v.style.display === 'block');
+            const vistaActiva = obtenerVistaVisible();
             
             if (vistaActiva) {
                 const currentState = history.state ? history.state.vista : null;
@@ -117,20 +115,11 @@ document.addEventListener("DOMContentLoaded", () => {
 function ejecutarRegresoVisual(vistaAnteriorId) {
     if (!vistaAnteriorId) return;
 
-    // 1. Apagamos todas las vistas activas
-    document.querySelectorAll('.subvista-contenido').forEach(vista => {
-        vista.style.display = 'none';
-    });
+    // 1. Apagamos todas las vistas y encendemos la que toca recuperar del historial (Ej: vista-autonomia)
+    mostrarVista(vistaAnteriorId);
 
-    // 2. Encendemos la vista que toca recuperar del historial (Ej: vista-autonomia)
-    const vistaDestino = document.getElementById(vistaAnteriorId);
-    if (vistaDestino) {
-        vistaDestino.style.display = 'flex';
-    }
-
-    // 3. Sincronizar los botones del menú principal inferior
-    document.querySelectorAll('.multi-slider .btn-menu').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.btn-login-header').forEach(btn => btn.classList.remove('active'));
+    // 2. Sincronizar los botones del menú principal inferior
+    apagarBotonesMenu();
 
     let vistaMenuPadre = 'vista-ver'; 
     if (vistaAnteriorId === 'vista-subir' || vistaAnteriorId.includes('prod-')) {

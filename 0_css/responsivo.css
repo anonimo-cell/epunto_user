@@ -3,18 +3,15 @@
    ========================================================================= */
 :root {
   /* MENUS Y BARRAS */
-  --color-superior: #204555;
   --color-multislider: #f7f9e3;
   --color-text-superior: #000;
   --color-text-superior-active: #000;
   --color-hover-superior: #ffc17a;
   --color-hover-superior-borde: #ffcf99;
   --color-barra-superior: #204555;
-  --color-barra-superior-active: #ffc17a;
   --color-barra-texto: #000;
   --color-botones-superior-fondo: #f7f9e3;
   --color-botones-superior-texto: #000;
-  --color-botones-superior-borde: #b86c18;
   --color-btn-menu-hover: #a9e1f2;
 
   /* ACCIONES Y BOTONES */
@@ -22,11 +19,9 @@
   --color-btn-volver-texto: #204555;
   --color-btn-frase: #204555;
   --color-btn-frase-claro: #f7f9e3;
-  --color-btn-frase-subir: #204555;
 
   /* TITULOS */
   --color-titulo: #204555;
-  --color-superior-frase: #204555;
 
   /* ACCESIBILIDAD */
   --color-acce-borde-lateral: #ffc17a;
@@ -36,60 +31,68 @@
   --color-acce-hover: #ffc17a;
 
   /* CATEGORIAS */
-  --color-cate-fondo: #fff0b9;
-  --color-cate-hover: #ffcf99;
   --color-cate-text: #000;
-  --color-cate-active: #ad5e05;
   --color-cate: #ffe8cd;
-  --color-cate-borde: #ad5e05;
-  --color-cate-text-active: #fff;
-
-  /* BUSCADOR */
-  --color-busc: #ffc17a;
-  --color-busc-text: #000;
-  --color-busc-text-hover: #f59c38;
-  --color-busc-borde: #ad5e05;
 
   /* GENERAL */
   --tamano-fuente-base: 100%;
-  --color-fondo-grid: rgba(190, 190, 190, 0.906);
-  --color-grid-borde: #000;
 }
 
+/* =========================================================================
+   MODO BLANCO Y NEGRO (clase .alto-contraste en <html>)
+   ========================================================================= */
 .alto-contraste {
-  --color-superior: #dcdcdc;
+  /* Menús y barras: blanco con texto negro; lo seleccionado, negro con texto blanco */
+  --color-multislider: #fff;
   --color-text-superior: #000;
   --color-text-superior-active: #fff;
-  --color-hover-superior: #fff;
+  --color-hover-superior: #000;
   --color-hover-superior-borde: #000;
-  --color-multislider: #ececec;
-  --color-btn-volver: #616161;
+  --color-barra-superior: #000;
+  --color-barra-texto: #fff;
+  --color-botones-superior-fondo: #fff;
+  --color-botones-superior-texto: #000;
+  --color-btn-menu-hover: #dcdcdc;
+
+  /* Acciones y botones */
+  --color-btn-volver: #000;
   --color-btn-volver-texto: #fff;
-  --color-btn-frase-subir: #313131;
   --color-btn-frase: #000;
+  --color-btn-frase-claro: #fff;
+
+  /* Títulos */
   --color-titulo: #000;
+
+  /* Accesibilidad */
   --color-acce-borde-lateral: #000;
   --color-acce-text: #000;
   --color-acce: #fff;
   --color-acce-borde: #000;
   --color-acce-hover: #dcdcdc;
-  --color-cate-fondo: #fff;
-  --color-cate-hover: #dcdcdc;
+
+  /* Categorías */
   --color-cate-text: #000;
-  --color-cate-active: #616161;
-  --color-cate-borde: #000;
   --color-cate: #fff;
-  --color-cate-text-active: #fff;
-  --color-busc: #616161;
-  --color-busc-text: #fff;
-  --color-busc-text-hover: #fff;
-  --color-busc-borde: #000;
-  --color-barra-superior: #b0b0b0;
-  --color-barra-superior-active: #616161;
-  --color-barra-texto: #000;
-  --color-botones-superior-fondo: #616161;
-  --color-botones-superior-texto: #fff;
-  --color-botones-superior-borde: #000;
+}
+
+/* Todo lo demás (pictogramas, fotos y colores fijos) pasa a escala de grises.
+   Se aplica en <html> para que no afecte a los elementos con position: fixed */
+html.alto-contraste {
+  filter: grayscale(100%);
+}
+
+/* Lo seleccionado: fondo negro con texto e iconos en blanco */
+.alto-contraste .active,
+.alto-contraste .active * {
+  color: #fff !important;
+}
+
+.alto-contraste .active img {
+  filter: invert(1);
+}
+
+.alto-contraste .activ-cate {
+  background-color: #dcdcdc;
 }
 
 html {
@@ -122,10 +125,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background-color: #fcfcfc;
-}
-.class-txt{
-  font-size: 1rem;
-  color: #232222;
 }
 
 .mensaje-estado-flotante {
@@ -217,11 +216,6 @@ body {
   margin-top: 10px;
 }
 
-.main-logo {
-  width: 50%;
-  height: auto;
-}
-
 .btn-rela {
   border-radius: 5px;
   border: 4px solid var(--color-acce-borde);
@@ -273,25 +267,11 @@ body {
   background-color: var(--color-hover-superior) !important;
 }
 
-.active .btn-frase {
-  color: var(--color-text-superior-active) !important;
-}
-
 .btn-icono-contenedor,
 .btn-icono-contenedor-menu {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-
-.icono-sin-fondo {
-  filter: none !important;
-  /* Quitamos el filtro que provocaba el azul claro */
-  mix-blend-mode: multiply;
-  /* Hace que el blanco sea totalmente transparente */
-  opacity: 0.85;
-  /* Suaviza el negro puro para que se vea casi idéntico a tu azul oscuro */
 }
 
 .cap-icon-menu {
@@ -300,14 +280,7 @@ body {
   object-fit: contain;
 }
 
-.cap-icon-menu-picto {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-
-.icon-btn-volver,
-.icon-btn-volver-atras {
+.icon-btn-volver {
   width: 2rem;
   height: auto;
 }
@@ -379,15 +352,7 @@ body {
   width: 100%;
 }
 
-.subtitulo-descriptivo {
-  margin: 5px 0;
-  text-align: center;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.caja-contenedor-busqueda,
-.contenedor-busqueda {
+.caja-contenedor-busqueda {
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -403,12 +368,10 @@ body {
    FOCO DE ACCESIBILIDAD GLOBAL
    ========================================================================= */
 
-
 /* Opcional: Si quieres quitar el recuadro cuando se hace clic con el ratón y dejarlo solo para el teclado */
 button:focus:not(:focus-visible) {
   outline: none;
 }
-
 
 /* REJILLAS Y ACCESIBILIDAD MÓVIL */
 .grid-lateral-acce {
@@ -432,8 +395,6 @@ button:focus:not(:focus-visible) {
   margin: 0;
 }
 
-
-.side-btn-izq,
 .side-btn-acce,
 .side-btn-dech {
   display: flex;
@@ -451,15 +412,6 @@ button:focus:not(:focus-visible) {
   padding: 5px;
   border-radius: 15px;
   border: var(--color-acce-borde);
-  font-size: 0.9rem;
-}
-
-.side-btn-izq {
-  width: 100%;
-  max-width: 260px;
-  height: 100%;
-  border-radius: 50px;
-  border: 4px solid var(--color-acce-borde);
   font-size: 0.9rem;
 }
 
@@ -512,7 +464,6 @@ button:focus:not(:focus-visible) {
   object-fit: contain;
 }
 
-
 .btn-titulo-izq {
   font-weight: normal;
   font-size: 0.8rem;
@@ -538,8 +489,7 @@ button:focus:not(:focus-visible) {
   width: 100%;
 }
 
-.activ-cate,
-.active-subir {
+.activ-cate {
   background-color: #fff4e3;
   border: 4px solid #000;
 }
@@ -580,12 +530,6 @@ button:focus:not(:focus-visible) {
   color: #409cff;
   /* O el color exacto que prefieras para resaltar */
   opacity: 0.8;
-}
-
-.columna-botones {
-  width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 /* 1. Actualizamos tu botón para fijar su altura */
@@ -651,7 +595,6 @@ body.navegacion-teclado *:focus {
 
 /* DIALOGS */
 .modal-cate,
-.modal-cate-filtro,
 .modal-accesible {
   border: 4px solid var(--color-acce-hover);
   border-radius: 12px;
@@ -753,15 +696,11 @@ body.navegacion-teclado *:focus {
   justify-content: center;
 }
 
-
-
 .btn-subir,
-.btn-subir-imagen,
 .btn-subir-imagen-paso,
 .btn-cate,
 .btn-filt,
-.btn-cate-4,
-.btn-secate {
+.btn-cate-4 {
   border-radius: 25px;
   border: 4px solid var(--color-acce-borde);
   background-color: #fff;
@@ -813,7 +752,6 @@ body.navegacion-teclado *:focus {
 /* HOVER & FOCUS */
 .side-btn-acce:hover,
 .side-btn-dech:hover,
-.side-btn-izq:hover,
 .btn-buscar:hover,
 .btn-menu:hover,
 .btn-filtro:hover,
@@ -824,42 +762,17 @@ body.navegacion-teclado *:focus {
 }
 
 .btn-volver:hover,
-.btn-siguiente:hover,
-.btn-volver-atras:hover {
+.btn-siguiente:hover {
   outline: none;
   background-color: var(--color-acce-hover);
 
 }
-
 
 .btn-cate:hover,
 .btn-cate-4:hover {
   outline: none;
   border: 4px solid var(--color-hover-superior);
   background-color: var(--color-botones-superior-fondo);
-}
-
-
-
-
-
-/* MODAL ACCESIBILIDAD */
-.modal-acces {
-  background-color: #fff;
-  width: 100%;
-  max-width: 650px;
-  height: 70vh;
-  display: flex !important;
-  flex-direction: column;
-}
-
-.modal-acces .modal-cabecera {
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 15px;
-  position: relative !important;
-  z-index: 99 !important;
 }
 
 .btn-top-acce,
@@ -920,42 +833,6 @@ body.navegacion-teclado *:focus {
     margin-top: 15px;
     margin-bottom: 5px;
     font-weight: 600;
-  }
-
-  /* DIFICULTAD GROUP */
-  .dificultad-group {
-    display: flex;
-    gap: 10px;
-    margin: 5px 0 15px;
-  }
-
-  .dificultad-option {
-    flex: 1;
-  }
-
-  .dificultad-option input {
-    display: none;
-  }
-
-  .dificultad-option label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 2.5rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: 3px solid var(--color-acce-borde);
-    background-color: #fff;
-    color: var(--color-cate-text);
-    cursor: pointer;
-    gap: 15px;
-  }
-
-  .dificultad-option input:checked+label {
-    background-color: var(--color-acce-borde);
-    color: #fff;
-    border-color: var(--color-acce-borde);
   }
 
   /* PASOS */
@@ -1080,7 +957,6 @@ body.navegacion-teclado *:focus {
     text-align: center;
   }
 
-
   .btn-accion {
     width: auto;
     background-color: var(--color-acce-borde-lateral);
@@ -1096,21 +972,6 @@ body.navegacion-teclado *:focus {
 
   .btn-accion:hover {
     background-color: #218838;
-  }
-
-  .btn-publicar {
-    width: 100%;
-    padding: 15px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-  }
-
-  #btn-publicar:disabled {
-    background: #ccc;
-    cursor: not-allowed;
   }
 
   .campo-error {
@@ -1262,10 +1123,6 @@ body.navegacion-teclado *:focus {
     margin-top: 5px;
   }
 
-  .main-logo {
-    width: 68px;
-  }
-
   .titulo-menu-acce-claro {
     font-size: 0.9rem;
   }
@@ -1390,12 +1247,6 @@ body.navegacion-teclado *:focus {
     text-align: left;
   }
 
-  .btn-titulo-volver {
-    font-weight: normal;
-    font-size: 1.2rem;
-    text-align: left;
-  }
-
   .btn-frase-subir {
     grid-row: 2;
     text-align: left;
@@ -1450,15 +1301,6 @@ body.navegacion-teclado *:focus {
     white-space: normal;
   }
 
-  /* CONTENT AREA */
-  .contenedor-principal-layout {
-    display: grid !important;
-    grid-template-columns: 15% 70% 15% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .fondo-centro,
   .subvista-contenido {
     grid-area: 3 / 2 / 4 / 3;
     border-radius: 15px;
@@ -1501,7 +1343,6 @@ body.navegacion-teclado *:focus {
     font-size: 2rem;
     text-align: left;
   }
-
 
   /* =========================================================================
    AJUSTE DE CABECERA EN VISTAS DE DETALLE DE PRODUCTO
@@ -1553,14 +1394,8 @@ body.navegacion-teclado *:focus {
     object-fit: contain;
   }
 
-
   .text-linea-superior {
     text-align: left;
-  }
-
-  .subtitulo-descriptivo {
-    text-align: left;
-    font-size: 0.9rem;
   }
 
   .caja-contenedor-busqueda {
@@ -1617,8 +1452,7 @@ body.navegacion-teclado *:focus {
     border: none;
   }
 
-  .btn-volver,
-  .btn-volver-atras {
+  .btn-volver {
     grid-area: col1;
     width: 100%;
     max-width: 100px;
@@ -1661,12 +1495,6 @@ body.navegacion-teclado *:focus {
     padding: 5px 0;
   }
 
-  .btn-secate {
-    display: flex;
-    flex-direction: column;
-    padding: 10px 20px;
-  }
-
   .contenedor-categoria {
     display: flex;
     flex-direction: row;
@@ -1674,11 +1502,6 @@ body.navegacion-teclado *:focus {
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
-  }
-
-  .contenedor-categoria .btn-secate {
-    flex: 1;
-    min-width: 150px;
   }
 
   .btn-cate {
@@ -1720,16 +1543,10 @@ body.navegacion-teclado *:focus {
     gap: 20px;
   }
 
-
-  .btn-subir-imagen,
   .btn-subir-imagen-paso {
     font-size: 1.2rem;
     font-weight: bold;
     width: 100%;
-  }
-
-  .btn-subir-imagen {
-    height: 100%;
   }
 
   .btn-subir-imagen-paso {
@@ -1759,10 +1576,6 @@ body.navegacion-teclado *:focus {
     grid-row: 2;
   }
 
-  .btn-cate-row-2 {
-    grid-row: 2;
-  }
-
   .btn-sele-filt {
     grid-row: 2;
     color: var(--color-btn-frase, #555555);
@@ -1776,11 +1589,6 @@ body.navegacion-teclado *:focus {
     height: 80%;
     align-items: start;
     margin-top: 5px;
-  }
-
-  .cap-icon-fil {
-    height: 2.5rem;
-    display: block;
   }
 
   .cap-icon-subir {
@@ -1909,31 +1717,14 @@ body.navegacion-teclado *:focus {
     justify-content: flex-start;
   }
 
-  .side-btn-izq {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0 25px 25px 0;
-    border-right: none;
-    padding: 8px;
-    justify-content: flex-start;
-  }
-
   .cabecera-izq {
     justify-content: flex-start;
     gap: 6px;
   }
 
-  /* SUBVISTA TWEAKS */
-  .subvista-contenido .columna-botones {
-    grid-column: 2 / 3;
-    justify-content: flex-end;
-    width: auto;
-  }
-
   .subvista-contenido .text-linea-superior {
     max-width: 600px;
   }
-
 
   /* MODALS DESKTOP */
   .modal-pequeno {
@@ -1950,14 +1741,9 @@ body.navegacion-teclado *:focus {
   }
 
   .modal-accesible,
-  .modal-cate,
-  .modal-cate-filtro {
+  .modal-cate {
     padding: 25px;
     border-width: 5px;
-  }
-
-  .modal-cate-filtro {
-    height: auto;
   }
 
   .modal-cabecera {
@@ -2133,7 +1919,6 @@ body.navegacion-teclado *:focus {
     font-size: 1.2rem !important;
 
   }
-
 
   #vista-detalle-verproductocom #detalle-ver-valoracion {
     display: flex !important;
@@ -2379,8 +2164,7 @@ body.navegacion-teclado *:focus {
   }
 
   #modal-accesibilidad .side-btn-acce,
-  #modal-menu-ayuda .side-btn-dech,
-  #modal-menu-ayuda .side-btn-izq {
+  #modal-menu-ayuda .side-btn-dech {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
@@ -2400,8 +2184,7 @@ body.navegacion-teclado *:focus {
   }
 
   #modal-accesibilidad .side-btn-acce:hover,
-  #modal-menu-ayuda .side-btn-dech:hover,
-  #modal-menu-ayuda .side-btn-izq:hover {
+  #modal-menu-ayuda .side-btn-dech:hover {
     background-color: var(--color-acce-hover) !important;
     transform: scale(1.02) !important;
   }
@@ -2477,8 +2260,6 @@ body.navegacion-teclado *:focus {
     border-radius: 8px !important;
     margin: 10px 0 15px 0 !important;
   }
-
-
 
   textarea,
   .input-moderno {
@@ -2572,7 +2353,6 @@ body.navegacion-teclado *:focus {
     display: none;
   }
 
-  .cap-icon-menu-picto,
   .cap-icon-menu {
     height: 24px;
     width: auto;
@@ -2605,8 +2385,7 @@ body.navegacion-teclado *:focus {
     height: 50px;
   }
 
-  .caja-contenedor-busqueda,
-  .contenedor-busqueda {
+  .caja-contenedor-busqueda {
     padding-inline: 20px;
     height: 1.5rem;
     width: 60%;
@@ -2647,7 +2426,6 @@ body.navegacion-teclado *:focus {
     text-align: left;
   }
 
-  .btn-volver-atras,
   .btn-volver {
     display: none !important;
   }
@@ -2694,7 +2472,6 @@ body.navegacion-teclado *:focus {
   }
 
   .side-btn-dech,
-  .side-btn-izq,
   .side-btn-acce {
     max-width: 45%;
     flex: 1 1 45%;
