@@ -1,86 +1,21 @@
 // 5. MODALES (<dialog>)
 // ==========================================
-//para informacion
-function abrirModalInfo() {
-    const modal = document.getElementById("modal-info");
-    if (modal) {
-        modal.showModal(); // Abre el diálogo de forma nativa y accesible
-        console.log("Modal de información abierto.");
-    } else {
-        console.error("No se encontró el elemento HTML con el id 'modal-info'.");
-    }
-}
-
-function cerrarModalInfo() {
-    const modal = document.getElementById("modal-info");
-    if (modal) {
-        modal.close(); // Cierra el diálogo nativo
-        console.log("Modal de información cerrado.");
-    }
-}
-
-
-
-function cerrarModal(boton) {
-    // Busca el <dialog> más cercano al botón que se ha pulsado
-    const modal = boton.closest('dialog');
-    if (modal) {
-        modal.close();
-    }
-}
-
-function cerrarModalLogin() {
-    const modal = document.getElementById('modal-login');
-    if (modal) {
-        modal.close();
-    }
-}
-//para agradecimientos
-function abrirModalAgradecimientos() {
-    const modal = document.getElementById("modal-agradecimientos");
+// Abre cualquier diálogo por su id
+function abrirModal(idModal) {
+    const modal = document.getElementById(idModal);
     if (modal) {
         modal.showModal(); // Abre el diálogo de forma nativa y accesible
     } else {
-        console.error("No se encontró el elemento HTML con el id 'modal-agradecimientos'.");
+        console.error(`No se encontró el elemento HTML con el id '${idModal}'.`);
     }
 }
 
-//para donar
-function abrirModalDona() {
-    const modal = document.getElementById("modal-dona");
-    if (modal) {
-        modal.showModal(); // Abre el diálogo de forma nativa y accesible
-        console.log("Modal de información abierto.");
-    } else {
-        console.error("No se encontró el elemento HTML con el id 'modal-ayuda'.");
-    }
-}
-
-function cerrarModalDona() {
-    const modal = document.getElementById("modal-dona");
-    if (modal) {
-        modal.close(); // Cierra el diálogo nativo
-        console.log("Modal de información cerrado.");
-    }
-}
-
-
-function abrirModalContacto() {
-    const modal = document.getElementById("modal-contacto");
-    if (modal) {
-        modal.showModal(); // Abre el diálogo de forma nativa y accesible
-        console.log("Modal de contacto abierto.");
-    } else {
-        console.error("No se encontró el elemento HTML con el id 'modal-contacto'.");
-    }
-}
-
-function cerrarModalContacto() {
-    const modal = document.getElementById("modal-contacto");
-    if (modal) {
-        modal.close(); // Cierra el diálogo nativo
-        console.log("Modal de información cerrado.");
-    }
+// Cierra un diálogo: recibe su id o cualquier elemento que esté dentro de él (p. ej. el botón ×)
+function cerrarModal(origen) {
+    const modal = typeof origen === 'string'
+        ? document.getElementById(origen)
+        : origen && origen.closest('dialog');
+    if (modal) modal.close();
 }
 
 

@@ -35,21 +35,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// CIERRE GENÉRICO PARA NUEVOS MODALES
+// LÓGICA DE SELECCIÓN DE PRECIO
 // ==========================================
-function cerrarModalGeneral(event) {
-    const dialog = event.target.closest('dialog');
-    if (dialog) dialog.close();
-}
-
-// ==========================================
-// LÓGICA DE APERTURA Y SELECCIÓN DE PRECIO
-// ==========================================
-function abrirModalPrecio() {
-    const modal = document.getElementById('modal-precio');
-    if (modal) modal.showModal();
-}
-
 function seleccionarPrecio(boton) {
     // 1. Extraemos el texto del botón pulsado
     const texto = boton.querySelector('.txt-filtro').innerText.trim();
@@ -76,19 +63,12 @@ function seleccionarPrecio(boton) {
         }
     }
 
-    // 5. Cerramos el diálogo actual
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 }
 
 // ==========================================
-// LÓGICA DE APERTURA Y SELECCIÓN: DIFICULTAD
+// LÓGICA DE SELECCIÓN: DIFICULTAD
 // ==========================================
-function abrirModalDificultad() {
-    const modal = document.getElementById('modal-dificultad');
-    if (modal) modal.showModal();
-}
-
 function seleccionarDificultad(boton) {
     const texto = boton.querySelector('.txt-filtro').innerText.trim();
     localStorage.setItem('dificultadGuardada', texto);
@@ -111,18 +91,12 @@ function seleccionarDificultad(boton) {
         }
     }
 
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 }
 
 // ==========================================
-// LÓGICA DE APERTURA Y SELECCIÓN: TIEMPO
+// LÓGICA DE SELECCIÓN: TIEMPO
 // ==========================================
-function abrirModalTiempo() {
-    const modal = document.getElementById('modal-tiempo');
-    if (modal) modal.showModal();
-}
-
 function seleccionarTiempo(boton) {
     const texto = boton.querySelector('.txt-filtro').innerText.trim();
     localStorage.setItem('tiempoGuardado', texto);
@@ -145,6 +119,5 @@ function seleccionarTiempo(boton) {
         }
     }
 
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 }

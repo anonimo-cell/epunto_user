@@ -39,23 +39,7 @@ function resetearFormularioDOM(sufijo) {
 function abrirModalCate1(sufijo = '') {
     // Guardamos temporalmente en qué formulario estamos trabajando mediante un atributo global o dataset
     window.formularioActivoActual = sufijo;
-    const modal1 = document.getElementById("modal-categorias1");
-    if (modal1) modal1.showModal();
-}
-
-function cerrarModalCate1() {
-    const modal1 = document.getElementById("modal-categorias1");
-    if (modal1) modal1.close();
-}
-
-function cerrarModalCate2(event) {
-    const dialog = event.target.closest('dialog');
-    if (dialog) dialog.close();
-}
-
-function cerrarModalCate3(event) {
-    const dialog = event.target.closest('dialog');
-    if (dialog) dialog.close();
+    abrirModal('modal-categorias1');
 }
 
 function abrirModalNivel2() {
@@ -78,8 +62,7 @@ function abrirModalNivel2() {
     const idModal = mapa[cat1.trim()];
 
     if (idModal) {
-        const modal2 = document.getElementById(idModal);
-        if (modal2) modal2.showModal();
+        abrirModal(idModal);
     } else {
         mostrarMensajeEstado("Categoría no reconocida: " + cat1);
     }
@@ -96,8 +79,7 @@ function abrirModalNivel3() {
 
     // Solo se abre si el Nivel 2 es Higiene
     if (cat2.trim() === "Higiene") {
-        const modal3 = document.getElementById('modal-n3-higiene');
-        if (modal3) modal3.showModal();
+        abrirModal('modal-n3-higiene');
     }
 }
 
@@ -190,7 +172,7 @@ function seleccionarCatenivel1(boton) {
         }
     }
 
-    cerrarModalCate1();
+    cerrarModal('modal-categorias1');
 }
 
 // ==========================================
@@ -246,8 +228,7 @@ function seleccionarCategoria2(boton) {
         }
     }
 
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 }
 
 // ==========================================
@@ -277,6 +258,5 @@ function seleccionarCategoria3(boton) {
         }
     }
 
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 }

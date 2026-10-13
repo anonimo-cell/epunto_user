@@ -59,10 +59,7 @@ async function gestionarClickLogin(boton) {
         }, 3500);
 
     } else {
-        const modalLogin = document.getElementById('modal-login');
-        if (modalLogin) {
-            modalLogin.showModal();
-        }
+        abrirModal('modal-login');
     }
 }
 // 2. Pintar el botón según el estado

@@ -105,8 +105,7 @@ async function abrirCatalogoProductos(boton) {
     hermanos.forEach(b => b.classList.remove('activ-cate'));
     boton.classList.add('activ-cate');
 
-    const modal = boton.closest('dialog');
-    if (modal) modal.close();
+    cerrarModal(boton);
 
     vistaObjetivoSeleccionada = 'vista-productos-final';
     if (typeof realizarBusqueda === 'function') realizarBusqueda();
@@ -508,10 +507,7 @@ function comprobarSesionYAbrirSubida(elemento) {
     const estadoSesion = sessionStorage.getItem('sesionIniciada');
 
     if (estadoSesion !== '1') {
-        const modalLogin = document.getElementById('modal-login');
-        if (modalLogin) {
-            modalLogin.showModal();
-        }
+        abrirModal('modal-login');
         return;
     }
     if (typeof cambiarEstadoslider === 'function') {
@@ -562,10 +558,7 @@ async function simularInicioSesionModal() {
 
         mostrarMensajeEstado("Sesión iniciada");
 
-        const modalLogin = document.getElementById('modal-login');
-        if (modalLogin) {
-            modalLogin.close();
-        }
+        cerrarModal('modal-login');
 
         if (typeof vistaIntencionSubida !== 'undefined' && vistaIntencionSubida) {
             document.querySelectorAll('.subvista-contenido').forEach(v => v.style.display = 'none');
