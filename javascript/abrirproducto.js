@@ -1,0 +1,950 @@
+// =========================================================================
+// 1. CONFIGURACIÓN DE SUPABASE (LA LLAVE Y LA DIRECCIÓN)
+// =========================================================================
+// 👇 ¡Pega aquí tus datos de Supabase entre las comillas simples! 👇
+const SUPABASE_URL = 'https://wdjpqqhxyzrhdbvrumav.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Nps0kXuyPJZlCJ1IPWsalQ_tBLNFgkG';
+
+// NUEVAS VARIABLES PARA EL FILTRO DE PRODUCTOS
+let productosGlobales = []; // Aquí guardaremos los productos que nos manda Supabase
+let tipoFiltroGlobal = 1;   // 1 = Comercializado, 0 = Bajo coste
+
+// =========================================================================
+// 2. SISTEMA DINÁMICO DE CARGA DESDE LA BASE DE DATOS
+// =========================================================================
+// Le ponemos "async" a la función para decirle al navegador que tenga 
+// paciencia mientras los datos viajan por Internet.
+async function abrirCatalogoProductos(boton) {
+
+    // 1. Extraemos el título y la imagen del botón pulsado
+    const tituloCategoria = boton.querySelector('.btn-cate-txt').innerText.trim();
+    const imagenCategoria = boton.querySelector('img').getAttribute('src');
+
+    // 2. Cambiamos el letrero principal y el icono del molde
+    const tituloMolde = document.getElementById('titulo-dinamico');
+    const iconoMolde = document.getElementById('icono-dinamico');
+
+    if (tituloMolde) tituloMolde.innerText = tituloCategoria;
+    if (iconoMolde) iconoMolde.src = imagenCategoria;
+
+    // =========================================================================
+    // 🌟 ACTUALIZACIÓN DINÁMICA DE MIGAS DE PAN (CON "Inicio Ver Productos" AL FRENTE)
+    // =========================================================================
+    const navMigasCatalogo = document.querySelector('#vista-productos-final .migas-pan');
+    if (navMigasCatalogo) {
+        let vistaOrigen = boton.closest('.subvista-contenido');
+        if (!vistaOrigen) {
+            document.querySelectorAll('.subvista-contenido').forEach(v => {
+                if (window.getComputedStyle(v).display !== 'none') {
+                    vistaOrigen = v;
+                }
+            });
+        }
+
+        // Iniciamos el array con la miga fija "Inicio Ver Productos"
+        let migasArray = [
+            `<span class="miga-enlace" onclick="regresarvolver(1)">Inicio Ver Productos</span>`
+        ];
+
+        if (vistaOrigen) {
+            const migasPrevias = vistaOrigen.querySelectorAll('.migas-pan .miga-enlace, .migas-pan .miga-actual');
+            migasPrevias.forEach(miga => {
+                const texto = miga.innerText.trim();
+                // Omitimos textos vacíos o duplicados del inicio
+                if (texto && texto.toLowerCase() !== 'inicio' && !texto.toLowerCase().includes('inicio ver')) {
+                    migasArray.push(`<span class="miga-enlace" onclick="regresarAnterior()">${texto}</span>`);
+                }
+            });
+        }
+
+        // Añadimos la categoría actual como la última parte de la ruta
+        migasArray.push(`<span class="miga-actual" id="miga-dinamica">${tituloCategoria}</span>`);
+
+        // Unimos los elementos de forma limpia mediante las flechas separadoras
+        navMigasCatalogo.innerHTML = migasArray.join('<span class="miga-separador">&rarr;</span>');
+    }
+
+    // 3. PREPARAMOS EL ESCAPARATE Y CARGAMOS DESDE SUPABASE
+    const contenedorProductos = document.getElementById('contenedor-productos-dinamico');
+
+    if (contenedorProductos) {
+        contenedorProductos.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <h2 style="color: #666;">Cargando productos de ${tituloCategoria}... ⏳</h2>
+            </div>
+        `;
+
+        try {
+         const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/verproductos?categoria=ilike.${encodeURIComponent(tituloCategoria)}&order=fecha.desc`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!respuesta.ok) throw new Error("No se pudo conectar con Supabase");
+
+            const productos = await respuesta.json();
+
+            productosGlobales = productos;
+
+            const btnComercializado = document.getElementById('btn-opcion-2');
+            const btnBajoCoste = document.getElementById('btn-opcion-1');
+
+            if (btnComercializado && btnBajoCoste) {
+                btnComercializado.classList.remove('active-filtro');
+                btnBajoCoste.classList.add('active-filtro');
+            }
+
+            tipoFiltroGlobal = 0; 
+
+            renderizarProductosFiltrados();
+
+        } catch (error) {
+            console.error("Error al cargar la base de datos:", error);
+            contenedorProductos.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                    <h2 style="color: #d93025;">Hubo un error al cargar el catálogo de productos.</h2>
+                </div>
+            `;
+        }
+    }
+
+    // 4. Encendemos visualmente el botón seleccionado
+    const hermanos = boton.parentElement.querySelectorAll('button');
+    hermanos.forEach(b => b.classList.remove('activ-cate'));
+    boton.classList.add('activ-cate');
+
+    // 5. Cerramos modales abiertos si los hubiera
+    const modal = boton.closest('dialog');
+    if (modal) modal.close();
+
+    // 6. Navegamos a la vista final del catálogo
+    vistaObjetivoSeleccionada = 'vista-productos-final';
+    if (typeof realizarBusqueda === 'function') realizarBusqueda();
+}
+
+// =========================================================================
+// CATÁLOGO EXCLUSIVO PARA PRODUCTOS A PROBAR (TABLA: productosprobar)
+// =========================================================================
+async function abrirCatalogoProductosProbar(elemento) {
+    console.log("Abriendo catálogo exclusivo de productosprobar...");
+
+    // 1. Ocultar todas las vistas principales de la aplicación
+    const idVistasPrincipales = [
+        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
+        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
+        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com', 
+        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
+        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 
+        'vista-detalle-verproductocom', 'vista-catalogo-productosprobar'
+    ];
+
+    idVistasPrincipales.forEach(id => {
+        const vista = document.getElementById(id);
+        if (vista) vista.style.display = 'none';
+    });
+
+    // 2. Mostrar la nueva vista exclusiva
+    const vistaMostrar = document.getElementById('vista-catalogo-productosprobar');
+    if (vistaMostrar) vistaMostrar.style.display = 'flex';
+
+    // 3. Apuntar al contenedor de esta vista
+    const contenedor = document.getElementById('contenedor-productosprobar-dinamico');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #666;">Cargando productos... ⏳</h2></div>';
+
+    try {
+        // 4. Petición limpia a la tabla 'productosprobar' de Supabase sin .order() restrictivo
+        const { data, error } = await window.supabase
+            .from('productosprobar')
+            .select('*');
+
+        if (error) throw error;
+
+        contenedor.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #666;">No hay productos para probar actualmente.</h2></div>';
+            return;
+        }
+
+        // 🌟 ORDENAR EN JAVASCRIPT: Los más recientes primero de forma totalmente segura 🌟
+        data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+
+        // 5. Generar las tarjetas
+        data.forEach(item => {
+            const nombre = item.nombre || 'Producto sin nombre';
+            const fecha = item.fecha || '';
+            const imagen = item.imagen || 'svg/subir/comprar.png';
+            const descripcion = item.descripcion || '';
+            const precio = item.precio || '';
+            const fabricante = item.fabricante || 'Desconocido';
+            const link = item.link || '#';
+
+            const nombreSeguro = nombre.replace(/'/g, "\\'");
+            const descripcionSegura = descripcion.replace(/'/g, "\\'");
+            const fabricanteSeguro = fabricante.replace(/'/g, "\\'");
+
+            const tarjetaHTML = `
+                <button class="btn-producto" onclick="verDetalleProductoProbar('${nombreSeguro}', '${fecha}', '${imagen}', '${descripcionSegura}', '${precio}', '${fabricanteSeguro}', '${link}')" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 15px; cursor: pointer;">
+                  <span class="prod-titulo" style="font-size: 1.1rem; margin-bottom: 8px;">${nombre}</span>
+                  <div style="width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; border-radius: 6px; margin-bottom: 10px; overflow: hidden;">
+                    <img src="${imagen}" class="prod-img" alt="${nombre}" style="width: 100%; height: 100%; object-fit: contain;">
+                  </div>
+                  <div class="prod-etiquetas" style="margin-top: auto; display: flex; align-items: center; gap: 6px;">
+                    <img src="svg/filtro/difi.svg" alt="Icono" style="width: 16px; height: 16px;">
+                    <span style="font-size: 0.9rem; color: #555;">Fabricante: ${fabricante}</span>
+                  </div>
+                </button>
+            `;
+
+            contenedor.insertAdjacentHTML('beforeend', tarjetaHTML);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar la tabla productosprobar:", error);
+        contenedor.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><h2 style="color: #d93025;">Hubo un error al cargar los productos.</h2></div>';
+    }
+}
+
+
+// =========================================================================
+function abrirDetalleVerProducto(productoJSON) {
+    // 1. Decodificamos los datos que vienen del botón
+    const prod = JSON.parse(decodeURIComponent(productoJSON));
+
+    // Guardamos el ID global para las valoraciones en Supabase
+    window.productoActualId = prod.id;
+
+    // 2. Ocultamos todas las vistas primero
+    document.querySelectorAll('.subvista-contenido').forEach(vista => {
+        vista.style.display = 'none';
+    });
+
+    if (typeof historialVistas !== 'undefined') {
+        historialVistas.push('vista-productos-final');
+    }
+
+    // =========================================================================
+    // GENERADOR DINÁMICO DE MIGAS
+    // =========================================================================
+    function generarMigasDePan(producto) {
+        let migasHTML = `<span class="miga-enlace" onclick="regresarvolver()">Inicio</span>`;
+        
+        if (producto.categoria1 && producto.categoria1 !== "Sin categoría" && producto.categoria1 !== "No seleccionada") {
+            migasHTML += `<span class="miga-separador">&rarr;</span><span class="miga-enlace">${producto.categoria1}</span>`;
+        }
+        if (producto.categoria2 && producto.categoria2 !== "Sin categoría" && producto.categoria2 !== "No seleccionada") {
+            migasHTML += `<span class="miga-separador">&rarr;</span><span class="miga-enlace">${producto.categoria2}</span>`;
+        }
+        if (producto.categoria && producto.categoria !== "Sin categoría" && producto.categoria !== "No seleccionada") { 
+            migasHTML += `<span class="miga-separador">&rarr;</span><span class="miga-enlace">${producto.categoria}</span>`;
+        }
+        migasHTML += `<span class="miga-separador">&rarr;</span><span class="miga-actual" id="miga-ver-titulo">${producto.titulo || 'Producto'}</span>`;
+        
+        return migasHTML;
+    }
+
+    // 3. DIFERENCIAMOS SEGÚN EL TIPO DE PRODUCTO (1 = Comercial, 0 = Bajo coste)
+    if (prod.producto === 1) {
+        // --- VISTA PRODUCTO COMERCIAL ---
+        const vistaCom = document.getElementById('vista-detalle-verproductocom');
+        if (vistaCom) vistaCom.style.display = 'block';
+
+        const navMigasCom = vistaCom.querySelector('.migas-pan');
+        if (navMigasCom) navMigasCom.innerHTML = generarMigasDePan(prod);
+
+        const cabeceraTitulo = vistaCom.querySelector('#cabecera-ver-titulo');
+        if (cabeceraTitulo) cabeceraTitulo.innerText = prod.titulo || 'Producto comercial';
+
+        // Imagen comercial optimizada para móvil y PC (Ancho fluido, contención de altura)
+        const imgCom = vistaCom.querySelector('#detalle-ver-imagen');
+        if (imgCom) {
+            imgCom.src = prod.imagen_url || 'svg/subir/comprar.png';
+            imgCom.style.cursor = 'pointer';
+            imgCom.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
+            imgCom.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto;";
+        }
+
+        let contenedorInfoExtraCom = document.getElementById('detalle-com-info-extra');
+        if (!contenedorInfoExtraCom && imgCom) {
+            contenedorInfoExtraCom = document.createElement('div');
+            contenedorInfoExtraCom.id = 'detalle-com-info-extra';
+            contenedorInfoExtraCom.style.cssText = "text-align: center; margin: 15px 0; color: #555; font-size: 0.95rem; word-break: break-word;";
+            imgCom.parentNode.insertBefore(contenedorInfoExtraCom, imgCom.nextSibling);
+        }
+
+        let fechaFormateadaCom = prod.fecha ? new Date(prod.fecha).toLocaleDateString() : "Fecha no disponible";
+        let usuarioSubidaCom = prod.usuario ? prod.usuario : "Anónimo";
+        if (contenedorInfoExtraCom) {
+            contenedorInfoExtraCom.innerHTML = `Subido por <strong>${usuarioSubidaCom}</strong> el ${fechaFormateadaCom}`;
+        }
+
+        const precioCom = vistaCom.querySelector('#detalle-ver-precio');
+        if (precioCom) precioCom.innerText = prod.precio ? `Precio / Rango: ${prod.precio}` : '-';
+
+        const descCom = vistaCom.querySelector('#detalle-ver-descripcion');
+        if (descCom) descCom.innerText = prod.descripcion || "No se ha proporcionado una descripción.";
+
+        const conclusionesCom = vistaCom.querySelector('#detalle-ver-conclusiones');
+        if (conclusionesCom) {
+            let textoFormaCompra = prod.conclusiones || "";
+            if (prod.enlace && prod.enlace.trim() !== "") {
+                // Adaptación móvil: display block, box-sizing para que el padding no desborde el 100% de width
+                textoFormaCompra += `<br><a href="${prod.enlace}" target="_blank" class="btn-buscar" style="display:block; margin-top:15px; padding:15px 10px; text-decoration:none; text-align:center; width:100%; max-width:100%; box-sizing:border-box; font-size:1.1rem;">Ir a la tienda</a>`;
+            }
+            conclusionesCom.innerHTML = textoFormaCompra || "No hay información de compra disponible.";
+        }
+
+        let contenedorValoracionCom = vistaCom.querySelector('#detalle-ver-valoracion');
+        if (!contenedorValoracionCom) {
+            const detalleCardCom = vistaCom.querySelector('.detalle-card');
+            contenedorValoracionCom = document.createElement('div');
+            contenedorValoracionCom.id = 'detalle-ver-valoracion';
+            // Adaptación móvil: flex-wrap permite que caigan en otra línea si la pantalla es de 320px
+            contenedorValoracionCom.style.cssText = "display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 25px; margin-bottom: 10px;";
+            
+            contenedorValoracionCom.innerHTML = `
+                <button type="button" class="btn-val-g btn-valoracion-independiente" id="btn-mg-si" onclick="alternarValoracion(this, 'me-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
+                     Me ha resultado útil
+                </button>
+                <button type="button" class="btn-val-n btn-valoracion-independiente" id="btn-mg-no" onclick="alternarValoracion(this, 'no-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
+                     No me gusta
+                </button>
+            `;
+            if (detalleCardCom) detalleCardCom.appendChild(contenedorValoracionCom);
+        }
+
+    } else {
+        // --- VISTA DE BAJO COSTE ---
+        const vistaBaj = document.getElementById('vista-detalle-verproducto');
+        if (vistaBaj) vistaBaj.style.display = 'block';
+
+        const navMigasBaj = vistaBaj.querySelector('.migas-pan');
+        if (navMigasBaj) navMigasBaj.innerHTML = generarMigasDePan(prod);
+
+        const cabeceraTitulo = vistaBaj.querySelector('#cabecera-ver-titulo');
+        if (cabeceraTitulo) cabeceraTitulo.innerText = prod.titulo || 'Producto';
+        
+        // Imagen principal de bajo coste adaptada (max-height reducido para que no ocupe todo el móvil)
+        const imgBaj = vistaBaj.querySelector('#detalle-ver-imagen');
+        if (imgBaj) {
+            imgBaj.src = prod.imagen_url || 'svg/subir/comprar.png';
+            imgBaj.style.cursor = 'pointer';
+            imgBaj.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
+            imgBaj.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; cursor: pointer;";
+        }
+
+        const elPrecio = vistaBaj.querySelector('#detalle-ver-precio');
+        if (elPrecio) elPrecio.innerHTML = `<img src="svg/filtro/dona.svg" alt="Precio" style="width:16px;"> ${prod.precio || '-'}`;
+
+        const elDificultad = vistaBaj.querySelector('#detalle-ver-dificultad');
+        if (elDificultad) elDificultad.innerHTML = `<img src="svg/filtro/difi.svg" alt="Dificultad" style="width:16px;"> ${prod.dificultad || '-'}`;
+
+        const elTiempo = vistaBaj.querySelector('#detalle-ver-tiempo');
+        if (elTiempo) elTiempo.innerHTML = `<img src="svg/filtro/tiempo.svg" alt="Tiempo" style="width:16px;"> ${prod.tiempo || '-'}`;
+        
+        let contenedorInfoExtra = document.getElementById('detalle-ver-info-extra');
+        if (!contenedorInfoExtra) {
+            const etiquetasDiv = vistaBaj.querySelector('.prod-etiquetas');
+            contenedorInfoExtra = document.createElement('div');
+            contenedorInfoExtra.id = 'detalle-ver-info-extra';
+            contenedorInfoExtra.style.cssText = "text-align: center; margin-bottom: 20px; color: #555; font-size: 0.95rem; word-break: break-word;";
+            if (etiquetasDiv && etiquetasDiv.parentNode) {
+                etiquetasDiv.parentNode.insertBefore(contenedorInfoExtra, etiquetasDiv.nextSibling);
+            }
+        }
+        
+        let fechaFormateada = prod.fecha ? new Date(prod.fecha).toLocaleDateString() : "Fecha no disponible";
+        let usuarioSubida = prod.usuario ? prod.usuario : "Anónimo";
+        if (contenedorInfoExtra) {
+            contenedorInfoExtra.innerHTML = `Subido por <strong>${usuarioSubida}</strong> el ${fechaFormateada}`;
+        }
+        
+        const descBaj = vistaBaj.querySelector('#detalle-ver-descripcion');
+        if (descBaj) descBaj.innerText = prod.descripcion || "No se ha proporcionado una descripción.";
+
+        const concBaj = vistaBaj.querySelector('#detalle-ver-conclusiones');
+        if (concBaj) concBaj.innerText = prod.conclusiones || "No hay conclusiones añadidas.";
+
+        // Materiales
+        const contenedorMateriales = vistaBaj.querySelector('#detalle-ver-materiales');
+        if (contenedorMateriales) {
+            contenedorMateriales.innerHTML = "";
+            let listaMats = [];
+
+            if (prod.materiales) {
+                if (Array.isArray(prod.materiales)) {
+                    listaMats = prod.materiales;
+                } else if (typeof prod.materiales === 'string') {
+                    try { listaMats = JSON.parse(prod.materiales); } catch (e) { listaMats = [prod.materiales]; }
+                }
+            }
+
+            if (listaMats.length > 0) {
+                let ulHTML = "<ul style='margin: 0; padding-left: 20px; word-break: break-word;'>";
+                listaMats.forEach(mat => {
+                    ulHTML += `<li style="margin-bottom: 5px;">${mat}</li>`;
+                });
+                ulHTML += "</ul>";
+                contenedorMateriales.innerHTML = ulHTML;
+            } else {
+                contenedorMateriales.innerText = "No se han especificado materiales.";
+            }
+        }
+
+        // Motor de Pasos adaptado para móviles
+        const contenedorPasos = vistaBaj.querySelector('#detalle-ver-pasos');
+        if (contenedorPasos) {
+            contenedorPasos.innerHTML = ""; 
+
+            if (prod.pasos) {
+                let listaPasos = [];
+
+                if (typeof prod.pasos === 'string') {
+                    try { listaPasos = JSON.parse(prod.pasos); } catch (e) { console.error("Error al leer formato de pasos"); }
+                } else if (Array.isArray(prod.pasos)) {
+                    listaPasos = prod.pasos;
+                }
+
+                if (listaPasos.length > 0) {
+                    const pasosPermitidos = listaPasos.slice(0, 10);
+
+                    pasosPermitidos.forEach((paso, index) => {
+                        let pasoHTML = `
+                            <div style="margin-bottom: 25px; width: 100%; box-sizing: border-box;">
+                                <h4 style="color: #024389; margin-bottom: 8px; font-weight: bold; font-size: 1.2rem;">
+                                    Paso ${index + 1}
+                                </h4>
+                        `;
+
+                        if (paso.texto && paso.texto.trim() !== "") {
+                            pasoHTML += `<p style="margin-bottom: 12px; line-height: 1.5; word-break: break-word;">${paso.texto.replace(/\n/g, '<br>')}</p>`;
+                        }
+
+                        // Imágenes de los pasos 100% responsivas para que no desborden
+                        if (paso.imagen && paso.imagen.trim() !== "") {
+                            pasoHTML += `
+                                <div style="text-align: center; margin-bottom: 12px; width: 100%;">
+                                    <img src="${paso.imagen}" onclick="abrirImagenGrande('${paso.imagen}')" style="width: 100%; max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; object-fit: contain;" title="Haz clic para ver en grande">
+                                </div>
+                            `;
+                        }
+                        pasoHTML += `</div>`;
+                        contenedorPasos.innerHTML += pasoHTML;
+                    });
+                } else {
+                    contenedorPasos.innerHTML = "<p>No hay pasos especificados para este producto.</p>";
+                }
+            } else {
+                contenedorPasos.innerHTML = "<p>No hay pasos especificados para este producto.</p>";
+            }
+        }
+
+        // SLIDER DE VALORACIÓN (BAJO COSTE) ADAPTADO A MÓVIL
+        let contenedorValoracion = vistaBaj.querySelector('#detalle-ver-valoracion');
+        if (!contenedorValoracion) {
+            const detalleCardBaj = vistaBaj.querySelector('.detalle-card');
+            contenedorValoracion = document.createElement('div');
+            contenedorValoracion.id = 'detalle-ver-valoracion';
+            // Adaptación móvil: flex-wrap permite que caigan en otra línea si la pantalla es estrecha
+            contenedorValoracion.style.cssText = "display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 25px; margin-bottom: 10px;";
+            
+            contenedorValoracion.innerHTML = `
+                <button type="button" class="btn-val-g btn-valoracion-independiente" id="btn-mg-si" onclick="alternarValoracion(this, 'me-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
+                     Me ha resultado útil
+                </button>
+                <button type="button" class="btn-val-n btn-valoracion-independiente" id="btn-mg-no" onclick="alternarValoracion(this, 'no-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
+                     No me gusta
+                </button>
+            `;
+            if (detalleCardBaj) detalleCardBaj.appendChild(contenedorValoracion);
+        }
+    }
+}
+
+// =========================================================================
+// SISTEMA DE FILTRADO (SLIDER: COMERCIALIZADO VS BAJO COSTE)
+// =========================================================================
+
+// Función 1: Se ejecuta al hacer clic en los botones del slider
+
+
+// =========================================================================
+// 1. ABRIR VISTA INDIVIDUAL DE PRODUCTO A PROBAR
+// =========================================================================
+function verDetalleProductoProbar(nombre, fecha, imagen, descripcion, precio, fabricante, link) {
+    console.log("Abriendo detalle individual de producto a probar:", nombre);
+
+    // 1. Ocultar todas las subvistas/vistas principales
+    const idVistasPrincipales = [
+        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
+        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
+        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com', 
+        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
+        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 
+        'vista-detalle-verproductocom', 'vista-catalogo-productosprobar', 'vista-catalogo-dificultades',
+        'vista-detalle-productosprobar'
+    ];
+
+    idVistasPrincipales.forEach(id => {
+        const vista = document.getElementById(id);
+        if (vista) vista.style.display = 'none';
+    });
+
+    // 2. Mostrar la vista de detalle exclusiva
+    const vistaDetalle = document.getElementById('vista-detalle-productosprobar');
+    if (vistaDetalle) vistaDetalle.style.display = 'flex';
+
+    // 3. Rellenar títulos superiores
+    const elCabecera = document.getElementById('cabecera-probar-titulo');
+    const elMiga = document.getElementById('miga-probar-titulo');
+    if (elCabecera) elCabecera.innerText = nombre || 'Detalle del producto';
+    if (elMiga) elMiga.innerText = nombre || 'Producto';
+
+    // 4. Imagen
+    const elImagen = document.getElementById('detalle-probar-imagen');
+    if (elImagen) elImagen.src = imagen || 'svg/subir/comprar.png';
+
+    // 5. Badges superiores (Fabricante y Fecha)
+    const badgeFabricante = document.getElementById('detalle-probar-badge-fabricante');
+    const badgeFecha = document.getElementById('detalle-probar-badge-fecha');
+
+    if (badgeFabricante) {
+        badgeFabricante.innerHTML = `<img src="svg/filtro/difi.svg" alt="Icono" style="width: 16px; height: 16px; margin-right: 5px;"> ${fabricante || 'Desconocido'}`;
+    }
+    if (badgeFecha) {
+        if (fecha) {
+            badgeFecha.innerText = `Subido el ${fecha}`;
+            badgeFecha.style.display = 'inline-flex';
+        } else {
+            badgeFecha.style.display = 'none';
+        }
+    }
+
+    // 6. Secciones con clase .txt-detalle (Descripción, Fabricante y Precio)
+    const elDesc = document.getElementById('detalle-probar-descripcion');
+    if (elDesc) elDesc.innerText = descripcion || 'Sin descripción disponible.';
+
+    const elFab = document.getElementById('detalle-probar-fabricante');
+    if (elFab) elFab.innerText = fabricante || 'Desconocido';
+
+    const elPrecio = document.getElementById('detalle-probar-precio');
+    if (elPrecio) elPrecio.innerText = precio || 'Consultar proveedor';
+
+    // 7. Botón Contactar / Enlace externo
+    const elLink = document.getElementById('detalle-probar-link');
+    const secLink = document.getElementById('seccion-probar-link');
+    if (link && link !== '#') {
+        elLink.href = link;
+        if (secLink) secLink.style.display = 'block';
+    } else {
+        if (secLink) secLink.style.display = 'none';
+    }
+}
+// =========================================================================
+// 2. REGRESAR AL CATÁLOGO DE PRODUCTOS A PROBAR DESDE EL DETALLE
+// =========================================================================
+function regresarCatalogoProductosProbar() {
+    const idVistasPrincipales = [
+        'vista-ver', 'vista-subir', 'vista-problema', 'vista-probar',
+        'vista-autonomia', 'vista-ocio', 'vista-productividad', 'vista-otros',
+        'vista-movilidad', 'vista-comunica', 'vista-higiene', 'vista-vestir',
+        'vista-prod-baj', 'vista-publicado', 'vista-publicado-dificultad', 'vista-prod-com', 
+        'vista-login', 'vista-solicitud', 'vista-productos-final', 'vista-productos-probar',
+        'vista-formulario-problema', 'vista-detalle-producto', 'vista-detalle-verproducto', 
+        'vista-detalle-verproductocom', 'vista-catalogo-dificultades',
+        'vista-detalle-productosprobar'
+    ];
+
+    idVistasPrincipales.forEach(id => {
+        const vista = document.getElementById(id);
+        if (vista) vista.style.display = 'none';
+    });
+
+    const vistaCatalogo = document.getElementById('vista-catalogo-productosprobar');
+    if (vistaCatalogo) vistaCatalogo.style.display = 'flex';
+}
+
+// =========================================================================
+// 3. ACTUALIZAR LA RENDERIZACIÓN DE TARJETAS EN EL CATÁLOGO
+// =========================================================================
+// En tu función `abrirCatalogoProductosProbar`, asegúrate de que el evento onclick 
+// de la tarjeta llame a `verDetalleProductoProbar` de la siguiente manera:
+/*
+    data.forEach(item => {
+        const nombre = item.nombre || 'Producto sin nombre';
+        const imagen = item.imagen || 'svg/subir/comprar.png';
+        const fabricante = item.fabricante || 'Desconocido';
+        const link = item.link || '#';
+
+        // Escapamos las comillas simples por seguridad en el paso de parámetros
+        const nombreSeguro = nombre.replace(/'/g, "\\'");
+        const fabricanteSeguro = fabricante.replace(/'/g, "\\'");
+
+        const tarjetaHTML = `
+            <button class="btn-producto" onclick="verDetalleProductoProbar('${nombreSeguro}', '${imagen}', '${fabricanteSeguro}', '${link}')" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 15px; cursor: pointer;">
+              <span class="prod-titulo" style="font-size: 1.1rem; margin-bottom: 8px;">${nombre}</span>
+              <div style="width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; border-radius: 6px; margin-bottom: 10px; overflow: hidden;">
+                <img src="${imagen}" class="prod-img" alt="${nombre}" style="width: 100%; height: 100%; object-fit: contain;">
+              </div>
+              <div class="prod-etiquetas" style="margin-top: auto; display: flex; align-items: center; gap: 6px;">
+                <img src="svg/filtro/difi.svg" alt="Icono" style="width: 16px; height: 16px;">
+                <span style="font-size: 0.9rem; color: #555;">Fabricante: ${fabricante}</span>
+              </div>
+            </button>
+        `;
+
+        contenedor.insertAdjacentHTML('beforeend', tarjetaHTML);
+    });
+*/
+function cambiarOpcionCatalogo(botonPulsado, opcionElegida) {
+    const contenedor = botonPulsado.closest('.contenedor-slider-filtros');
+    const botones = contenedor.querySelectorAll('button');
+
+    // Apagamos los dos botones
+    botones.forEach(btn => btn.classList.remove('active-filtro'));
+
+    // Encendemos solo el que hemos pulsado
+    botonPulsado.classList.add('active-filtro');
+
+    // Decidimos qué número buscar en Supabase (1 o 0)
+    if (opcionElegida === 'comercializado') {
+        tipoFiltroGlobal = 1;
+    } else {
+        tipoFiltroGlobal = 0;
+    }
+
+    // Volvemos a pintar las tarjetas al instante
+    renderizarProductosFiltrados();
+}
+
+// Función 2: Filtra la lista de Supabase y crea el HTML
+function renderizarProductosFiltrados() {
+    const contenedorProductos = document.getElementById('contenedor-productos-dinamico');
+    contenedorProductos.innerHTML = ""; // Vaciamos la pantalla
+
+    // ✨ AQUÍ ESTÁ EL CAMBIO: Ahora busca en prod.producto ✨
+    const productosFiltrados = productosGlobales.filter(prod => prod.producto == tipoFiltroGlobal);
+
+    if (productosFiltrados && productosFiltrados.length > 0) {
+        // Si hay productos con ese número, los pintamos
+        productosFiltrados.forEach(prod => {
+            const prodCodificado = encodeURIComponent(JSON.stringify(prod));
+
+            const tarjetaHTML = `
+                <button class="btn-producto" onclick="abrirDetalleVerProducto('${prodCodificado}')">
+                  <span class="prod-titulo">${prod.titulo}</span>
+                  <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="${prod.titulo}">
+                  <div class="prod-etiquetas">
+                    <span class="etiqueta-badge"><img src="svg/filtro/dona.svg" alt="Precio"> ${prod.precio || '-'}</span>
+                    <span class="etiqueta-badge"><img src="svg/filtro/difi.svg" alt="Dificultad"> ${prod.dificultad || '-'}</span>
+                    <span class="etiqueta-badge"><img src="svg/filtro/tiempo.svg" alt="Tiempo"> ${prod.tiempo || '-'}</span>
+                  </div>
+                </button>
+            `;
+            contenedorProductos.innerHTML += tarjetaHTML;
+        });
+    } else {
+        // Si no hay ninguno, mostramos este mensaje
+        contenedorProductos.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <h2 style="color: #666;">No hay productos de este tipo actualmente.</h2>
+            </div>
+        `;
+    }
+}
+
+function abrirImagenGrande(urlImagen) {
+    const modal = document.getElementById('modal-imagen-grande');
+    const imgAmpliada = document.getElementById('imagen-ampliada-src');
+
+    if (modal && imgAmpliada) {
+        imgAmpliada.src = urlImagen;
+        modal.style.display = 'flex'; // Muestra el modal centrado
+    }
+}
+
+function cerrarImagenGrande() {
+    const modal = document.getElementById('modal-imagen-grande');
+    if (modal) {
+        modal.style.display = 'none'; // Oculta el modal al hacer clic
+    }
+}
+
+
+
+function alternarValoracion(botonPulsado, opcion) {
+    const contenedor = botonPulsado.closest('#detalle-ver-valoracion');
+    const todosLosBotones = contenedor.querySelectorAll('.btn-valoracion-independiente');
+
+    // Comprobamos si el botón que acaba de pulsar ya estaba activo
+    const yaEstabaActivo = botonPulsado.classList.contains('active-filtro');
+
+    // 1. Apagamos y reseteamos el texto original de ambos botones
+    todosLosBotones.forEach(btn => {
+        btn.classList.remove('active-filtro');
+        if (btn.id === 'btn-mg-si') btn.innerText = "Me ha resultado útil";
+        if (btn.id === 'btn-mg-no') btn.innerText = "No me ha resultado útil";
+    });
+
+    // 2. Si NO estaba activo, lo encendemos y le asignamos su texto personalizado
+    if (!yaEstabaActivo) {
+        botonPulsado.classList.add('active-filtro');
+        
+        // Textos personalizados al activarse cada botón:
+        if (opcion === 'me-gusta') {
+            botonPulsado.innerText = "Le has dado a útil"; // Texto cuando está activo "Me gusta"
+        } else if (opcion === 'no-gusta') {
+            botonPulsado.innerText = "Le has dado a no útil"; // Texto cuando está activo "No me gusta"
+        }
+
+        console.log("Valoración seleccionada:", opcion);
+    } else {
+        console.log("Valoración retirada.");
+    }
+}
+// =========================================================================
+// 1. VALIDACIÓN PARA EL BOTÓN CONTACTAR
+// =========================================================================
+// =========================================================================
+// VALIDACIÓN PARA EL BOTÓN CONTACTAR Y APERTURA DE MODAL PRO
+// =========================================================================
+// Variable global para recordar el producto actual
+let productoActualSeleccionado = null;
+
+function comprobarSesionYContactar(event, link) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    const estadoSesion = sessionStorage.getItem('sesionIniciada');
+
+    if (estadoSesion !== '1') {
+        const modalLogin = document.getElementById('modal-login');
+        if (modalLogin) {
+            modalLogin.showModal();
+        }
+        return false;
+    }
+
+    // 🔍 AQUÍ CAPTURAMOS EL TÍTULO DEL PRODUCTO DESDE EL BOTÓN O SU CONTENEDOR
+    // Buscamos el elemento de título dentro de la tarjeta o vista de detalle actual
+    const tarjetaProducto = event.target.closest('.guia-card, .vista-detalle, div');
+    if (tarjetaProducto) {
+        const elementoTitulo = tarjetaProducto.querySelector('h1, h2, h3, .titulo-producto');
+        if (elementoTitulo) {
+            productoActualSeleccionado = elementoTitulo.innerText.trim();
+        }
+    }
+
+    // Si no lo encuentra por ahí, intentamos buscar el título principal de la vista activa de detalle
+    if (!productoActualSeleccionado) {
+        const tituloGeneral = document.querySelector('.subvista-contenido[style*="display: flex"] h1, .subvista-contenido[style*="display: block"] h1');
+        if (tituloGeneral) {
+            productoActualSeleccionado = tituloGeneral.innerText.trim();
+        }
+    }
+
+    console.log("Producto identificado para probar:", productoActualSeleccionado);
+
+    // Abrimos tu diálogo
+    const modalContactarPro = document.getElementById('modal-contactar-pro');
+    if (modalContactarPro) {
+        modalContactarPro.showModal();
+    }
+    
+    return true;
+}
+
+// Función auxiliar por si quieres asegurar que el botón de cerrar del diálogo funcione
+function cerrarModalInfo() {
+    const modalContactarPro = document.getElementById('modal-contactar-pro');
+    if (modalContactarPro) {
+        modalContactarPro.close();
+    }
+}
+
+// =========================================================================
+// 2. VALIDACIÓN PARA EL BOTÓN RELLENAR INFORME ("No encuentro lo que busco")
+// =========================================================================
+function comprobarSesionYAbrirProblema(elemento) {
+    const estadoSesion = sessionStorage.getItem('sesionIniciada');
+
+    if (estadoSesion !== '1') {
+        const modalLogin = document.getElementById('modal-login');
+        if (modalLogin) {
+            modalLogin.showModal();
+        }
+        return;
+    }
+    if (typeof cambiarEstadoslider === 'function') {
+        cambiarEstadoslider(elemento);
+    }
+}
+
+// =========================================================================
+// 3. VALIDACIÓN PARA LOS BOTONES DE SUBIDA DE PRODUCTO
+// =========================================================================
+function comprobarSesionYAbrirSubida(elemento) {
+    const estadoSesion = sessionStorage.getItem('sesionIniciada');
+
+    if (estadoSesion !== '1') {
+        const modalLogin = document.getElementById('modal-login');
+        if (modalLogin) {
+            modalLogin.showModal();
+        }
+        return;
+    }
+    if (typeof cambiarEstadoslider === 'function') {
+        cambiarEstadoslider(elemento);
+    }
+}
+
+// =========================================================================
+// 4. INICIO DE SESIÓN EN EL MODAL FLOTANTE
+// =========================================================================
+// =========================================================================
+// 4. INICIO DE SESIÓN EN EL MODAL FLOTANTE
+// =========================================================================
+async function simularInicioSesionModal() {
+    const usuarioInput = document.getElementById('login-usuario-modal').value.trim();
+    const pass = document.getElementById('login-password-modal').value.trim();
+    const mensajeError = document.getElementById('mensaje-error-login-modal');
+
+    if (!usuarioInput || !pass) {
+        alert("Rellena ambos campos");
+        return;
+    }
+
+    const email = usuarioInput.toLowerCase() + "@epunto.com";
+
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: pass
+        });
+
+        if (error) {
+            throw error;
+        }
+
+        // GUARDAMOS EN SESSION (se borra al cerrar el navegador)
+        sessionStorage.setItem('sesionIniciada', '1');
+        
+        // ⬇️ ¡AQUÍ ESTÁ LA CLAVE! GUARDAMOS EL NOMBRE DEL USUARIO ⬇️
+        sessionStorage.setItem('nombreUsuario', usuarioInput);
+        
+        // PINTAMOS EL BOTÓN AL INSTANTE
+        if (typeof pintarBotonLogin === 'function') {
+            pintarBotonLogin();
+        }
+        
+        if (mensajeError) {
+            mensajeError.style.display = 'none'; 
+        }
+
+        alert("¡Bienvenido!");
+        
+        const modalLogin = document.getElementById('modal-login');
+        if (modalLogin) {
+            modalLogin.close();
+        }
+
+        if (typeof vistaIntencionSubida !== 'undefined' && vistaIntencionSubida) {
+            document.querySelectorAll('.subvista-contenido').forEach(v => v.style.display = 'none');
+            const vistaFormulario = document.getElementById(vistaIntencionSubida);
+            if (vistaFormulario) {
+                vistaFormulario.style.display = 'flex';
+            }
+            vistaIntencionSubida = null;
+        } 
+        else if (typeof vistaIntencion !== 'undefined' && vistaIntencion === 'vista-formulario-problema') {
+            document.querySelectorAll('.subvista-contenido').forEach(v => v.style.display = 'none');
+            const vistaProblemaForm = document.getElementById('vista-formulario-problema');
+            if (vistaProblemaForm) {
+                vistaProblemaForm.style.display = 'flex';
+            }
+            vistaIntencion = null;
+        }
+
+    } catch (e) {
+        console.error("Error de inicio de sesión:", e.message);
+        if (mensajeError) {
+            mensajeError.style.display = 'block';
+            mensajeError.innerText = "Usuario o contraseña incorrectos";
+        }
+    }
+}
+// =========================================================================
+// REGISTRAR USUARIO INTERESADO EN PROBAR UN PRODUCTO (Columna jsonb)
+// =========================================================================
+async function apuntarUsuarioAProbar(boton) {
+    const estadoSesion = sessionStorage.getItem('sesionIniciada');
+    if (estadoSesion !== '1') {
+        alert("Debes iniciar sesión para realizar esta acción.");
+        cerrarModalInfo();
+        return;
+    }
+
+    // Si por lo que sea la variable está vacía, intentamos rescatar el nombre del usuario de la sesión o le ponemos uno genérico
+    // (Asegúrate de guardar el nombre en el sessionStorage al iniciar sesión, ej: sessionStorage.setItem('nombreUsuario', 'TuNombre'))
+    const nombreUsuarioActual = sessionStorage.getItem('nombreUsuario') || sessionStorage.getItem('usuarioLogueado') || "Usuario Anónimo";
+
+    if (!productoActualSeleccionado) {
+        alert("No se ha podido identificar el producto. Por favor, vuelve a hacer clic en 'Contactar'.");
+        return;
+    }
+
+    boton.innerText = "Apuntando... ⏳";
+    boton.disabled = true;
+
+    try {
+        // 1. Buscamos el producto en la tabla 'productosprobar' usando el título guardado
+        const { data: productoData, error: errorBusqueda } = await window.supabase
+            .from('productosprobar')
+            .select('id, "usuario-probar"')
+            .eq('nombre', productoActualSeleccionado)
+            .single();
+
+        if (errorBusqueda) throw errorBusqueda;
+
+        // 2. Preparamos el array JSONB
+        let listaUsuariosProbar = productoData["usuario-probar"] || [];
+        if (!Array.isArray(listaUsuariosProbar)) {
+            listaUsuariosProbar = [];
+        }
+
+        // Comprobar si ya estaba apuntado
+        if (listaUsuariosProbar.includes(nombreUsuarioActual)) {
+            alert("¡Ya te habías apuntado anteriormente para probar este producto!");
+            cerrarModalInfo();
+            return;
+        }
+
+        // Añadimos el usuario
+        listaUsuariosProbar.push(nombreUsuarioActual);
+
+        // 3. Actualizamos en Supabase
+        const { error: errorActualizar } = await window.supabase
+            .from('productosprobar')
+            .update({ "usuario-probar": listaUsuariosProbar })
+            .eq('id', productoData.id);
+
+        if (errorActualizar) throw errorActualizar;
+
+        alert("¡Te has apuntado con éxito! Nos pondremos en contacto contigo pronto.");
+        cerrarModalInfo();
+
+    } catch (error) {
+        console.error("Error al registrar usuario para probar:", error);
+        alert("Hubo un error al procesar tu solicitud. Asegúrate de que el nombre del producto en la tabla coincide exactamente.");
+    } finally {
+        boton.innerText = "Quiero probar este producto";
+        boton.disabled = false;
+    }
+}
