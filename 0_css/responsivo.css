@@ -117,8 +117,15 @@ html {
   box-sizing: inherit;
 }
 
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
 body {
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: Verdana, Geneva, sans-serif;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -150,7 +157,7 @@ body {
   padding: 20px 30px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: Verdana, Geneva, sans-serif;
   text-align: center;
   max-width: 90%;
 }
@@ -526,10 +533,15 @@ button:focus:not(:focus-visible) {
   text-decoration: underline;
 }
 
-.miga-enlace:hover {
-  color: #409cff;
-  /* O el color exacto que prefieras para resaltar */
-  opacity: 0.8;
+.miga-enlace {
+  cursor: pointer;
+}
+
+/* Azul oscuro: contraste suficiente con el fondo claro (WCAG 1.4.3) */
+.miga-enlace:hover,
+.miga-enlace:focus-visible {
+  color: #0056b3;
+  text-decoration-thickness: 3px;
 }
 
 /* 1. Actualizamos tu botón para fijar su altura */
@@ -537,10 +549,10 @@ button:focus:not(:focus-visible) {
   min-width: 85px;
   padding: 0 15px;
   background-color: var(--color-acce);
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: Verdana, Geneva, sans-serif;
   color: var(--color-text-superior);
   font-weight: bold;
   height: 50px;
@@ -554,29 +566,29 @@ input[type="text"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 .input-moderno:focus {
-  outline: none !important;
-  /* Quita el borde feo del navegador */
-  box-shadow: none !important;
-  /* APAGA EL RECUADRO AZUL Y NEGRO */
-
-  /* Cambia el borde a tu color naranja de la paleta */
+  /* Borde naranja de la paleta + contorno oscuro para que el foco
+     se vea con suficiente contraste sobre fondo blanco (WCAG 2.4.7 / 1.4.11) */
   border: 6px solid var(--color-hover-superior-borde) !important;
-}
-
-button:focus {
-  outline: none !important;
+  outline: 3px solid var(--color-acce-borde) !important;
+  outline-offset: 2px;
   box-shadow: none !important;
 }
 
 /* =========================================================================
-   ESTILO DE ACCESIBILIDAD (SOLO AL USAR LA TECLA TABULADOR)
+   FOCO VISIBLE AL USAR EL TECLADO (WCAG 2.4.7 y 2.4.11)
+   :focus-visible solo se activa con teclado, no al hacer clic con el ratón.
    ========================================================================= */
-body.navegacion-teclado *:focus {
+:focus-visible {
+  outline: 4px solid #0317fa !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 7px #fff !important;
+}
+
+/* Los títulos reciben el foco por código al cambiar de vista: sin recuadro */
+h1[tabindex="-1"]:focus,
+main[tabindex="-1"]:focus {
   outline: none !important;
-  box-shadow: 0 0 0 4px #0317fa, 0 0 0 6px var(--color-acce-borde-lateral) !important;
-  border-radius: inherit !important;
-  z-index: 9999 !important;
-  position: relative;
+  box-shadow: none !important;
 }
 
 .btn-mostrar:hover {
@@ -798,7 +810,7 @@ body.navegacion-teclado *:focus {
   .acordeon-form {
     width: 100%;
     margin: 5px;
-    font-family: sans-serif;
+    font-family: inherit;
   }
 
   details {
@@ -1036,9 +1048,15 @@ body.navegacion-teclado *:focus {
     box-sizing: border-box !important;
   }
 
+  /* En los pasos del tutorial la fila interna ocupa todo el ancho del paso
+     (si no, se quedaba solo en la columna del 65% de .paso-item) */
+  #lista-pasos .paso-item {
+    display: block;
+  }
+
   .paso-fila-interna {
     display: grid !important;
-    grid-template-columns: 70% 30% !important;
+    grid-template-columns: 7fr 3fr !important;
     gap: 20px !important;
     align-items: stretch !important;
     width: 100% !important;
@@ -1058,7 +1076,7 @@ body.navegacion-teclado *:focus {
     width: 100% !important;
     resize: none !important;
     padding: 10px !important;
-    border: 1px solid #ccc !important;
+    border: 1px solid #767676 !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
   }
@@ -1423,7 +1441,7 @@ body.navegacion-teclado *:focus {
     width: 100%;
     margin: 0;
     padding: 10px 15px 10px 45px !important;
-    border: 1px solid #ccc;
+    border: 1px solid #767676;
     border-radius: 10px;
     /* <--- Aquí aplicamos las esquinas redondeadas */
     box-sizing: border-box;
@@ -2396,7 +2414,7 @@ body.navegacion-teclado *:focus {
     width: 100%;
     margin: 0;
     padding: 10px 15px 10px 45px !important;
-    border: 1px solid #ccc;
+    border: 1px solid #767676;
     border-radius: 10px;
     box-sizing: border-box;
     font-family: inherit;
@@ -2717,4 +2735,1474 @@ body.navegacion-teclado *:focus {
     border-radius: 8px !important;
     margin: 10px 0 15px 0 !important;
   }
+}
+/* =========================================================================
+   MÁS OPCIONES DE ACCESIBILIDAD (dialog #modal-acce-mas)
+   ========================================================================= */
+#modal-acce-mas .grid-acce-mas {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 15px !important;
+  margin-top: 15px;
+}
+
+#modal-acce-mas .side-btn-acce {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 130px !important;
+  padding: 15px !important;
+  border: 2px solid var(--color-acce-borde) !important;
+  border-radius: 15px !important;
+}
+
+#modal-acce-mas .cabecera-linea-acce {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 0 !important;
+  padding-left: 0 !important;
+}
+
+#modal-acce-mas .btn-titulo-acce {
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  line-height: 1.3;
+}
+
+#modal-acce-mas .cap-icon-mini-acce {
+  height: 2.5rem !important;
+}
+
+.icono-acce-mas {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+/* Opción activada: fondo oscuro y texto claro */
+#modal-acce-mas .side-btn-acce[aria-pressed="true"] {
+  background-color: var(--color-acce-borde);
+  color: #fff;
+}
+
+/* ---- Funciones ---- */
+
+/* Cursor grande */
+.acc-cursor-grande,
+.acc-cursor-grande * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l7 19 2.5-7.5L20 11z' fill='%23000' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E") 4 2, auto !important;
+}
+
+/* Resaltar enlaces y botones */
+.acc-resaltar-enlaces a,
+.acc-resaltar-enlaces button,
+.acc-resaltar-enlaces [role="button"] {
+  outline: 3px dashed var(--color-acce-borde) !important;
+  outline-offset: 2px;
+}
+
+.acc-resaltar-enlaces a {
+  text-decoration: underline !important;
+  font-weight: bold;
+}
+
+/* Más espacio entre líneas, letras y palabras */
+.acc-espaciado body * {
+  line-height: 1.8 !important;
+  letter-spacing: 0.08em !important;
+  word-spacing: 0.16em !important;
+}
+
+/* =========================================================================
+   MEJORAS DE ACCESIBILIDAD WCAG 2.2
+   ========================================================================= */
+
+/* <main> agrupa las vistas sin alterar la rejilla de .parent */
+.contenido-principal {
+  display: contents;
+}
+
+/* Antes eran <h3>: mantienen el mismo aspecto */
+.btn-titulo-menu {
+  display: block;
+}
+
+/* Aviso de campos obligatorios en los formularios */
+.nota-obligatorio {
+  margin: 0 0 15px;
+  font-weight: bold;
+  color: var(--color-titulo);
+}
+
+/* Mensajes de estado */
+.mensaje-estado-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  line-height: 1.4;
+  padding: 35px 45px !important;
+  max-width: 90vw !important;
+}
+
+/* La caja recibe el foco al abrirse: sin recuadro */
+.mensaje-estado-contenido:focus {
+  outline: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+
+/* Las miniaturas que se pueden ampliar indican que son pulsables */
+img[role="button"] {
+  cursor: zoom-in;
+}
+
+/* Respeta la preferencia del sistema de reducir movimiento (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================================
+   FORMULARIOS: DISEÑO UNIFICADO Y ACCESIBLE
+   (subir producto de bajo coste, comercializado, solicitar cuenta e inicio
+   de sesión). Se usa #contenido-principal / #modal-login para que estas
+   reglas solo afecten a los formularios y ganen a las reglas antiguas.
+   ========================================================================= */
+:root {
+  --form-texto: #1f2933;
+  --form-texto-suave: #4b5563;
+  --form-borde: #767676;          /* 4.5:1 sobre blanco (WCAG 1.4.11) */
+  --form-separador: #e3e8ec;
+  --form-fondo-suave: #f4f7f9;
+  --form-error: #b3261e;          /* 6.2:1 sobre blanco */
+}
+
+.alto-contraste {
+  --form-texto: #000;
+  --form-texto-suave: #000;
+  --form-borde: #000;
+  --form-separador: #000;
+  --form-fondo-suave: #fff;
+  --form-error: #000;
+}
+
+/* ---------- Contenedor ---------- */
+#contenido-principal .acordeon-form {
+  width: min(100%, 980px) !important;
+  margin: 0 auto 40px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: Verdana, Geneva, sans-serif !important;
+  color: var(--form-texto);
+}
+
+#contenido-principal .acordeon-form .nota-obligatorio {
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 5px solid var(--color-acce-borde);
+  border-radius: 8px;
+  background-color: var(--form-fondo-suave);
+  color: var(--form-texto);
+  font-weight: 700;
+}
+
+/* ---------- Tarjetas (secciones) ---------- */
+#contenido-principal .acordeon-form > details,
+#vista-prod-com .acordeon-form > .guia-card,
+#vista-solicitud .acordeon-form {
+  margin: 0 !important;
+  padding: 0 24px 24px !important;
+  background: #fff !important;
+  border: 1px solid #d5dbe1 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 8px rgba(32, 69, 85, 0.08);
+}
+
+#vista-prod-com .acordeon-form > .guia-card,
+#vista-solicitud .acordeon-form {
+  padding: 28px 28px 32px !important;
+}
+
+/* En "Solicitar cuenta" los campos van seguidos: el espacio lo dan sus márgenes */
+#vista-solicitud .acordeon-form {
+  gap: 0;
+}
+
+#vista-solicitud .acordeon-form .nota-obligatorio {
+  margin-bottom: 20px;
+}
+
+/* Las tarjetas internas no llevan otro borde (evita "caja dentro de caja") */
+#contenido-principal .acordeon-form details .guia-card,
+#vista-solicitud .acordeon-form .guia-card {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Títulos de sección (acordeón) ---------- */
+#contenido-principal .acordeon-form summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  margin: 0 -24px;
+  padding: 16px 24px !important;
+  border-radius: 16px;
+  color: var(--color-acce-borde);
+  font-size: 1.25rem;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+
+#contenido-principal .acordeon-form summary::-webkit-details-marker {
+  display: none;
+}
+
+#contenido-principal .acordeon-form summary:hover {
+  background-color: var(--form-fondo-suave);
+}
+
+#contenido-principal .acordeon-form details[open] > summary {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--form-separador);
+  border-radius: 16px 16px 0 0;
+}
+
+/* Icono +/− dentro de un círculo */
+#contenido-principal .acordeon-form summary::after {
+  content: "+" !important;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--color-acce-borde);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+#contenido-principal .acordeon-form details[open] > summary::after {
+  content: "−" !important;
+}
+
+/* ---------- Etiquetas ---------- */
+#contenido-principal .acordeon-form label,
+#contenido-principal .acordeon-form .titulo-form,
+#contenido-principal .acordeon-form .paso-label,
+#modal-login label {
+  display: block;
+  margin: 0 0 8px !important;
+  color: var(--form-texto) !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  line-height: 1.4;
+}
+
+#contenido-principal .acordeon-form .form-row,
+#modal-login .form-row {
+  margin: 0 0 20px !important;
+  width: 100%;
+}
+
+/* ---------- Campos de texto ---------- */
+#contenido-principal .acordeon-form input[type="text"],
+#contenido-principal .acordeon-form input[type="password"],
+#contenido-principal .acordeon-form textarea,
+#modal-login input[type="text"],
+#modal-login input[type="password"] {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 52px;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 2px solid var(--form-borde) !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+  color: var(--form-texto);
+  font-family: inherit !important;
+  font-size: 1.05rem !important;
+  font-weight: 400;
+  line-height: 1.5;
+  box-sizing: border-box !important;
+}
+
+/* Los campos que van dentro de su <label> mantienen un pequeño espacio */
+#contenido-principal .acordeon-form label > input[type],
+#contenido-principal .acordeon-form label > textarea,
+#contenido-principal .acordeon-form label > .form-row,
+#modal-login label > input[type] {
+  margin-top: 8px !important;
+}
+
+#contenido-principal .acordeon-form textarea {
+  min-height: 120px !important;
+  resize: vertical !important;
+}
+
+#contenido-principal .acordeon-form ::placeholder,
+#modal-login ::placeholder {
+  color: #6b7280;   /* 4.8:1 sobre blanco */
+  opacity: 1;
+  font-family: inherit;
+}
+
+#contenido-principal .acordeon-form input:hover,
+#contenido-principal .acordeon-form textarea:hover,
+#modal-login input:hover {
+  border-color: var(--color-acce-borde) !important;
+}
+
+/* Foco: borde oscuro + contorno azul (visible con ratón y con teclado) */
+#contenido-principal .acordeon-form input:focus,
+#contenido-principal .acordeon-form textarea:focus,
+#modal-login input:focus {
+  border: 2px solid var(--color-acce-borde) !important;
+  outline: 3px solid #0317fa !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Errores de validación ---------- */
+#contenido-principal .acordeon-form .campo-error,
+#modal-login .campo-error {
+  border: 2px solid var(--form-error) !important;
+  background-color: #fff5f5 !important;
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.2) !important;
+}
+
+.mensaje-error-campo {
+  margin: 8px 0 0 !important;
+  padding: 10px 14px;
+  border-left: 5px solid var(--form-error);
+  border-radius: 8px;
+  background-color: #fff5f5;
+  color: var(--form-error) !important;
+  font-size: 1rem !important;
+  font-weight: 700;
+}
+
+.mensaje-error-campo::before {
+  content: "⚠ ";
+}
+
+/* ---------- Contraseña + botón Mostrar ---------- */
+.fila-contrasena {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.fila-contrasena input {
+  flex: 1;
+  min-width: 0;
+}
+
+#contenido-principal .acordeon-form .btn-mostrar,
+#modal-login .btn-mostrar {
+  min-width: 100px;
+  min-height: 52px;
+  height: auto !important;
+  padding: 0 16px !important;
+  border: 2px solid var(--color-acce-borde) !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+  color: var(--color-acce-borde) !important;
+  font-family: inherit;
+  font-size: 1rem !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#contenido-principal .acordeon-form .btn-mostrar:hover,
+#modal-login .btn-mostrar:hover {
+  background-color: var(--form-fondo-suave) !important;
+}
+
+/* ---------- Subida de imágenes ---------- */
+#contenido-principal .acordeon-form .area-carga-imagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100% !important;
+  min-height: 150px;
+  padding: 20px !important;
+  border: 2px dashed var(--form-borde) !important;
+  border-radius: 14px !important;
+  background: var(--form-fondo-suave) !important;
+  box-sizing: border-box;
+}
+
+#contenido-principal .acordeon-form .btn-subir-imagen-paso {
+  grid-auto-flow: column;           /* icono y texto en la misma línea */
+  flex-direction: row !important;
+  white-space: nowrap;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto !important;
+  height: auto !important;
+  min-height: 48px;
+  padding: 10px 22px !important;
+  border: 2px solid var(--color-acce-borde) !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+  color: var(--color-acce-borde) !important;
+  font-family: inherit;
+  font-size: 1.05rem !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#contenido-principal .acordeon-form .btn-subir-imagen-paso::before {
+  content: "⬆";
+  margin-right: 8px;
+}
+
+#contenido-principal .acordeon-form .btn-subir-imagen-paso:hover {
+  background-color: var(--color-acce-borde) !important;
+  color: #fff !important;
+}
+
+#contenido-principal .acordeon-form .preview-container {
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+/* ---------- Botones de eliminar (foto, material, paso) ---------- */
+#contenido-principal .acordeon-form .btn-eliminar-foto,
+#contenido-principal .acordeon-form .btn-eliminar-paso,
+#contenido-principal .acordeon-form .material-item button {
+  position: static;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 14px !important;
+  border: 2px solid var(--form-error) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--form-error) !important;
+  font-family: inherit;
+  font-size: 1rem !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#contenido-principal .acordeon-form .btn-eliminar-foto {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+#contenido-principal .acordeon-form .btn-eliminar-foto:hover,
+#contenido-principal .acordeon-form .btn-eliminar-paso:hover,
+#contenido-principal .acordeon-form .material-item button:hover {
+  background: var(--form-error) !important;
+  color: #fff !important;
+}
+
+/* ---------- Botones de añadir (material, paso) ---------- */
+#contenido-principal .acordeon-form .btn-accion {
+  box-sizing: border-box !important;
+  min-height: 52px;
+  margin: 12px 0 0 !important;
+  padding: 12px 24px !important;
+  border: 2px solid #e8963a !important;
+  border-radius: 12px !important;
+  background-color: var(--color-acce-borde-lateral) !important;  /* naranja de la paleta */
+  color: #000 !important;                                          /* 11:1 sobre el naranja */
+  font-family: inherit;
+  font-size: 1.05rem !important;
+  font-weight: 700;
+  box-shadow: 0 3px 0 #c97a26, 0 4px 10px rgba(0, 0, 0, 0.15);  /* relieve de botón */
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+#contenido-principal .acordeon-form .btn-accion:hover {
+  background-color: #ffad5c !important;
+}
+
+/* Al pulsarlo "se hunde" como un botón físico */
+#contenido-principal .acordeon-form .btn-accion:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #c97a26, 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Filas de materiales ---------- */
+#contenido-principal .acordeon-form .material-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px !important;
+}
+
+/* ---------- Pasos del tutorial ---------- */
+#contenido-principal .acordeon-form #lista-pasos {
+  gap: 16px;
+}
+
+#contenido-principal .acordeon-form #lista-pasos .paso-item {
+  margin: 0 !important;
+  padding: 20px !important;
+  border: 1px solid var(--form-separador);
+  border-radius: 14px;
+  background-color: #fbfcfd;
+}
+
+#contenido-principal .acordeon-form .paso-columna-texto .form-row {
+  margin-bottom: 0 !important;
+}
+
+#contenido-principal .acordeon-form .btn-eliminar-paso {
+  margin-top: 12px !important;
+}
+
+/* ---------- Tarjetas para elegir (filtros y categorías) ---------- */
+#contenido-principal .acordeon-form .contenedor-categoria {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 16px !important;
+  width: 100%;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .btn-filt,
+#contenido-principal .acordeon-form .contenedor-categoria .btn-cate {
+  position: relative;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 100px;
+  margin: 0 !important;
+  padding: 16px 48px 16px 18px !important;
+  border: 2px solid var(--form-borde) !important;
+  border-radius: 14px !important;
+  background-color: #fff !important;
+  color: var(--form-texto) !important;
+  font-family: inherit;
+  text-align: left !important;
+  cursor: pointer;
+}
+
+/* Flecha que indica que al pulsar se abre una lista para elegir */
+#contenido-principal .acordeon-form .contenedor-categoria .btn-filt::after,
+#contenido-principal .acordeon-form .contenedor-categoria .btn-cate::after {
+  content: "›";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  color: var(--color-acce-borde);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .btn-filt:hover,
+#contenido-principal .acordeon-form .contenedor-categoria .btn-cate:hover {
+  border-color: var(--color-acce-borde) !important;
+  background-color: var(--form-fondo-suave) !important;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .btn-cate-txt {
+  align-self: flex-start;
+  text-align: left !important;
+  height: auto !important;
+  margin: 0 !important;
+  color: var(--color-acce-borde) !important;
+  font-size: 1.1rem !important;
+  font-weight: 700;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .btn-sele-filt {
+  margin: 0 !important;
+  color: var(--form-texto-suave) !important;
+  font-size: 1rem !important;
+  text-align: left !important;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .cabecera-linea-acce {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center;
+  gap: 8px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .cap-icon-cate,
+#contenido-principal .acordeon-form .contenedor-categoria .cap-icon-mini-fil {
+  width: auto !important;
+  height: 48px !important;
+  max-height: 48px;
+}
+
+/* ---------- Opciones en píldora (precio, relación con el Parkinson) ---------- */
+#sele-relacion {
+  margin: 0 0 20px !important;
+}
+
+#precio-com.contenedor-slider-filtros,
+#sele-relacion > div {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 0 20px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#precio-com .btn-filtro,
+#sele-relacion .btn-rela {
+  flex: 1 1 160px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 52px;
+  padding: 10px 18px !important;
+  border: 2px solid var(--form-borde) !important;
+  border-radius: 999px !important;
+  background-color: #fff !important;
+  color: var(--form-texto) !important;
+  font-family: inherit;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+
+/* El texto del precio no se parte; si no cabe, la píldora pasa a otra fila */
+#precio-com .btn-filtro {
+  flex: 1 1 auto !important;
+  white-space: nowrap;
+}
+
+#sele-relacion .btn-rela .btn-cate-txt {
+  font-size: 1rem !important;
+  color: inherit !important;
+}
+
+#precio-com .btn-filtro:hover,
+#sele-relacion .btn-rela:hover {
+  border-color: var(--color-acce-borde) !important;
+  background-color: var(--form-fondo-suave) !important;
+}
+
+/* Seleccionado: fondo oscuro + marca ✓ (no se indica solo con color, WCAG 1.4.1) */
+#precio-com .btn-filtro.active-filtro,
+#sele-relacion .btn-rela.activ-cate {
+  border-color: var(--color-acce-borde) !important;
+  background-color: var(--color-acce-borde) !important;
+  color: #fff !important;
+}
+
+#precio-com .btn-filtro.active-filtro::before,
+#sele-relacion .btn-rela.activ-cate .btn-cate-txt::before {
+  content: "✓ ";
+}
+
+/* ---------- Botones Anterior / Siguiente entre secciones ---------- */
+#contenido-principal .acordeon-form .siguiente {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center;
+  gap: 16px !important;
+  margin-top: 24px !important;
+  padding-top: 20px;
+  border-top: 1px solid var(--form-separador);
+}
+
+#contenido-principal .acordeon-form .siguiente .btn-siguiente,
+#contenido-principal .acordeon-form .siguiente .btn-volver {
+  display: inline-flex !important;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 48px;
+  padding: 8px 20px !important;
+  border: 2px solid var(--color-acce-borde) !important;
+  border-radius: 10px !important;
+  background-color: var(--color-btn-volver) !important;
+  color: var(--color-acce-borde) !important;
+  cursor: pointer;
+}
+
+/* "Siguiente" siempre a la derecha, aunque sea el único botón */
+#contenido-principal .acordeon-form .siguiente [aria-label="Siguiente sección"] {
+  margin-left: auto;
+}
+
+#contenido-principal .acordeon-form .siguiente .btn-siguiente:hover,
+#contenido-principal .acordeon-form .siguiente .btn-volver:hover {
+  background-color: var(--color-acce-hover) !important;
+}
+
+#contenido-principal .acordeon-form .siguiente .cabecera-linea-volver {
+  gap: 10px !important;
+}
+
+#contenido-principal .acordeon-form .siguiente .icon-btn-volver {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.texto-nav-seccion {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* ---------- Botón principal (publicar / crear cuenta / entrar) ---------- */
+#contenido-principal .acordeon-form .buscar-espacio,
+#modal-login .buscar-espacio {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 0 !important;
+}
+
+#contenido-principal .acordeon-form .btn-buscar,
+#modal-login .btn-buscar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 420px) !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 60px;
+  margin: 0 !important;
+  padding: 14px 28px !important;
+  border: 2px solid var(--color-acce-borde) !important;
+  border-radius: 14px !important;
+  background-color: var(--color-acce-borde) !important;
+  color: #fff !important;
+  font-family: inherit;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(32, 69, 85, 0.25);
+  cursor: pointer;
+}
+
+#contenido-principal .acordeon-form .btn-buscar:hover,
+#modal-login .btn-buscar:hover {
+  background-color: var(--color-hover-superior) !important;
+  color: #000 !important;
+}
+
+/* ---------- Diálogo de inicio de sesión ---------- */
+#modal-login {
+  width: min(92vw, 480px) !important;
+  max-width: none !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 18px !important;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+#modal-login .modal-cabecera {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 16px 16px 16px 28px !important;
+  background-color: var(--color-acce-borde) !important;
+  border: none !important;
+}
+
+#modal-login .btn-titulo-dialog {
+  color: #fff !important;
+  font-size: 1.4rem !important;
+  font-weight: 700;
+}
+
+#modal-login .btn-cerrar-modal {
+  width: 44px !important;
+  height: 44px !important;
+  border: 2px solid #fff !important;
+  border-radius: 10px !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  font-size: 1.6rem !important;
+  line-height: 1;
+}
+
+#modal-login .btn-cerrar-modal:hover {
+  background-color: #fff !important;
+  color: var(--color-acce-borde) !important;
+}
+
+#modal-login .modal-cuerpo {
+  padding: 24px 28px 28px !important;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+#modal-login .login-intro {
+  margin: 0 0 20px;
+  color: var(--color-acce-borde);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#modal-login .btn-buscar {
+  width: 100% !important;
+}
+
+/* ---------- Distribución en pantallas grandes / pequeñas ---------- */
+@media (min-width: 1024px) {
+  /* Título de los formularios centrado en una sola línea, con el icono a la
+     izquierda. Ocupa todo el ancho de la cabecera, dejando hueco a los lados
+     para el botón de volver. */
+  #vista-subir .cabecera-superior-icono,
+  #vista-prod-baj .cabecera-superior-icono,
+  #vista-prod-com .cabecera-superior-icono,
+  #vista-solicitud .cabecera-superior-icono {
+    grid-row: 2 !important;
+    grid-column: 1 / -1 !important;
+    justify-self: stretch !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    padding: 0 120px;
+    box-sizing: border-box;
+  }
+
+  /* El tamaño se adapta al ancho para caber en una línea; si el usuario
+     aumenta la letra, el título puede pasar a dos líneas (WCAG 1.4.4) */
+  #vista-subir .titulo-linea-superior,
+  #vista-prod-baj .titulo-linea-superior,
+  #vista-prod-com .titulo-linea-superior,
+  #vista-solicitud .titulo-linea-superior {
+    font-size: clamp(1.4rem, 2vw, 1.9rem) !important;
+    text-align: left !important;
+    line-height: 1.2;
+  }
+
+  /* El botón de volver queda por encima de la fila del título */
+  #vista-prod-baj .linea_superior .btn-volver,
+  #vista-prod-com .linea_superior .btn-volver {
+    position: relative;
+    z-index: 1;
+  }
+
+  #contenido-principal .acordeon-form .form-grid-ini {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px 32px !important;
+    margin: 0 !important;
+  }
+
+  #vista-prod-com .acordeon-form .paso-item {
+    display: grid !important;
+    grid-template-columns: 3fr 2fr !important;
+    gap: 32px !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  #contenido-principal .acordeon-form .form-grid-ini,
+  #vista-prod-com .acordeon-form .paso-item {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  #contenido-principal .acordeon-form > details {
+    padding: 0 16px 20px !important;
+  }
+
+  #contenido-principal .acordeon-form summary {
+    margin: 0 -16px;
+    padding: 14px 16px !important;
+  }
+
+  #vista-prod-com .acordeon-form > .guia-card,
+  #vista-solicitud .acordeon-form {
+    padding: 20px 16px 24px !important;
+  }
+
+  .texto-nav-seccion {
+    font-size: 1rem;
+  }
+}
+
+/* =========================================================================
+   PANTALLAS DE CONFIRMACIÓN (producto publicado / solicitud enviada)
+   ========================================================================= */
+
+/* Migas que no son enlace (texto normal, sin subrayado) */
+.miga-texto {
+  color: var(--color-acce-borde);
+}
+
+.confirmacion {
+  box-sizing: border-box;
+  width: min(100%, 680px);
+  margin: 40px auto;
+  padding: 48px 40px 40px;
+  border: 1px solid #d5dbe1;
+  border-radius: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 16px rgba(32, 69, 85, 0.1);
+  text-align: center;
+  font-family: inherit;
+}
+
+/* Círculo verde con la marca de éxito */
+.confirmacion-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 24px;
+  border: 4px solid #1e7b34;      /* 5.4:1 sobre el fondo verde claro */
+  border-radius: 50%;
+  background-color: #e6f4ea;
+  color: #1e7b34;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.confirmacion-titulo {
+  margin: 0 0 16px;
+  color: var(--color-titulo);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.confirmacion-texto {
+  margin: 0 auto 28px;
+  max-width: 52ch;
+  color: #374151;                  /* 10:1 sobre blanco */
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Recuadro "¿Qué pasa ahora?" */
+.confirmacion-aviso {
+  margin: 0 0 32px;
+  padding: 20px 24px;
+  border-left: 5px solid var(--color-acce-borde);
+  border-radius: 10px;
+  background-color: #f4f7f9;
+  text-align: left;
+}
+
+.confirmacion-aviso-titulo {
+  margin: 0 0 10px;
+  color: var(--color-acce-borde);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.confirmacion-aviso ol {
+  margin: 0;
+  padding-left: 1.4em;
+  color: #1f2933;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.confirmacion-aviso li + li {
+  margin-top: 6px;
+}
+
+/* Botones */
+.confirmacion-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.btn-confirmacion-principal,
+.btn-confirmacion-secundario {
+  box-sizing: border-box;
+  flex: 1 1 220px;
+  max-width: 300px;
+  min-height: 56px;
+  padding: 12px 24px;
+  border: 2px solid var(--color-acce-borde);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-confirmacion-principal {
+  background-color: var(--color-acce-borde);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(32, 69, 85, 0.25);
+}
+
+.btn-confirmacion-principal:hover {
+  background-color: var(--color-hover-superior);
+  color: #000;
+}
+
+.btn-confirmacion-secundario {
+  background-color: #fff;
+  color: var(--color-acce-borde);
+}
+
+.btn-confirmacion-secundario:hover {
+  background-color: #f4f7f9;
+}
+
+/* Modo blanco y negro */
+.alto-contraste .confirmacion-icono {
+  border-color: #000;
+  background-color: #fff;
+  color: #000;
+}
+
+@media (max-width: 1023px) {
+  .confirmacion {
+    margin: 20px auto;
+    padding: 32px 20px 28px;
+  }
+
+  .confirmacion-icono {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .btn-confirmacion-principal,
+  .btn-confirmacion-secundario {
+    max-width: none;
+  }
+}
+
+/* =========================================================================
+   RELIEVE EN TODOS LOS BOTONES (affordance)
+   Todos los botones de la web tienen una "base" más oscura debajo, se
+   levantan un poco al pasar el ratón y se hunden al pulsarlos, como un
+   botón físico. Así se reconoce de un vistazo qué se puede pulsar.
+
+   Se usa una sombra negra semitransparente para que funcione sobre
+   cualquier color de botón (blanco, crema, naranja, azul, oscuro).
+
+   El selector ":is(#relieve#relieve#relieve, html)" es un truco para dar
+   a esta regla más prioridad que las reglas antiguas con ID; siempre
+   coincide (porque coincide con <html>).
+   ========================================================================= */
+:root {
+  --relieve-reposo: 0 4px 0 rgba(0, 0, 0, 0.28), 0 6px 12px rgba(0, 0, 0, 0.12);
+  --relieve-encima: 0 6px 0 rgba(0, 0, 0, 0.28), 0 10px 18px rgba(0, 0, 0, 0.14);
+  --relieve-pulsado: 0 1px 0 rgba(0, 0, 0, 0.28), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+:is(#relieve#relieve#relieve, html) :is(button, [role="button"]):not(img):not(:disabled) {
+  box-shadow: var(--relieve-reposo) !important;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease !important;
+}
+
+/* Al pasar el ratón: se levanta un poco */
+:is(#relieve#relieve#relieve, html) :is(button, [role="button"]):not(img):not(:disabled):hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--relieve-encima) !important;
+}
+
+/* Al pulsar: se hunde */
+:is(#relieve#relieve#relieve, html) :is(button, [role="button"]):not(img):not(:disabled):active {
+  transform: translateY(3px) !important;
+  box-shadow: var(--relieve-pulsado) !important;
+}
+
+/* Opciones seleccionadas y sección actual: se quedan "hundidas".
+   Es una pista más, además del color y la marca ✓ (WCAG 1.4.1). */
+:is(#relieve#relieve#relieve, html) :is(button, [role="button"]):is([aria-pressed="true"], [aria-current="page"]):not(:disabled) {
+  transform: translateY(3px) !important;
+  box-shadow: var(--relieve-pulsado), inset 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Botones desactivados: planos, para que se note que no se pueden pulsar */
+:is(#relieve#relieve#relieve, html) button:disabled {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Al usar el teclado, el contorno azul de foco se mantiene visible */
+:is(#relieve#relieve#relieve, html) :is(button, [role="button"]):not(img):focus-visible {
+  outline: 4px solid #0317fa !important;
+  outline-offset: 4px !important;
+}
+
+/* Con "reducir movimiento" el botón no se desplaza (solo cambia la sombra) */
+@media (prefers-reduced-motion: reduce) {
+  :is(#relieve#relieve#relieve, html) :is(button, [role="button"]):not(img):is(:hover, :active, [aria-pressed="true"], [aria-current="page"]) {
+    transform: none !important;
+  }
+}
+
+/* =========================================================================
+   PANTALLA "SUBIR UN PRODUCTO" SIN SCROLL (accesibilidad motriz)
+   En ordenador todo cabe en la pantalla: la vista ocupa exactamente el
+   hueco bajo el menú y las dos tarjetas se estiran para llenarlo; el
+   pictograma se encoge si hace falta.
+   Si el usuario aumenta la letra o hace zoom, la vista puede crecer y
+   aparece el scroll, para que nunca se corte nada (WCAG 1.4.4 y 1.4.10).
+   ========================================================================= */
+@media (min-width: 1024px) {
+  #vista-subir.subvista-contenido {
+    box-sizing: border-box;
+    /* 170px = barra superior (40) + menú fijo y margen (130); 16px de aire abajo */
+    height: auto !important;
+    min-height: calc(100vh - 186px);
+    max-height: none;
+    margin-bottom: 16px;
+    flex-direction: column;
+  }
+
+  #vista-subir .contenedor-dinamico {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 12px;
+  }
+
+  #vista-subir .linea_superior {
+    flex: 0 0 auto;
+  }
+
+  #vista-subir .slider-subir {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 24px;
+    padding: 4px 8px 12px;   /* deja ver el relieve de las tarjetas */
+  }
+
+  #vista-subir .slider-subir .btn-subir {
+    box-sizing: border-box;
+    flex: 1 1 0;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 24px 28px !important;
+  }
+
+  #vista-subir .btn-titulo-subir {
+    flex: 0 0 auto;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  #vista-subir .btn-frase-subir {
+    flex: 0 0 auto;
+    max-width: 46ch;
+    padding: 0 !important;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  /* El pictograma ocupa el espacio que sobra, entre 80px y 16rem */
+  #vista-subir .cap-icon-subir {
+    flex: 1 1 0;
+    width: 100%;
+    height: 0;
+    min-height: 80px;
+    max-height: 16rem;
+    object-fit: contain;
+  }
+}
+
+/* Pantallas bajas (portátiles pequeños): todo un poco más compacto */
+@media (min-width: 1024px) and (max-height: 700px) {
+  #vista-subir .slider-subir .btn-subir {
+    padding: 16px 20px !important;
+    gap: 10px;
+  }
+
+  #vista-subir .btn-titulo-subir {
+    font-size: 1.3rem;
+  }
+
+  #vista-subir .btn-frase-subir {
+    font-size: 1rem;
+  }
+}
+
+/* =========================================================================
+   HOVER DE LOS ÚLTIMOS BOTONES QUE SOLO TENÍAN EL RELIEVE
+   ========================================================================= */
+/* Barras superiores del móvil: "Menú de accesibilidad" y "Menú de ayuda" */
+.btn-top-acce:hover,
+.btn-scroll-ayuda:hover {
+  background-color: var(--color-acce-hover);
+}
+
+/* Botón × de la imagen ampliada: se rellena de blanco */
+#btn-cerrar-imagen-grande:hover {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+/* =========================================================================
+   SÍMBOLOS DECORATIVOS: QUE EL LECTOR DE PANTALLA NO LOS LEA
+   Con "content: X / texto" el texto tras la barra es lo que se lee en voz alta
+   (vacío = no se lee). El estado ya lo anuncia el propio control: desplegado
+   o plegado, pulsado, etc. Los navegadores que no entienden esta sintaxis se
+   quedan con la regla anterior y siguen mostrando el icono.
+   ========================================================================= */
+#contenido-principal .acordeon-form summary::after {
+  content: "+" / "" !important;
+}
+
+#contenido-principal .acordeon-form details[open] > summary::after {
+  content: "−" / "" !important;
+}
+
+#contenido-principal .acordeon-form .btn-subir-imagen-paso::before {
+  content: "⬆" / "";
+}
+
+#contenido-principal .acordeon-form .contenedor-categoria .btn-filt::after,
+#contenido-principal .acordeon-form .contenedor-categoria .btn-cate::after {
+  content: "›" / "";
+}
+
+#precio-com .btn-filtro.active-filtro::before,
+#sele-relacion .btn-rela.activ-cate .btn-cate-txt::before {
+  content: "✓ " / "";
+}
+
+/* El aviso sí se lee, pero como palabra */
+.mensaje-error-campo::before {
+  content: "⚠ " / "Aviso: ";
+}
+
+/* =========================================================================
+   MIGAS DE PAN: LOS ENLACES EN AZUL
+   Azul para indicar que es un enlace (7.2:1 sobre blanco) y un azul más
+   claro y vivo al pasar el ratón o con el foco (4.5:1, el más claro que
+   cumple el contraste mínimo para texto), con el subrayado más grueso.
+   El texto que no es enlace (la página actual) sigue en el color normal.
+   ========================================================================= */
+.migas-pan .miga-enlace {
+  color: #0f52ba;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.migas-pan .miga-enlace:hover,
+.migas-pan .miga-enlace:focus-visible {
+  color: #1a73e8;
+  text-decoration-thickness: 3px;
+}
+
+/* En modo blanco y negro, los enlaces en negro (siguen subrayados) */
+.alto-contraste .migas-pan .miga-enlace,
+.alto-contraste .migas-pan .miga-enlace:hover {
+  color: #000;
+}
+
+/* =========================================================================
+   MENÚ SUPERIOR: SUBTÍTULOS EN UNA SOLA LÍNEA (ordenador)
+   ========================================================================= */
+@media (min-width: 1024px) {
+  .multi-slider .btn-frase-menu {
+    white-space: nowrap;
+  }
+}
+
+/* =========================================================================
+   MENSAJES DEL CATÁLOGO (sin productos, cargando, buscando, error)
+   Texto normal, sin negrita.
+   ========================================================================= */
+.mensaje-catalogo {
+  margin: 0;
+  color: #4b5563;               /* 7.6:1 sobre blanco */
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.mensaje-catalogo-error {
+  color: #b3261e;               /* 6.2:1 sobre blanco */
+}
+
+.alto-contraste .mensaje-catalogo {
+  color: #000;
+}
+
+/* =========================================================================
+   ALTURA DE LAS VISTAS (ordenador)
+   La altura antigua (100vh - 130px) no descontaba la barra superior de 40px,
+   así que TODAS las vistas sobresalían 40px y aparecía scroll aunque el
+   contenido cupiera. Ahora la vista ocupa como mínimo el hueco disponible
+   y crece si su contenido es más largo (formularios, catálogo, zoom...).
+   ========================================================================= */
+@media (min-width: 1024px) {
+  .subvista-contenido {
+    box-sizing: border-box;
+    height: auto !important;
+    /* 170px = barra superior (40) + menú fijo y margen (130); 16px de aire abajo */
+    min-height: calc(100vh - 186px);
+    margin-bottom: 16px;
+  }
+}
+
+/* =========================================================================
+   PANTALLA "VER PRODUCTOS" SIN SCROLL
+   Las 6 tarjetas se reparten el alto disponible (3 columnas x 2 filas) y el
+   pictograma se encoge si hace falta. Con letra grande o zoom la página
+   crece en vez de recortar (WCAG 1.4.4 y 1.4.10).
+   ========================================================================= */
+@media (min-width: 1024px) {
+  #vista-ver.subvista-contenido {
+    flex-direction: column;
+    padding-bottom: 16px !important;
+  }
+
+  #vista-ver .contenedor-dinamico {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 12px;
+  }
+
+  #vista-ver .linea_superior {
+    flex: 0 0 auto;
+  }
+
+  #vista-ver .categorias {
+    display: flex;
+    flex: 1 1 auto;
+  }
+
+  #vista-ver .grid-capsulas {
+    flex: 1 1 auto;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 340px));
+    grid-auto-rows: 1fr;
+    align-items: stretch !important;     /* las tarjetas llenan su fila */
+    align-content: stretch;
+    justify-content: center;
+    gap: 20px;
+    padding: 4px 8px 12px;   /* deja ver el relieve de las tarjetas */
+  }
+
+  #vista-ver .grid-capsulas > .btn-cate {
+    box-sizing: border-box;
+    align-self: stretch !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 12px 18px !important;
+  }
+
+  #vista-ver .grid-capsulas > .btn-cate .btn-cate-txt {
+    flex: 0 0 auto;
+  }
+
+  #vista-ver .grid-capsulas > .btn-cate .btn-cate-frase {
+    flex: 0 0 auto;
+    margin: 0 !important;
+  }
+
+  /* El pictograma ocupa el espacio que sobra, entre 40px y 130px */
+  #vista-ver .grid-capsulas > .btn-cate .cap-icon-cate {
+    flex: 1 1 0;
+    width: 100%;
+    height: 0 !important;
+    min-height: 40px;
+    max-height: 130px;
+    margin: 0 !important;
+    object-fit: contain;
+  }
+}
+
+/* =========================================================================
+   BOTONES DE CERRAR / ELIMINAR (×, ✕, X): ROJOS CON TEXTO BLANCO
+   Rojo #b3261e con blanco = 6.2:1; al pasar el ratón, rojo oscuro
+   #8c1d18 = 8.9:1 (WCAG 1.4.3). El selector ":is(#cerrar#cerrar#cerrar,
+   html)" da prioridad sobre las reglas anteriores que usan ID.
+   ========================================================================= */
+:is(#cerrar#cerrar#cerrar, html) :is(
+  .btn-cerrar-modal,
+  #btn-cerrar-imagen-grande,
+  .btn-eliminar-foto,
+  .btn-eliminar-paso,
+  .material-item button
+) {
+  background: #b3261e !important;
+  border: 2px solid #b3261e !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+:is(#cerrar#cerrar#cerrar, html) :is(
+  .btn-cerrar-modal,
+  #btn-cerrar-imagen-grande,
+  .btn-eliminar-foto,
+  .btn-eliminar-paso,
+  .material-item button
+):hover {
+  background: #8c1d18 !important;
+  border-color: #8c1d18 !important;
+  color: #fff !important;
+}
+
+/* Sobre la cabecera oscura del inicio de sesión y sobre el fondo negro de la
+   imagen ampliada, un borde blanco para que el botón se distinga del fondo */
+:is(#cerrar#cerrar#cerrar, html) :is(#modal-login .btn-cerrar-modal, #btn-cerrar-imagen-grande) {
+  border-color: #fff !important;
 }

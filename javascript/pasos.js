@@ -1,3 +1,6 @@
+// Contador para dar a cada paso nuevo un id único (para enlazar su etiqueta)
+let contadorPasosCreados = 1;
+
 document.addEventListener('DOMContentLoaded', () => {
     // Buscamos TODOS los contenedores de carga estáticos que haya en el HTML original
     const contenedoresIniciales = document.querySelectorAll('.area-carga-imagen');
@@ -16,6 +19,7 @@ document.getElementById('btn-agregar-paso').addEventListener('click', function (
     }
 
     const nuevoNumero = listaPasos.children.length + 1;
+    const idUnico = `paso-texto-${++contadorPasosCreados}`;
 
     // Crear el contenedor del paso
     const nuevoPaso = document.createElement('div');
@@ -29,21 +33,21 @@ document.getElementById('btn-agregar-paso').addEventListener('click', function (
             
             <!-- Columna Izquierda (Texto) -->
             <div class="paso-columna-texto">
-                <label class="paso-label" style="font-weight: bold; margin-bottom: 5px;">Paso ${nuevoNumero}</label>
+                <label class="paso-label" for="${idUnico}" style="font-weight: bold; margin-bottom: 5px;">Paso ${nuevoNumero}</label>
                 <div class="form-row" style="flex: 1; display: flex; flex-direction: column;">
-                    <textarea placeholder="Descripción del paso ${nuevoNumero}" maxlength="300" rows="4" style="flex: 1; width: 100%; resize: none;"></textarea>
+                    <textarea id="${idUnico}" aria-required="true" placeholder="Descripción del paso ${nuevoNumero}" maxlength="300" rows="4" style="flex: 1; width: 100%; resize: none;"></textarea>
                 </div>
-                <button type="button" class="btn-eliminar-paso" style="background-color: #d93025; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: fit-content;">✕ Eliminar Paso</button>
+                <button type="button" class="btn-eliminar-paso" style="background-color: #d93025; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: fit-content;" aria-label="Eliminar paso ${nuevoNumero}"><span aria-hidden="true">✕</span> Eliminar paso</button>
             </div>
             <!-- Columna Derecha (Imagen) -->
             <div class="paso-columna-imagen">
-                <label class="titulo-form" style="font-size: 0.85rem; margin-bottom: 5px;">Imagen del Proyecto:</label>
-                <div class="area-carga-imagen">
-                    <input type="file" class="file-input" accept="image/*" style="display:none;">
+                <span class="titulo-form" id="${idUnico}-imagen" style="font-size: 0.85rem; margin-bottom: 5px; font-weight: bold;">Imagen del paso (opcional):</span>
+                <div class="area-carga-imagen" role="group" aria-labelledby="${idUnico}-imagen">
+                    <input type="file" class="file-input" accept="image/*" style="display:none;" tabindex="-1" aria-hidden="true">
                     <button type="button" class="btn-subir-imagen-paso">Subir Imagen</button>
                     <div class="preview-container" style="display:none;">
-                        <img class="img-preview" src="#" alt="Vista previa">
-                        <button type="button" class="btn-eliminar-foto">✕ Eliminar</button>
+                        <img class="img-preview" src="#" alt="Vista previa de la imagen que has subido">
+                        <button type="button" class="btn-eliminar-foto" aria-label="Eliminar imagen del paso">✕ Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -58,18 +62,30 @@ document.getElementById('btn-agregar-paso').addEventListener('click', function (
     nuevoPaso.querySelector('.btn-eliminar-paso').addEventListener('click', function () {
         nuevoPaso.remove();
         reordenarPasos();
+        verificarLimite();
+        // El foco vuelve al botón de añadir para no perderse
+        document.getElementById('btn-agregar-paso').focus();
+        if (typeof anunciar === 'function') anunciar('Paso eliminado');
     });
 
     listaPasos.appendChild(nuevoPaso);
     verificarLimite(); // Ocultar el botón si llega a 7
+
+    // El foco va al texto del paso nuevo para escribir directamente
+    nuevoPaso.querySelector('textarea').focus();
 });
 
 function reordenarPasos() {
-    const pasos = document.querySelectorAll('.paso-item');
+    // Solo los pasos del tutorial (el formulario comercial también usa .paso-item)
+    const pasos = document.querySelectorAll('#lista-pasos .paso-item');
     pasos.forEach((paso, index) => {
         const nuevoNum = index + 1;
-        paso.querySelector('.paso-label').innerText = `Paso ${nuevoNum}`;
-        paso.querySelector('textarea').placeholder = `Descripción del paso ${nuevoNum}`;
+        const etiqueta = paso.querySelector('.paso-label');
+        const texto = paso.querySelector('textarea');
+        if (etiqueta) etiqueta.innerText = `Paso ${nuevoNum}`;
+        if (texto) texto.placeholder = `Descripción del paso ${nuevoNum}`;
+        const botonEliminar = paso.querySelector('.btn-eliminar-paso');
+        if (botonEliminar) botonEliminar.setAttribute('aria-label', `Eliminar paso ${nuevoNum}`);
 
         // Opcional: podrías ocultar/mostrar el botón eliminar si necesitas lógica extra
     });

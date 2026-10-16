@@ -65,7 +65,7 @@ async function abrirCatalogoProductos(boton) {
     if (contenedorProductos) {
         contenedorProductos.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                <h2 style="color: #666;">Cargando productos de ${tituloCategoria}... ⏳</h2>
+                <p class="mensaje-catalogo">Cargando productos de ${tituloCategoria}...<span aria-hidden="true"> ⏳</span></p>
             </div>
         `;
 
@@ -97,7 +97,7 @@ async function abrirCatalogoProductos(boton) {
             console.error("Error al cargar la base de datos:", error);
             contenedorProductos.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                    <h2 style="color: #d93025;">Hubo un error al cargar el catálogo de productos.</h2>
+                    <p class="mensaje-catalogo mensaje-catalogo-error">Hubo un error al cargar el catálogo de productos.</p>
                 </div>
             `;
         }
@@ -173,6 +173,7 @@ function abrirDetalleVerProducto(indiceProducto) {
         const imgCom = vistaCom.querySelector('#detalle-ver-imagen');
         if (imgCom) {
             imgCom.src = prod.imagen_url || 'svg/subir/comprar.png';
+            imgCom.alt = prod.titulo ? `Foto de ${prod.titulo}` : "Foto del producto";
             imgCom.style.cursor = 'pointer';
             imgCom.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
             imgCom.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto;";
@@ -237,6 +238,7 @@ function abrirDetalleVerProducto(indiceProducto) {
         const imgBaj = vistaBaj.querySelector('#detalle-ver-imagen');
         if (imgBaj) {
             imgBaj.src = prod.imagen_url || 'svg/subir/comprar.png';
+            imgBaj.alt = prod.titulo ? `Foto de ${prod.titulo}` : "Foto del producto";
             imgBaj.style.cursor = 'pointer';
             imgBaj.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
             imgBaj.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; cursor: pointer;";
@@ -333,7 +335,7 @@ function abrirDetalleVerProducto(indiceProducto) {
                         if (paso.imagen && paso.imagen.trim() !== "") {
                             pasoHTML += `
                                 <div style="text-align: center; margin-bottom: 12px; width: 100%;">
-                                    <img src="${paso.imagen}" onclick="abrirImagenGrande('${paso.imagen}')" style="width: 100%; max-width: 300px;  min-width: 200px; height: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; object-fit: contain;" title="Haz clic para ver en grande">
+                                    <img src="${paso.imagen}" alt="Imagen del paso ${index + 1}" onclick="abrirImagenGrande('${paso.imagen}')" style="width: 100%; max-width: 300px;  min-width: 200px; height: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; object-fit: contain;" title="Haz clic para ver en grande">
                                 </div>
                             `;
                         }
@@ -424,7 +426,7 @@ function renderizarProductosFiltrados() {
             const tarjetaHTML = `
                 <button class="btn-producto" onclick="abrirDetalleVerProducto(${indiceProducto})">
                   <span class="prod-titulo">${prod.titulo}</span>
-                  <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="${prod.titulo}" loading="lazy" decoding="async">
+                  <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="" loading="lazy" decoding="async">
                   <div class="prod-etiquetas">
                     ${etiquetasHTML}
                   </div>
@@ -436,27 +438,56 @@ function renderizarProductosFiltrados() {
         // Si no hay ninguno, mostramos este mensaje
         contenedorProductos.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                <h2 style="color: #666;">No hay productos de este tipo actualmente.</h2>
+                <p class="mensaje-catalogo">No hay productos de este tipo actualmente.</p>
             </div>
         `;
     }
 }
+// Elemento que tenía el foco antes de abrir la imagen (para devolverlo al cerrar)
+let focoAntesDeImagenGrande = null;
+
 function abrirImagenGrande(urlImagen) {
     const modal = document.getElementById('modal-imagen-grande');
     const imgAmpliada = document.getElementById('imagen-ampliada-src');
 
     if (modal && imgAmpliada) {
+        focoAntesDeImagenGrande = document.activeElement;
+
+        // La imagen ampliada lleva la misma descripción que la miniatura pulsada
+        const miniatura = focoAntesDeImagenGrande && focoAntesDeImagenGrande.tagName === 'IMG' ? focoAntesDeImagenGrande : null;
+        imgAmpliada.alt = miniatura && miniatura.alt ? miniatura.alt : 'Imagen ampliada';
+
         imgAmpliada.src = urlImagen;
         modal.style.display = 'flex'; // Muestra el modal centrado
+
+        const botonCerrar = document.getElementById('btn-cerrar-imagen-grande');
+        if (botonCerrar) botonCerrar.focus();
     }
 }
 
 function cerrarImagenGrande() {
     const modal = document.getElementById('modal-imagen-grande');
-    if (modal) {
+    if (modal && modal.style.display !== 'none') {
         modal.style.display = 'none'; // Oculta el modal al hacer clic
+
+        if (focoAntesDeImagenGrande && focoAntesDeImagenGrande.isConnected) focoAntesDeImagenGrande.focus();
+        focoAntesDeImagenGrande = null;
     }
 }
+
+// Teclado en la imagen ampliada: Escape cierra y el foco no se escapa detrás
+document.addEventListener('keydown', (evento) => {
+    const modal = document.getElementById('modal-imagen-grande');
+    if (!modal || modal.style.display === 'none') return;
+
+    if (evento.key === 'Escape') {
+        cerrarImagenGrande();
+    } else if (evento.key === 'Tab') {
+        evento.preventDefault(); // El único control es el botón de cerrar
+        const botonCerrar = document.getElementById('btn-cerrar-imagen-grande');
+        if (botonCerrar) botonCerrar.focus();
+    }
+});
 
 
 
@@ -490,10 +521,15 @@ function alternarValoracion(botonPulsado, opcion) {
 // =========================================================================
 // VALIDACIÓN PARA LOS BOTONES DE SUBIDA DE PRODUCTO
 // =========================================================================
+// Botón de subida (bajo coste / comercializado) que el usuario pulsó sin haber
+// iniciado sesión. Al iniciar sesión se abre directamente su formulario.
+let subidaPendienteTrasLogin = null;
+
 function comprobarSesionYAbrirSubida(elemento) {
     const estadoSesion = sessionStorage.getItem('sesionIniciada');
 
     if (estadoSesion !== '1') {
+        subidaPendienteTrasLogin = elemento;
         abrirModal('modal-login');
         return;
     }
@@ -501,6 +537,16 @@ function comprobarSesionYAbrirSubida(elemento) {
         cambiarEstadoslider(elemento);
     }
 }
+
+// Si el usuario cierra el diálogo sin iniciar sesión, olvidamos el formulario
+// pendiente (para que un inicio de sesión posterior no le lleve allí por sorpresa)
+document.addEventListener('DOMContentLoaded', () => {
+    const modalLogin = document.getElementById('modal-login');
+    if (!modalLogin) return;
+    modalLogin.addEventListener('close', () => {
+        if (sessionStorage.getItem('sesionIniciada') !== '1') subidaPendienteTrasLogin = null;
+    });
+});
 
 
 // =========================================================================
@@ -543,14 +589,16 @@ async function simularInicioSesionModal() {
             mensajeError.style.display = 'none';
         }
 
-        mostrarMensajeEstado("Sesión iniciada");
-
         cerrarModal('modal-login');
 
-        if (typeof vistaIntencionSubida !== 'undefined' && vistaIntencionSubida) {
-            mostrarVista(vistaIntencionSubida);
-            vistaIntencionSubida = null;
+        // Si venía de pulsar "bajo coste" o "comercializado", abrimos ese formulario
+        if (subidaPendienteTrasLogin) {
+            const destino = subidaPendienteTrasLogin;
+            subidaPendienteTrasLogin = null;
+            cambiarEstadoslider(destino);
         }
+
+        mostrarMensajeEstado("Sesión iniciada");
 
     } catch (e) {
         console.error("Error de inicio de sesión:", e.message);

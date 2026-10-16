@@ -564,20 +564,42 @@ function agregarFilaMaterial() {
     div.className = 'material-item';
     div.style.cssText = "display: flex; gap: 10px; align-items: center; margin-bottom: 10px;";
 
+    const numero = totalMateriales + 1;
+
     // Si es el primer material (totalMateriales === 0), NO añadimos el botón "X"
     if (totalMateriales === 0) {
         div.innerHTML = `
-            <input type="text" placeholder="Escribe qué material" maxlength="20" aria-label="Añade un material" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; width90%">
+            <input type="text" placeholder="Escribe qué material" maxlength="20" aria-label="Material ${numero}" aria-required="true" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #767676; border-radius: 6px;">
         `;
     } else {
         // A partir del segundo material, sí llevan el botón de eliminar
         div.innerHTML = `
-            <input type="text" placeholder="Escribe qué material" maxlength="20" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
-            <button type="button" onclick="this.parentElement.remove()" style="background-color: #d93025; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">X</button>
+            <input type="text" placeholder="Escribe qué material" maxlength="20" aria-label="Material ${numero}" aria-required="true" class="input-material" style="flex: 1; padding: 8px; border: 1px solid #767676; border-radius: 6px;">
+            <button type="button" onclick="eliminarFilaMaterial(this)" aria-label="Eliminar material ${numero}" style="background-color: #d93025; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; min-width: 44px; min-height: 44px;">X</button>
         `;
     }
 
     contenedor.appendChild(div);
+
+    // El foco va al campo nuevo para poder escribir directamente
+    if (totalMateriales > 0) div.querySelector('input').focus();
+}
+
+// Elimina una fila de material y devuelve el foco a un sitio lógico
+function eliminarFilaMaterial(boton) {
+    boton.parentElement.remove();
+
+    const contenedor = document.getElementById('lista-materiales');
+    contenedor.querySelectorAll('.material-item').forEach((fila, indice) => {
+        const campo = fila.querySelector('input');
+        const botonEliminar = fila.querySelector('button');
+        if (campo) campo.setAttribute('aria-label', `Material ${indice + 1}`);
+        if (botonEliminar) botonEliminar.setAttribute('aria-label', `Eliminar material ${indice + 1}`);
+    });
+
+    const botonAnadir = document.getElementById('btn-agregar-material');
+    if (botonAnadir) botonAnadir.focus();
+    if (typeof anunciar === 'function') anunciar('Material eliminado');
 }
 // B. Autorellenar la primera fila vacía al cargar
 document.addEventListener('DOMContentLoaded', () => {
@@ -733,7 +755,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         if (contenedorProductos) {
             contenedorProductos.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                    <h2 style="color: #666;">Buscando "${terminoBusqueda}"...</h2>
+                    <p class="mensaje-catalogo">Buscando "${terminoBusqueda}"...</p>
                 </div>
             `;
         }
@@ -772,7 +794,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
             if (contenedorProductos) {
                 contenedorProductos.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                        <h2 style="color: #d93025;">Hubo un problema al realizar la búsqueda.</h2>
+                        <p class="mensaje-catalogo mensaje-catalogo-error">Hubo un problema al realizar la búsqueda.</p>
                     </div>
                 `;
             }
@@ -935,6 +957,9 @@ function mostrarMensajeEstado(texto, esError = false) {
         return;
     }
 
+    // Recordamos dónde estaba el foco para devolverlo al cerrar el mensaje
+    elementoFocoAntesDelMensaje = document.activeElement;
+
     textoElemento.innerText = texto;
 
     if (esError) {
@@ -943,13 +968,49 @@ function mostrarMensajeEstado(texto, esError = false) {
         contenedor.classList.remove('error');
     }
 
+    // Si había un mensaje anterior cerrándose, cancelamos sus temporizadores
+    clearTimeout(temporizadorMensaje);
+    clearTimeout(temporizadorOcultarMensaje);
+
     contenedor.style.display = 'flex';
     contenedor.style.opacity = '1';
 
-    setTimeout(() => {
-        contenedor.style.opacity = '0';
-        setTimeout(() => {
-            contenedor.style.display = 'none';
-        }, 300);
-    }, 2000);
+    // El mensaje se ve durante 10 segundos y luego se borra solo.
+    // Con la tecla Escape (o pulsando fuera) se cierra antes.
+    temporizadorMensaje = setTimeout(cerrarMensajeEstado, DURACION_MENSAJE_ESTADO);
+
+    // El foco va a la caja del mensaje
+    const caja = contenedor.querySelector('.mensaje-estado-contenido');
+    if (caja) {
+        caja.setAttribute('tabindex', '-1');
+        caja.focus();
+    }
 }
+
+const DURACION_MENSAJE_ESTADO = 10000; // 10 segundos
+let temporizadorMensaje = null;
+let temporizadorOcultarMensaje = null;
+let elementoFocoAntesDelMensaje = null;
+
+function cerrarMensajeEstado() {
+    const contenedor = document.getElementById('mensaje-estado-global');
+    if (!contenedor || contenedor.style.display === 'none' || contenedor.style.opacity === '0') return;
+
+    clearTimeout(temporizadorMensaje);
+    contenedor.style.opacity = '0';
+    temporizadorOcultarMensaje = setTimeout(() => {
+        contenedor.style.display = 'none';
+    }, 300);
+
+    const destino = elementoFocoAntesDelMensaje;
+    elementoFocoAntesDelMensaje = null;
+    if (destino && destino.isConnected && destino.offsetParent !== null) destino.focus();
+}
+
+document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') cerrarMensajeEstado();
+});
+
+document.addEventListener('click', (evento) => {
+    if (evento.target && evento.target.id === 'mensaje-estado-global') cerrarMensajeEstado();
+});

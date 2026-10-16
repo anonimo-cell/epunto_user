@@ -13,10 +13,10 @@ function toggleMostrarPassword(inputId, btnId) {
 
     if (inputPass && inputPass.type === "password") {
         inputPass.type = "text";
-        if (btnPass) btnPass.innerText = "Ocultar";
+        if (btnPass) btnPass.innerHTML = 'Ocultar<span class="sr-only"> contraseña</span>';
     } else if (inputPass) {
         inputPass.type = "password";
-        if (btnPass) btnPass.innerText = "Mostrar";
+        if (btnPass) btnPass.innerHTML = 'Mostrar<span class="sr-only"> contraseña</span>';
     }
 }
 // 1. Qué pasa cuando haces clic en el botón de la cabecera
@@ -43,6 +43,8 @@ async function gestionarClickLogin(boton) {
         }, 3500);
 
     } else {
+        // Inicio de sesión desde la cabecera: no hay formulario pendiente que abrir después
+        if (typeof subidaPendienteTrasLogin !== 'undefined') subidaPendienteTrasLogin = null;
         abrirModal('modal-login');
     }
 }

@@ -26,10 +26,10 @@ function toggleMostrarPasswordModal() {
     if (inputPass && btnToggle) {
         if (inputPass.type === 'password') {
             inputPass.type = 'text'; 
-            btnToggle.innerText = 'Ocultar'; 
+            btnToggle.innerHTML = 'Ocultar<span class="sr-only"> contraseña</span>'; 
         } else {
             inputPass.type = 'password'; 
-            btnToggle.innerText = 'Mostrar'; 
+            btnToggle.innerHTML = 'Mostrar<span class="sr-only"> contraseña</span>'; 
         }
     }
 }
