@@ -1226,12 +1226,6 @@ main[tabindex="-1"]:focus {
     transition: all 0.2s ease;
   }
 
-  .etiqueta-badge:hover {
-    background-color: var(--color-hover-superior);
-    color: var(--color-text-superior-active);
-    transform: translateY(-2px);
-  }
-
   .etiqueta-badge img {
     height: 26px;
     width: auto;
