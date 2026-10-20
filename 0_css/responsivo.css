@@ -1198,12 +1198,11 @@ main[tabindex="-1"]:focus {
   }
 
   .prod-etiquetas {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     width: 100%;
-    flex-wrap: nowrap;
+    box-sizing: border-box;
   }
 
   .etiqueta-badge {
@@ -1211,24 +1210,26 @@ main[tabindex="-1"]:focus {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    font-size: 1rem;
-    height: 100%;
+    gap: 4px;
+    font-size: 0.9rem;
+    line-height: 1.2;
     background-color: var(--color-multislider);
     border: 2px solid var(--color-hover-superior);
     color: var(--color-titulo);
-    padding: 10px 8px;
-    border-radius: 14px;
+    padding: 8px 4px;
+    border-radius: 12px;
     font-weight: 700;
     text-align: center;
-    min-width: 75px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   .etiqueta-badge img {
-    height: 26px;
+    height: 22px;
     width: auto;
+    flex-shrink: 0;
   }
 
   .etiqueta-badge-fila {
