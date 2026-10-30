@@ -2734,10 +2734,27 @@ main[tabindex="-1"]:focus {
 /* =========================================================================
    MÁS OPCIONES DE ACCESIBILIDAD (dialog #modal-acce-mas)
    ========================================================================= */
+/* Icono junto al título "Menú de accesibilidad" */
+#modal-acce-mas .btn-cabecera-linea-modal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#modal-acce-mas .btn-titulo-dialog {
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+#modal-acce-mas .cap-icon-titulo-acce {
+  height: 2rem;
+  width: auto;
+}
+
 #modal-acce-mas .grid-acce-mas {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
-  gap: 15px !important;
+  gap: 24px !important;
   margin-top: 15px;
 }
 
@@ -2804,12 +2821,6 @@ main[tabindex="-1"]:focus {
   font-weight: bold;
 }
 
-/* Más espacio entre líneas, letras y palabras */
-.acc-espaciado body * {
-  line-height: 1.8 !important;
-  letter-spacing: 0.08em !important;
-  word-spacing: 0.16em !important;
-}
 
 /* =========================================================================
    MEJORAS DE ACCESIBILIDAD WCAG 2.2
@@ -4805,7 +4816,7 @@ img[role="button"] {
    ========================================================================= */
 @media (min-width: 1280px) {
   :root {
-    --ancho-lateral: 84px; /* la columna derecha solo lleva iconos */
+    --ancho-lateral: 100px; /* la columna derecha solo lleva iconos */
   }
 
   .parent {
@@ -5007,5 +5018,84 @@ img[role="button"] {
     height: 100%;
     max-height: 100%;
     margin-top: 0;
+  }
+}
+
+/* =========================================================================
+   MENÚ DE ACCESIBILIDAD COMO DESPLEGABLE DE LA COLUMNA DERECHA (ordenador)
+   En vez de una ventana grande en el centro, se abre pegado al borde derecho,
+   a la altura del botón "Accesibilidad", compacto (2 columnas) y con el
+   fondo casi sin oscurecer, para que se vea la página mientras se ajusta.
+   Se cierra con la ×, con Escape o pulsando fuera (0_modales.js).
+   ========================================================================= */
+@media (min-width: 1280px) {
+  #modal-acce-mas {
+    position: fixed;
+    top: 0;
+    right: 0;                                     /* pegado al borde derecho */
+    left: auto;
+    bottom: 0;                                    /* ocupa todo el alto */
+    margin: 0;
+    width: 400px;
+    max-width: calc(100vw - 40px);
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;                             /* el scroll va en la zona de botones */
+    padding: 16px;
+    border-right: 0;
+    border-radius: 20px 0 0 20px;                 /* redondeado solo a la izquierda */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  #modal-acce-mas[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Botones con aire entre filas, sin estirarse hasta abajo del todo */
+  #modal-acce-mas .modal-cuerpo.grid-acce-mas {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    grid-auto-rows: 130px;
+    align-content: start;
+    row-gap: 32px !important;
+    padding-top: 24px;
+  }
+
+  #modal-acce-mas::backdrop {
+    background-color: rgba(0, 0, 0, 0.15);
+    backdrop-filter: none;
+  }
+
+  #modal-acce-mas .btn-titulo-dialog {
+    font-size: 1.4rem;
+  }
+
+  #modal-acce-mas .grid-acce-mas {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    margin-top: 10px;
+  }
+
+  #modal-acce-mas .side-btn-acce {
+    min-height: 96px !important;
+    padding: 10px !important;
+  }
+
+  #modal-acce-mas .cabecera-linea-acce {
+    gap: 8px !important;
+  }
+
+  #modal-acce-mas .btn-titulo-acce {
+    font-size: 1rem !important;
+  }
+
+  #modal-acce-mas .cap-icon-mini-acce {
+    height: 1.8rem !important;
+  }
+
+  #modal-acce-mas .icono-acce-mas {
+    font-size: 1.8rem;
   }
 }

@@ -35,3 +35,16 @@ function toggleMostrarPasswordModal() {
 }
 
 
+
+// El menú de accesibilidad funciona como un desplegable: se cierra al pulsar
+// fuera de él. Al pulsar en el fondo, el clic llega al propio <dialog>.
+const menuAccesibilidad = document.getElementById('modal-acce-mas');
+if (menuAccesibilidad) {
+    menuAccesibilidad.addEventListener('click', (evento) => {
+        if (evento.target !== menuAccesibilidad) return;
+        const caja = menuAccesibilidad.getBoundingClientRect();
+        const fuera = evento.clientX < caja.left || evento.clientX > caja.right ||
+            evento.clientY < caja.top || evento.clientY > caja.bottom;
+        if (fuera) menuAccesibilidad.close();
+    });
+}

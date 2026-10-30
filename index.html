@@ -1924,6 +1924,7 @@
   <dialog id="modal-acce-mas" class="modal-accesible" aria-labelledby="titulo-acce-mas">
     <div class="modal-cabecera">
       <div class="btn-cabecera-linea-modal">
+        <img src="svg/accesibilidad/acces.svg" class="cap-icon-titulo-acce" alt="">
         <span class="btn-titulo-dialog" id="titulo-acce-mas">Menú de accesibilidad</span>
       </div>
       <button type="button" class="btn-cerrar-modal" aria-label="Cerrar ventana" title="Cerrar ventana"
@@ -1933,14 +1934,14 @@
     <div class="modal-cuerpo grid-acce-mas">
       <div class="side-btn-acce" role="button" tabindex="0" id="btn-aumentar">
         <div class="cabecera-linea-acce">
-          <img loading="lazy" decoding="async" src="svg/accesibilidad/mas.svg" class="cap-icon-mini-acce" alt="">
+          <span class="icono-acce-mas" aria-hidden="true" style="font-weight: bold;">A+</span>
           <span class="btn-titulo-acce">Aumento letra</span>
         </div>
       </div>
 
       <div class="side-btn-acce" role="button" tabindex="0" id="btn-reducir">
         <div class="cabecera-linea-acce">
-          <img loading="lazy" decoding="async" src="svg/accesibilidad/menos.svg" class="cap-icon-mini-acce" alt="">
+          <span class="icono-acce-mas" aria-hidden="true" style="font-weight: bold;">A−</span>
           <span class="btn-titulo-acce">Reducir letra</span>
         </div>
       </div>
@@ -1961,15 +1962,8 @@
 
       <div class="side-btn-acce" role="button" tabindex="0" aria-pressed="false" data-acc-opcion="enlaces">
         <div class="cabecera-linea-acce">
-          <span class="icono-acce-mas" aria-hidden="true">🔗</span>
+          <span class="icono-acce-mas" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
           <span class="btn-titulo-acce">Resaltar enlaces y botones</span>
-        </div>
-      </div>
-
-      <div class="side-btn-acce" role="button" tabindex="0" aria-pressed="false" data-acc-opcion="espaciado">
-        <div class="cabecera-linea-acce">
-          <span class="icono-acce-mas" aria-hidden="true">↕</span>
-          <span class="btn-titulo-acce">Más espacio entre líneas</span>
         </div>
       </div>
 
