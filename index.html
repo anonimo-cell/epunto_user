@@ -29,11 +29,11 @@
         <button type="button" id="mi-boton-login" class="btn-login-header" onclick="gestionarClickLogin(this)">Iniciar sesión</button>
 
         <button type="button" class="btn-login-header" data-vista="vista-solicitud" id="btn-solicitud"
-          onclick="cambiarEstadoslider(this)">Solicitar cuenta</button>
+          onclick="cambiarEstadoslider(this)">Registrarse</button>
       </div>
     </header>
     <button type="button" id="btn-top-accesibilidad" class="btn-top-acce" aria-haspopup="dialog"
-      onclick="abrirModal('modal-accesibilidad')">
+      onclick="abrirModal('modal-acce-mas')">
       <img src="svg/accesibilidad/acces.svg" alt="" class="cap-icon-acce-top">
       <span>Menú de accesibilidad</span>
     </button>
@@ -42,56 +42,28 @@
       <img src="svg/lat_dech/ayuda.svg" alt="" class="cap-icon-ayuda-scroll">
       <span>Menú de ayuda</span>
     </button>
-    <!--MENÚ DE ACCESIBILIDAD-->
-    <aside class="lateral_acce" aria-labelledby="titulo-lateral-acce">
-      <div class="grid-lateral-acce">
-        <div class="grid-lateral-acce-texto">
-          <img src="svg/accesibilidad/acces.svg" class="cap-icon-acce" alt="">
-          <p class="titulo-menu-acce" id="titulo-lateral-acce">Menú de <br>accesibilidad</p>
-        </div>
-        <div class="side-btn-acce" role="button" tabindex="0" id="btn-aumentar">
-          <div class="cabecera-linea-acce">
-            <img src="svg/accesibilidad/mas.svg" class="cap-icon-mini-acce" alt="">
-            <span class="btn-titulo-acce">Aumento letra</span>
-          </div>
-        </div>
-        <div class="side-btn-acce" role="button" tabindex="0" id="btn-reducir">
-          <div class="cabecera-linea-acce">
-            <img src="svg/accesibilidad/menos.svg" class="cap-icon-mini-acce" alt="">
-            <span class="btn-titulo-acce">Reducir letra</span>
-          </div>
-        </div>
-        <div class="side-btn-acce" role="button" tabindex="0" data-acc-accion="restablecer-mas">
-          <div class="cabecera-linea-acce">
-            <img src="svg/accesibilidad/resta.svg" class="cap-icon-mini-acce" alt="">
-            <span class="btn-titulo-acce">Restablecer</span>
-          </div>
-        </div>
-        <div class="side-btn-acce" role="button" tabindex="0" aria-haspopup="dialog"
-          onclick="abrirModal('modal-acce-mas')">
-          <div class="cabecera-linea-acce">
-            <img src="svg/icon-park-outline--other.svg" class="cap-icon-mini-acce" alt="">
-            <span class="btn-titulo-acce">Más opciones</span>
-          </div>
-        </div>
-      </div>
-    </aside>
-    <!--MENÚ DE LATERAL IZQUIERDO-->
-    <aside class="lateral_izq" aria-label="Información sobre EPunto">
+    <!--MENÚ DE LATERAL DERECHO (el primero abre el menú de accesibilidad)-->
+    <aside class="lateral_izq" aria-label="Accesibilidad e información sobre EPunto">
       <div class="grid-lateral-izq">
-        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-info')">
+        <div class="side-btn-dech" role="button" tabindex="0" aria-haspopup="dialog" title="Accesibilidad" onclick="abrirModal('modal-acce-mas')">
+          <div class="cabecera-izq">
+            <img src="svg/accesibilidad/acces.svg" class="cap-icon-izq" alt="">
+            <span class="btn-titulo-izq">Accesibilidad</span>
+          </div>
+        </div>
+        <div class="side-btn-dech" role="button" tabindex="0" title="Información" onclick="abrirModal('modal-info')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/info.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Información</span>
           </div>  
         </div>
-        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-contacto')">
+        <div class="side-btn-dech" role="button" tabindex="0" title="Contacto" onclick="abrirModal('modal-contacto')">
           <div class="cabecera-izq">
-            <img src="svg/lat_dech/contacto.svg" class="cap-icon-izq" alt="">
+            <img src="svg/lat_dech/gmail.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Contacto</span>
           </div>
         </div>
-        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-agradecimientos')">
+        <div class="side-btn-dech" role="button" tabindex="0" title="Agradecimientos" onclick="abrirModal('modal-agradecimientos')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/agradecimientos.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Agradecimientos</span>
@@ -108,8 +80,7 @@
           <img src="svg/menu/subir.svg" class="cap-icon-menu" alt="">
         </div>
         <div class="btn-textos-contenedor-menu">
-          <span class="btn-titulo-menu">Subir un producto</span>
-          <p class="btn-frase-menu">Comparte productos que te hayan servido</p>
+          <span class="btn-titulo-menu">Difundir productos o tutoriales</span>
         </div>
       </div>
       <div class="btn-menu active" role="button" tabindex="0" data-vista="vista-ver" aria-current="page"
@@ -119,7 +90,6 @@
         </div>
         <div class="btn-textos-contenedor-menu">
           <span class="btn-titulo-menu">Ver productos</span>
-          <p class="btn-frase-menu">Explora categorías y productos</p>
         </div>
       </div>
     </nav>
@@ -137,7 +107,6 @@
               <img src="svg/menu/ver.png" class="cap-icon-linea-superior" alt="">
               <div class="text-linea-superior">
                 <h1 class="titulo-linea-superior">Ver Productos </h1>
-                <p class="btn-frase-menu">Explora categorías y productos</p>
               </div>
             </div>
 
@@ -158,27 +127,22 @@
           <div class="grid-capsulas">
             <button type="button" class="btn-cate" data-vista="vista-autonomia" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Autonomía y cuidado</span>
-              <span class="btn-cate-frase">Actividades básicas de la vida diaria y fomento de la independencia</span>
               <img src="svg/cate/auto/auto.png" class="cap-icon-cate" alt="">
             </button>
             <button type="button" class="btn-cate" data-vista="vista-movilidad" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Movilidad</span>
-              <span class="btn-cate-frase">Gestión de traslados, transporte y movilidad personal.</span>
               <img src="svg/cate/movilidad/mover.png" class="cap-icon-cate" alt="">
             </button>
             <button type="button" class="btn-cate" data-vista="vista-comunica" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Comunicación</span>
-              <span class="btn-cate-frase">Expresar lo que siento y pienso</span>
               <img src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="">
             </button>
             <button type="button" class="btn-cate" data-vista="vista-productividad" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Tareas cotidianas</span>
-              <span class="btn-cate-frase">Quehaceres de la casa</span>
               <img src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="">
             </button>
             <button type="button" class="btn-cate" data-vista="vista-ocio" onclick="seleccionarCategoria1(this)">
               <span class="btn-cate-txt">Ocio</span>
-              <span class="btn-cate-frase">Tiempo libre y entretenimiento.</span>
               <img src="svg/cate/ocio/ocio.png" class="cap-icon-cate" alt="">
             </button>
             <button type="button" class="btn-cate" onclick="abrirCatalogoProductos(this)">
@@ -195,13 +159,13 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <nav class="migas-pan" aria-label="Ruta de navegación">
-              <span class="miga-actual">Inicio Subir Producto</span>
+              <span class="miga-actual">Inicio Difundir productos o tutoriales</span>
             </nav>
             <div class="cabecera-superior-icono">
               <img loading="lazy" decoding="async" src="svg/menu/subir.svg" class="cap-icon-linea-superior" alt=""
                >
               <div class="text-linea-superior">
-                <h1 class="titulo-linea-superior">Subir un producto</h1>
+                <h1 class="titulo-linea-superior">Difundir productos o tutoriales</h1>
               </div>
 
             </div>
@@ -232,7 +196,7 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <nav class="migas-pan" aria-label="Ruta de navegación">
-              <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Subir Producto</span>
+              <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Difundir productos o tutoriales</span>
               <span class="miga-separador">&rarr;</span>
               <span class="miga-actual">Producto de bajo coste</span>
             </nav>
@@ -515,7 +479,7 @@
           <div class="grid-linea-superior">
 
             <nav class="migas-pan" aria-label="Ruta de navegación">
-              <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Subir Producto</span>
+              <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Difundir productos o tutoriales</span>
               <span class="miga-separador">&rarr;</span>
               <span class="miga-actual">Producto de apoyo comercializado</span>
             </nav>
@@ -619,7 +583,7 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <nav class="migas-pan" aria-label="Ruta de navegación">
-                <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Subir Producto</span>
+                <span class="miga-enlace" onclick="regresarvolver(2)">Inicio Difundir productos o tutoriales</span>
                 <span class="miga-separador">&rarr;</span>
                 <!-- MIGA DINÁMICA: Cambiará según el formulario -->
                 <span class="miga-texto" id="miga-tipo-formulario">Formulario</span>
@@ -657,7 +621,7 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <nav class="migas-pan" aria-label="Ruta de navegación">
-                <span class="miga-texto">Solicitar cuenta</span>
+                <span class="miga-texto">Registrarse</span>
                 <span class="miga-separador">&rarr;</span>
                 <span class="miga-actual">Confirmación solicitud</span>
               </nav>
@@ -1364,7 +1328,7 @@
         <div class="linea_superior">
           <div class="grid-linea-superior">
             <div class="cabecera-superior-icono">
-              <h1 class="titulo-linea-superior">Solicitar cuenta</h1>
+              <h1 class="titulo-linea-superior">Registrarse</h1>
             </div>
           </div>
         </div>
@@ -1565,7 +1529,7 @@
     <div class="modal-cabecera">
       <div class="btn-cabecera-linea-modal">
         <span class="btn-titulo-dialog">Contacto</span>
-        <img loading="lazy" decoding="async" src="svg/lat_dech/contacto.svg" class="cap-icon-modal" alt="">
+        <img loading="lazy" decoding="async" src="svg/lat_dech/gmail.svg" class="cap-icon-modal" alt="">
       </div>
       <button type="button" class="btn-cerrar-modal" aria-label="Cerrar ventana" title="Cerrar ventana" onclick="cerrarModal(this)">×</button>
     </div>
@@ -1590,31 +1554,26 @@
     <div class="grid-capsulas">
       <button type="button" class="btn-cate" data-vista="vista-autonomia" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Autonomía y cuidado</span>
-        <span class="btn-cate-frase">Actividades básicas de la vida diaria y fomento de la independencia</span>
         <img loading="lazy" decoding="async" src="svg/cate/auto/auto.png" class="cap-icon-cate" alt="">
       </button>
 
       <button type="button" class="btn-cate" data-vista="vista-movilidad" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Movilidad</span>
-        <span class="btn-cate-frase">Gestión de traslados, transporte y movilidad personal.</span>
         <img loading="lazy" decoding="async" src="svg/cate/movilidad/mover.png" class="cap-icon-cate" alt="">
       </button>
 
       <button type="button" class="btn-cate" data-vista="vista-comunica" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Comunicación</span>
-        <span class="btn-cate-frase">Expresar lo que siento y pienso</span>
         <img loading="lazy" decoding="async" src="svg/cate/comunica/comunicación.png" class="cap-icon-cate" alt="">
       </button>
 
       <button type="button" class="btn-cate" data-vista="vista-productividad" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Tareas cotidianas</span>
-        <span class="btn-cate-frase">Quehaceres de la casa</span>
         <img loading="lazy" decoding="async" src="svg/cate/tareas/tareas.png" class="cap-icon-cate" alt="">
       </button>
 
       <button type="button" class="btn-cate" data-vista="vista-ocio" onclick="seleccionarCatenivel1(this)">
         <span class="btn-cate-txt">Ocio</span>
-        <span class="btn-cate-frase">Tiempo libre y entretenimiento.</span>
         <img loading="lazy" decoding="async" src="svg/cate/ocio/ocio.png" class="cap-icon-cate" alt="">
       </button>
 
@@ -1945,7 +1904,7 @@
       <div class="side-btn-dech" role="button" tabindex="0" style="max-width: 100%; border-radius: 12px; height: 55px;"
         onclick="cerrarModal(this); abrirModal('modal-contacto')">
         <div class="cabecera-izq">
-          <img loading="lazy" decoding="async" src="svg/lat_dech/contacto.svg" class="cap-icon-izq" alt="">
+          <img loading="lazy" decoding="async" src="svg/lat_dech/gmail.svg" class="cap-icon-izq" alt="">
           <span class="btn-titulo-izq" style="font-size: 1rem;">Contacto</span>
         </div>
       </div>
@@ -1961,16 +1920,17 @@
     </div>
   </dialog>
 
-  <dialog id="modal-accesibilidad" class="modal-accesible">
+  <!--MENÚ DE ACCESIBILIDAD: tamaño de letra y el resto de opciones en un solo dialog-->
+  <dialog id="modal-acce-mas" class="modal-accesible" aria-labelledby="titulo-acce-mas">
     <div class="modal-cabecera">
       <div class="btn-cabecera-linea-modal">
-        <span class="btn-titulo-dialog">Menú de accesibilidad</span>
+        <span class="btn-titulo-dialog" id="titulo-acce-mas">Menú de accesibilidad</span>
       </div>
       <button type="button" class="btn-cerrar-modal" aria-label="Cerrar ventana" title="Cerrar ventana"
         onclick="cerrarModal(this)">×</button>
     </div>
 
-    <div class="modal-cuerpo grid-accessibility">
+    <div class="modal-cuerpo grid-acce-mas">
       <div class="side-btn-acce" role="button" tabindex="0" id="btn-aumentar">
         <div class="cabecera-linea-acce">
           <img loading="lazy" decoding="async" src="svg/accesibilidad/mas.svg" class="cap-icon-mini-acce" alt="">
@@ -1985,34 +1945,6 @@
         </div>
       </div>
 
-      <div class="side-btn-acce" role="button" tabindex="0" data-acc-accion="restablecer-mas">
-        <div class="cabecera-linea-acce">
-          <img loading="lazy" decoding="async" src="svg/accesibilidad/resta.svg" class="cap-icon-mini-acce" alt="">
-          <span class="btn-titulo-acce">Restablecer</span>
-        </div>
-      </div>
-
-      <div class="side-btn-acce btn-acce-mas-opciones" role="button" tabindex="0" aria-haspopup="dialog"
-        onclick="abrirModal('modal-acce-mas')">
-        <div class="cabecera-linea-acce">
-          <img loading="lazy" decoding="async" src="svg/icon-park-outline--other.svg" class="cap-icon-mini-acce" alt="">
-          <span class="btn-titulo-acce">Más opciones</span>
-        </div>
-      </div>
-    </div>
-  </dialog>
-
-  <!--MÁS OPCIONES DE ACCESIBILIDAD-->
-  <dialog id="modal-acce-mas" class="modal-accesible" aria-labelledby="titulo-acce-mas">
-    <div class="modal-cabecera">
-      <div class="btn-cabecera-linea-modal">
-        <span class="btn-titulo-dialog" id="titulo-acce-mas">Más opciones de accesibilidad</span>
-      </div>
-      <button type="button" class="btn-cerrar-modal" aria-label="Cerrar ventana" title="Cerrar ventana"
-        onclick="cerrarModal(this)">×</button>
-    </div>
-
-    <div class="modal-cuerpo grid-acce-mas">
       <div class="side-btn-acce" role="button" tabindex="0" aria-pressed="false" data-acc-opcion="contraste">
         <div class="cabecera-linea-acce">
           <img loading="lazy" decoding="async" src="svg/accesibilidad/blan_ne.svg" class="cap-icon-mini-acce" alt="">

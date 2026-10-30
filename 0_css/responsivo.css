@@ -1222,7 +1222,7 @@ main[tabindex="-1"]:focus {
     text-align: center;
     min-width: 0;
     box-sizing: border-box;
-    overflow-wrap: anywhere;
+    hyphens: auto; /* corta con guion (lang="es") si la letra está aumentada */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
@@ -4795,4 +4795,135 @@ img[role="button"] {
   .lateral_izq {
     top: 140px !important;
   }
+}
+
+/* =========================================================================
+   COLUMNAS EN ORDENADOR: centro centrado y laterales estrechos
+   Tres columnas simétricas (lateral · contenido · lateral). La columna
+   derecha (accesibilidad, información...) es fija y mide lo mismo que el
+   hueco reservado a cada lado, así el contenido queda en el centro real.
+   ========================================================================= */
+@media (min-width: 1280px) {
+  :root {
+    --ancho-lateral: 84px; /* la columna derecha solo lleva iconos */
+  }
+
+  .parent {
+    width: 100%;
+    grid-template-columns: var(--ancho-lateral) minmax(0, 1fr) var(--ancho-lateral);
+    grid-column-gap: 1.5rem;
+  }
+
+  .lateral_izq {
+    width: var(--ancho-lateral);
+    box-sizing: border-box;
+    padding: 20px 0 20px 8px;
+  }
+
+  .grid-lateral-izq {
+    gap: 40px;
+  }
+
+  /* Botones altos: más fáciles de acertar con temblor (objetivo táctil amplio) */
+  .lateral_izq .side-btn-dech {
+    width: 100%;
+    min-height: 68px;
+    padding: 12px 10px;
+    box-sizing: border-box;
+    justify-content: center;
+  }
+
+  .lateral_izq .cabecera-izq {
+    justify-content: center;
+  }
+
+  .lateral_izq .cap-icon-izq {
+    height: 34px;
+  }
+
+  /* Solo iconos: el nombre se oculta a la vista pero lo sigue leyendo el
+     lector de pantalla, y al pasar el ratón aparece en el title */
+  .lateral_izq .btn-titulo-izq {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* VER PRODUCTOS: pictogramas más grandes y tarjetas que aprovechan
+     todo el ancho de la columna central */
+  /* .contenedor-dinamico centra a sus hijos (align-items: center) y los encoge
+     a su contenido: se les da todo el ancho para que las tarjetas crezcan */
+  #vista-ver .categorias,
+  #vista-ver .grid-capsulas {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #vista-ver .grid-capsulas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #vista-ver .grid-capsulas > .btn-cate .cap-icon-cate {
+    min-height: 60px;
+    max-height: 210px;
+  }
+}
+
+/* Menú principal en ordenador: cada título en una sola línea
+   (sin subtítulo, la caja de texto se estrechaba y lo partía en dos),
+   más grande y sin negrita */
+@media (min-width: 1280px) {
+  .multi-slider .btn-titulo-menu {
+    white-space: nowrap;
+    font-size: 1.4rem;
+    font-weight: normal;
+  }
+}
+
+/* =========================================================================
+   BOTONES DE SESIÓN: sin negrita, icono también en "Registrarse" y más
+   separación entre los dos. El icono va en ::before, como el de iniciar
+   sesión, y es decorativo (el lector solo lee el texto).
+   ========================================================================= */
+.barra-superior-login .botones-login-container {
+  gap: 1rem !important;
+}
+
+.botones-login-container .btn-login-header {
+  font-weight: normal !important;
+}
+
+#btn-solicitud {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#btn-solicitud::before {
+  content: "";
+  flex-shrink: 0;
+  width: 1.3em;
+  height: 1.2em;
+  background: url("../svg/login/registro.svg") no-repeat center / contain;
+}
+
+@media (min-width: 700px) {
+  .barra-superior-login .botones-login-container {
+    gap: 28px !important;
+  }
+}
+
+/* Botones de sesión más redondeados y con iconos más grandes */
+.botones-login-container .btn-login-header {
+  border-radius: 20px !important;
+}
+
+#mi-boton-login::before,
+#btn-solicitud::before {
+  width: 1.7em;
+  height: 1.7em;
 }
