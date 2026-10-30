@@ -3882,9 +3882,9 @@ img[role="button"] {
 @media (min-width: 1280px) {
   #vista-subir.subvista-contenido {
     box-sizing: border-box;
-    /* 140px = barra superior (56), menú fijo (66) y 18px de separación; 16px de aire abajo */
+    /* 160px = barra superior (56), menú fijo (86) y 18px de separación; 16px de aire abajo */
     height: auto !important;
-    min-height: calc(100vh - 156px);
+    min-height: calc(100vh - 176px);
     max-height: none;
     margin-bottom: 16px;
     flex-direction: column;
@@ -4831,6 +4831,9 @@ img[role="button"] {
     padding: 12px 10px;
     box-sizing: border-box;
     justify-content: center;
+    /* Lado izquierdo en semicírculo (medio alto del botón); el derecho
+       sigue recto, pegado al borde de la pantalla */
+    border-radius: 40px 0 0 40px;
   }
 
   .lateral_izq .cabecera-izq {
@@ -4926,4 +4929,83 @@ img[role="button"] {
 #btn-solicitud::before {
   width: 1.7em;
   height: 1.7em;
+}
+
+/* =========================================================================
+   MENÚ PRINCIPAL EN ORDENADOR: botones centrados y más compactos
+   En vez de ocupar cada uno media pantalla, los dos botones van juntos en
+   el centro con un ancho máximo y esquinas redondeadas. Solo dimensiones:
+   colores, textos e iconos no cambian. El menú mide 86px (6 + 74 + 6),
+   20px más que antes: el contenido y la columna lateral bajan lo mismo.
+   ========================================================================= */
+@media (min-width: 1280px) {
+  /* Todo lo que no es un botón, en blanco */
+  .multi-slider {
+    grid-template-columns: repeat(2, minmax(0, 560px));
+    justify-content: center;
+    gap: 16px;
+    padding: 6px 24px;
+    background-color: #fff;
+  }
+
+  .multi-slider .btn-menu {
+    box-sizing: border-box;
+    border-color: transparent; /* el marco color crema rodeaba al botón activo */
+    height: 74px;
+    padding: 0 24px;
+    border-radius: 14px;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  /* Extremos exteriores muy redondeados: el izquierdo en "Difundir" y el
+     derecho en "Ver productos" (37px = medio alto, forma de píldora) */
+  .multi-slider .btn-menu:first-child {
+    border-top-left-radius: 37px;
+    border-bottom-left-radius: 37px;
+  }
+
+  .multi-slider .btn-menu:last-child {
+    border-top-right-radius: 37px;
+    border-bottom-right-radius: 37px;
+  }
+
+  .multi-slider .cap-icon-menu {
+    height: 46px;
+  }
+
+  .multi-slider .btn-textos-contenedor-menu {
+    margin-left: 0;
+  }
+
+  /* El menú acaba ahora en 144px (58 + 86): todo baja 20px */
+  .subvista-contenido {
+    margin-top: 120px !important;
+    min-height: calc(100vh - 176px);
+  }
+
+  .lateral_izq {
+    top: 160px !important;
+  }
+}
+
+/* =========================================================================
+   TARJETAS DE CATEGORÍAS: dos filas (título · pictograma)
+   Ya no llevan subtítulo, así que sobraba la fila del medio que lo
+   reservaba; el pictograma ocupa todo el espacio bajo el título.
+   ========================================================================= */
+@media (min-width: 1280px) {
+  .btn-cate,
+  .btn-cate-4 {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .btn-cate .cap-icon-cate,
+  .btn-cate-4 .cap-icon-cate {
+    grid-row: 2;
+    height: 100%;
+    max-height: 100%;
+    margin-top: 0;
+  }
 }
