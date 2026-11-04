@@ -95,6 +95,40 @@ html.alto-contraste {
   background-color: #dcdcdc;
 }
 
+/* Botones de volver/siguiente: fondo negro, así que la flecha (negra) pasa a
+   blanca; al pasar el ratón el fondo se aclara y la flecha vuelve a negra */
+.alto-contraste .btn-volver .icon-btn-volver,
+.alto-contraste .btn-siguiente .icon-btn-volver {
+  filter: invert(1);
+}
+
+.alto-contraste .btn-volver:hover .icon-btn-volver,
+.alto-contraste .btn-siguiente:hover .icon-btn-volver {
+  filter: none;
+}
+
+/* Iniciar sesión / Registrarse seleccionado: la barra también es negra, así
+   que lleva un borde blanco para que se vea el botón, y el icono pasa a blanco */
+.alto-contraste .btn-login-header.active {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
+.alto-contraste .btn-login-header.active::before {
+  filter: invert(1);
+}
+
+/* Filtro del catálogo seleccionado (bajo coste / comercializado): fondo
+   negro, así que texto y pictograma en blanco */
+.alto-contraste #vista-productos-final .btn-filtro.active-filtro,
+.alto-contraste #vista-productos-final .btn-filtro.active-filtro * {
+  color: #fff !important;
+}
+
+.alto-contraste .btn-filtro.active-filtro .cap-icon-filtro-catalogo {
+  filter: invert(1);
+}
+
 html {
   font-size: var(--tamano-fuente-base);
   box-sizing: border-box;
@@ -367,8 +401,11 @@ body {
   position: relative;
 }
 
+/* Hover: borde oscuro y más grueso sin mover el texto. El grosor extra
+   se dibuja con una sombra por fuera, así el borde real no cambia de ancho */
 .input-busqueda:hover {
-  border: 5px solid var(--color-acce-borde);
+  border-color: var(--color-acce-borde) !important;
+  box-shadow: 0 0 0 3px var(--color-acce-borde);
 }
 
 /* =========================================================================
@@ -682,10 +719,40 @@ main[tabindex="-1"]:focus {
   flex-direction: row;
   align-items: center;
   width: 100%;
-  gap: 20%;
+  gap: 16px;   /* título e icono juntos */
+}
+
+/* Logos de Agradecimientos: los tres en una sola fila */
+.logos-agradecimientos {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 24px;
+  margin: 16px 0;
+}
+
+.logos-agradecimientos img {
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 90px;
+  object-fit: contain;
+}
+
+/* Email de contacto: se ve como un enlace */
+.enlace-email {
+  color: var(--color-titulo);
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.enlace-email:hover,
+.enlace-email:focus-visible {
+  background-color: var(--color-acce-hover);
 }
 
 .btn-titulo-dialog {
+  color: var(--color-titulo);
   font-weight: bold;
   font-size: clamp(1.3rem, 5vw, 1.7rem);
   line-height: 1.2;
@@ -756,9 +823,9 @@ main[tabindex="-1"]:focus {
   color: #333;
 }
 
+/* Fondo de los diálogos: algo oscurecido pero sin desenfocar la página */
 .modal-accesible::backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* HOVER & FOCUS */
@@ -1768,7 +1835,7 @@ main[tabindex="-1"]:focus {
 
   .btn-cabecera-linea-modal {
     justify-content: center;
-    gap: 10%;
+    gap: 16px;
   }
 
   .btn-titulo-dialog {
@@ -1897,7 +1964,8 @@ main[tabindex="-1"]:focus {
   }
 
   #vista-detalle-verproductocom #detalle-ver-imagen {
-    width: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
     max-height: 250px !important;
     height: auto !important;
     object-fit: contain !important;
@@ -2563,7 +2631,7 @@ main[tabindex="-1"]:focus {
   }
 
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.3);
   }
 
   .cabecera-superior-icono {
@@ -2940,6 +3008,12 @@ img[role="button"] {
   padding: 28px 28px 32px !important;
 }
 
+/* "Registrarse" ocupa todo el ancho de la vista, como el resto de pantallas */
+#contenido-principal #vista-solicitud .acordeon-form {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
 /* En "Solicitar cuenta" los campos van seguidos: el espacio lo dan sus márgenes */
 #vista-solicitud .acordeon-form {
   gap: 0;
@@ -3031,9 +3105,11 @@ img[role="button"] {
 /* ---------- Campos de texto ---------- */
 #contenido-principal .acordeon-form input[type="text"],
 #contenido-principal .acordeon-form input[type="password"],
+#contenido-principal .acordeon-form input[type="email"],
 #contenido-principal .acordeon-form textarea,
 #modal-login input[type="text"],
-#modal-login input[type="password"] {
+#modal-login input[type="password"],
+#modal-login input[type="email"] {
   display: block;
   width: 100% !important;
   height: auto !important;
@@ -3093,6 +3169,20 @@ img[role="button"] {
   border: 2px solid var(--form-error) !important;
   background-color: #fff5f5 !important;
   box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.2) !important;
+}
+
+/* Inicio de sesión: el campo vacío se marca muy fuerte en rojo, también
+   cuando tiene el foco (si no, el foco azul tapaba el error) */
+#modal-login input.campo-error,
+#modal-login input.campo-error:focus,
+#contenido-principal #vista-solicitud input.campo-error,
+#contenido-principal #vista-solicitud input.campo-error:focus,
+#contenido-principal #vista-solicitud .btn-rela.campo-error {
+  border: 4px solid var(--form-error) !important;
+  background-color: #ffe5e5 !important;
+  outline: 3px solid var(--form-error) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 7px rgba(179, 38, 30, 0.25) !important;
 }
 
 .mensaje-error-campo {
@@ -3417,8 +3507,10 @@ img[role="button"] {
 
 #precio-com .btn-filtro:hover,
 #sele-relacion .btn-rela:hover {
+  /* Hover bien visible: naranja de la web + borde oscuro reforzado */
   border-color: var(--color-acce-borde) !important;
-  background-color: var(--form-fondo-suave) !important;
+  background-color: var(--color-acce-hover) !important;
+  box-shadow: 0 0 0 2px var(--color-acce-borde) !important;
 }
 
 /* Seleccionado: fondo oscuro + marca ✓ (no se indica solo con color, WCAG 1.4.1) */
@@ -5098,4 +5190,114 @@ img[role="button"] {
   #modal-acce-mas .icono-acce-mas {
     font-size: 1.8rem;
   }
+}
+
+/* =========================================================================
+   TÍTULOS DE LAS VISTAS EN UNA SOLA LÍNEA (ordenador)
+   La columna central se adapta al título ("Autonomía y cuidado" no se
+   parte en dos líneas) y las laterales se reparten el resto.
+   ========================================================================= */
+@media (min-width: 1280px) {
+  /* No en la ficha de un producto: su título (el nombre) puede ser muy largo */
+  .subvista-contenido:not(#vista-detalle-verproducto):not(#vista-detalle-verproductocom) .grid-linea-superior {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .subvista-contenido:not(#vista-detalle-verproducto):not(#vista-detalle-verproductocom) .titulo-linea-superior {
+    white-space: nowrap;
+  }
+}
+
+/* =========================================================================
+   SLIDER "BAJO COSTE / COMERCIALIZADO" DEL CATÁLOGO
+   Igual que el menú superior: dos botones crema separados, en forma de
+   píldora por los extremos, con icono a la izquierda del texto y el activo
+   en naranja.
+   ========================================================================= */
+#vista-productos-final .contenedor-slider-filtros {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: min(100%, 1000px) !important;
+  margin: 0 auto;
+  background: transparent;
+  box-shadow: none;
+}
+
+#vista-productos-final .btn-filtro {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100% !important;   /* otras reglas lo dejaban al 50% de su hueco */
+  height: 64px !important;
+  padding: 0 20px !important;
+  white-space: nowrap;
+  background-color: var(--color-acce);
+  color: var(--color-btn-frase) !important;
+  font-size: 1.15rem !important;
+  font-weight: normal !important;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+#vista-productos-final .btn-filtro:first-child {
+  border-top-left-radius: 32px;
+  border-bottom-left-radius: 32px;
+}
+
+#vista-productos-final .btn-filtro:last-child {
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+#vista-productos-final .btn-filtro.active-filtro {
+  font-weight: normal !important;
+  color: var(--color-btn-frase) !important;
+}
+
+.cap-icon-filtro-catalogo {
+  height: 40px;
+  width: auto;
+  flex: none;
+}
+
+@media (max-width: 699px) {
+  #vista-productos-final .contenedor-slider-filtros {
+    gap: 8px;
+  }
+
+  #vista-productos-final .btn-filtro {
+    gap: 8px;
+    padding: 0 10px !important;
+    font-size: 0.95rem !important;
+    white-space: normal;   /* en móvil el texto sí puede ir en dos líneas */
+  }
+
+  .cap-icon-filtro-catalogo {
+    height: 28px;
+  }
+}
+
+/* =========================================================================
+   PANTALLA "REVISA TU CORREO" (código de verificación al registrarse)
+   ========================================================================= */
+#vista-verificar-correo .verificar-correo-campo {
+  width: min(100%, 360px);
+  margin: 24px auto 8px;
+  text-align: left;
+}
+
+/* Código grande y espaciado: más fácil de leer y de escribir */
+#verificar-correo-codigo {
+  font-size: 1.6rem !important;
+  letter-spacing: 0.3em;
+  text-align: center;
+}
+
+#vista-verificar-correo .confirmacion-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }

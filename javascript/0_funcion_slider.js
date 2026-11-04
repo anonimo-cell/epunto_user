@@ -78,14 +78,12 @@ function seleccionarCategoria1(elemento) {
 // ==========================================
 function realizarBusqueda() {
     if (!vistaObjetivoSeleccionada) {
-        mostrarMensajeEstado("Selecciona una opción antes de continuar.");
         return;
     }
 
     const vistaDestino = document.getElementById(vistaObjetivoSeleccionada);
     if (!vistaDestino) {
         console.warn(`El elemento HTML con ID '${vistaObjetivoSeleccionada}' no existe.`);
-        mostrarMensajeEstado("Esta sección aún no ha sido implementada en el HTML.");
         return;
     }
 
@@ -292,10 +290,9 @@ async function validarYPublicar(elemento) {
 
 
     // ==========================================
-    // B) GESTIÓN DE LA mostrarMensajeEstadoA ÚNICA Y EL SCROLL (FRENADO)
+    // B) SI HAY ERRORES: SCROLL AL PRIMERO Y FRENADO
     // ==========================================
     if (errores.length > 0) {
-        mostrarMensajeEstado("Falta información por rellenar.");
         const primerError = errores[0];
         if (primerError.acordeon) {
             const detalles = vistaActual.querySelector(primerError.acordeon);
@@ -355,7 +352,7 @@ async function validarYPublicar(elemento) {
 
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
+            const nombreUsuario = nombreVisibleDe(user) || "Anónimo";
             const fechaActual = new Date().toISOString();
 
             const { data, error } = await supabase
@@ -382,6 +379,8 @@ async function validarYPublicar(elemento) {
 
             if (error) throw error;
 
+            cacheCatalogo.clear(); // para que el producto nuevo aparezca en el catálogo
+            actualizarCategoriasVisibles(); // y su categoría, si antes estaba vacía
             limpiarFormulariosCompletos();
 
             //  Inyectamos todos los textos dinámicos para BAJO COSTE
@@ -400,7 +399,6 @@ async function validarYPublicar(elemento) {
 
         } catch (error) {
             console.error("Error al guardar en Supabase:", error);
-            mostrarMensajeEstado("Hubo un problema al subir el producto. Inténtalo de nuevo.");
         } finally {
             elemento.innerText = textoOriginalBoton;
             elemento.disabled = false;
@@ -440,7 +438,7 @@ async function validarYPublicar(elemento) {
         try {
             // 2. Enviamos a Supabase
             const { data: { user } } = await supabase.auth.getUser();
-            const nombreUsuario = user ? user.email.split('@')[0] : "Anónimo";
+            const nombreUsuario = nombreVisibleDe(user) || "Anónimo";
             const fechaActual = new Date().toISOString();
 
             const { data, error } = await supabase
@@ -463,6 +461,8 @@ async function validarYPublicar(elemento) {
 
             if (error) throw error;
 
+            cacheCatalogo.clear(); // para que el producto nuevo aparezca en el catálogo
+            actualizarCategoriasVisibles(); // y su categoría, si antes estaba vacía
             limpiarFormulariosCompletos();
 
 
@@ -482,7 +482,6 @@ async function validarYPublicar(elemento) {
 
         } catch (error) {
             console.error("Error al guardar el producto comercializado en Supabase:", error);
-            mostrarMensajeEstado("Hubo un problema al subir el producto. Inténtalo de nuevo.");
         } finally {
             elemento.innerText = textoOriginalBoton;
             elemento.disabled = false;
@@ -511,7 +510,28 @@ document.addEventListener('input', function (event) {
         const textoErrorPass = document.getElementById('error-texto-pass');
         if (textoErrorPass) textoErrorPass.style.display = 'none';
     }
+
+    // Al cambiar el correo se quitan sus avisos ("ya tiene cuenta", "no es válido")
+    if (event.target.id === 'solicitud-contacto') {
+        const errorCorreo = document.getElementById('error-texto-correo');
+        if (errorCorreo) errorCorreo.style.display = 'none';
+    }
+
+    // Inicio de sesión: el aviso se oculta cuando ya no queda ningún campo en rojo
+    if (event.target.id === 'login-usuario-modal' || event.target.id === 'login-password-modal') {
+        const avisoLogin = document.getElementById('mensaje-error-login-modal');
+        if (avisoLogin && !document.querySelector('#modal-login .campo-error')) avisoLogin.style.display = 'none';
+    }
+
+    // Registrarse: igual
+    if (event.target.closest('#vista-solicitud')) ocultarAvisoSolicitudSiCorrecto();
 });
+
+// Oculta el aviso "Falta rellenar..." de Registrarse cuando ya no queda nada en rojo
+function ocultarAvisoSolicitudSiCorrecto() {
+    const aviso = document.getElementById('mensaje-error-solicitud');
+    if (aviso && !document.querySelector('#vista-solicitud .campo-error')) aviso.style.display = 'none';
+}
 
 // 2. Quitar el borde rojo al interactuar (hacer clic) con botones de categorías o filtros
 document.addEventListener('click', function (event) {
@@ -556,7 +576,6 @@ function agregarFilaMaterial() {
     const totalMateriales = contenedor.querySelectorAll('.material-item').length;
 
     if (totalMateriales >= 5) {
-        mostrarMensajeEstado("Solo puedes añadir un máximo de 5 materiales.");
         return;
     }
 
@@ -711,7 +730,6 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         const terminoBusqueda = inputElement.value.trim();
 
         if (terminoBusqueda === "") {
-            mostrarMensajeEstado("Por favor, escribe un nombre de producto para buscar.");
             return;
         }
 
@@ -728,7 +746,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
             }
         }
 
-        let url = `${SUPABASE_URL}/rest/v1/verproductos?titulo=ilike.*${encodeURIComponent(terminoBusqueda)}*&order=fecha.desc`;
+        let url = `titulo=ilike.*${encodeURIComponent(terminoBusqueda)}*&order=fecha.desc`;
         let textoMiga = "Búsqueda global";
 
         if (tituloVista && tituloVista.toLowerCase() !== "ver productos" && tituloVista.toLowerCase() !== "cargando...") {
@@ -745,7 +763,7 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         const navMigasCatalogo = document.querySelector('#vista-productos-final .migas-pan');
         if (navMigasCatalogo) {
             navMigasCatalogo.innerHTML = `
-                <span class="miga-enlace" onclick="regresarvolver()">Inicio</span>
+                <span class="miga-enlace" onclick="regresarvolver(1)">Ver Productos</span>
                 <span class="miga-separador">&rarr;</span>
                 <span class="miga-actual" id="miga-dinamica">${textoMiga}</span>
             `;
@@ -764,17 +782,8 @@ async function ejecutarBusquedaTexto(event, inputElement) {
         if (typeof realizarBusqueda === 'function') realizarBusqueda();
 
         try {
-            const respuesta = await fetch(url, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-
-            if (!respuesta.ok) throw new Error("No se pudo realizar la búsqueda");
-
-            const productosEncontrados = await respuesta.json();
-            productosGlobales = productosEncontrados;
+            // cargarProductos (abrirproducto.js) pide solo lo de las tarjetas
+            productosGlobales = await cargarProductos(url);
 
             const btnComercializado = document.getElementById('btn-opcion-2');
             const btnBajoCoste = document.getElementById('btn-opcion-1');
@@ -815,8 +824,11 @@ async function validarFormularioSolicitud(elemento) {
     vistaActual.querySelectorAll('.campo-error').forEach(el => el.classList.remove('campo-error'));
     const textoErrorPass = document.getElementById('error-texto-pass');
     if (textoErrorPass) textoErrorPass.style.display = 'none';
+    const avisoSolicitud = document.getElementById('mensaje-error-solicitud');
+    if (avisoSolicitud) avisoSolicitud.style.display = 'none';
 
     let errores = [];
+    let faltan = []; // lo que falta por rellenar (si hay algo, se muestra el aviso)
 
     // 2. Capturar campos
     const usuario = document.getElementById('solicitud-usuario');
@@ -826,33 +838,70 @@ async function validarFormularioSolicitud(elemento) {
     const fundacion = document.getElementById('solicitud-fundacion');
 
     // 3. Validar textos
-    if (!usuario || !usuario.value.trim()) errores.push(usuario);
-    if (!contacto || !contacto.value.trim()) errores.push(contacto);
+    if (!usuario || !usuario.value.trim()) { errores.push(usuario); faltan.push('el nombre de usuario'); }
+    if (!contacto || !contacto.value.trim()) { errores.push(contacto); faltan.push('el correo'); }
+
+    // El correo tiene que tener forma de correo: ahí se envía el código de verificación
+    const errorCorreo = document.getElementById('error-texto-correo');
+    if (errorCorreo) errorCorreo.style.display = 'none';
+    if (contacto && contacto.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto.value.trim())) {
+        errores.push(contacto);
+        if (errorCorreo) {
+            errorCorreo.innerText = "Escribe un correo electrónico válido (por ejemplo, nombre@gmail.com).";
+            errorCorreo.style.display = 'block';
+        }
+    } else if (contacto && contacto.value.trim() && await correoYaRegistrado(contacto.value)) {
+        // Se comprueba ya, para avisar a la vez que del resto de errores
+        errores.push(contacto);
+        if (errorCorreo) {
+            errorCorreo.innerText = "Ese correo ya tiene una cuenta. Inicia sesión o usa otro correo.";
+            errorCorreo.style.display = 'block';
+        }
+    }
 
 
-    // 4. Validar contraseñas
-    if (!pass1 || !pass1.value.trim()) errores.push(pass1);
-    if (!pass2 || !pass2.value.trim()) errores.push(pass2);
+    // 4. Validar contraseñas (todos los fallos a la vez, no solo el primero)
+    if (!pass1 || !pass1.value.trim()) { errores.push(pass1); faltan.push('la contraseña'); }
+    if (!pass2 || !pass2.value.trim()) { errores.push(pass2); faltan.push('repetir la contraseña'); }
 
-    if (pass1 && pass2 && pass1.value.trim() !== '' && pass1.value !== pass2.value) {
+    const fallosPass = [];
+    if (pass1 && pass1.value.trim() !== '' && pass1.value.trim().length < 6) {
+        // Supabase no acepta contraseñas de menos de 6 caracteres
+        fallosPass.push("La contraseña debe tener al menos 6 caracteres.");
+    }
+    if (pass1 && pass2 && pass1.value.trim() !== '' && pass2.value.trim() !== '' && pass1.value !== pass2.value) {
+        fallosPass.push("Las contraseñas no coinciden. Revísalas.");
+    }
+    if (fallosPass.length > 0) {
         errores.push(pass1);
         errores.push(pass2);
-        if (textoErrorPass) textoErrorPass.style.display = 'block';
+        if (textoErrorPass) {
+            textoErrorPass.innerText = fallosPass.join("\n");
+            textoErrorPass.style.display = 'block';
+        }
     }
 
     // 5. Validar selección de perfil
     if (!perfilSeleccionadoSolicitud) {
+        // Se marcan en rojo los botones de perfil (no la tarjeta entera)
         vistaActual.querySelectorAll('.btn-rela').forEach(btn => btn.classList.add('campo-error'));
-        errores.push(vistaActual.querySelector('.guia-card'));
+        errores.push(vistaActual.querySelector('#sele-relacion .btn-rela'));
+        faltan.push('tu relación con el Parkinson');
     }
 
-    // 6. FRENAR SI HAY ERRORES BÁSICOS
+    // 6. FRENAR SI HAY ERRORES BÁSICOS: los campos quedan en rojo y debajo
+    //    se dice qué falta (sin mensajes que tapen la pantalla)
     if (errores.length > 0) {
-        mostrarMensajeEstado("Por favor, rellena todos los campos y selecciona tu perfil.");
         errores.forEach(el => {
             if (el && el.classList) el.classList.add('campo-error');
         });
-        errores[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (avisoSolicitud && faltan.length > 0) {
+            avisoSolicitud.innerText = "Faltan por rellenar los campos obligatorios resaltados en rojo";
+            avisoSolicitud.style.display = 'block';
+        }
+        // Subimos hasta el aviso (está arriba del formulario) y dejamos el cursor en el primer campo
+        (faltan.length > 0 && avisoSolicitud ? avisoSolicitud : errores[0]).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        errores[0].focus({ preventScroll: true });
         return;
     }
 
@@ -867,57 +916,37 @@ async function validarFormularioSolicitud(elemento) {
         const nombreIngresado = usuario.value.trim();
         const passIngresada = pass1.value.trim();
 
-        // 👇 PASO NUEVO: COMPROBAR SI EL USUARIO YA EXISTE 👇
-        const { data: usuarioExistente, error: errorBusqueda } = await window.supabase
-            .from('usuarios')
-            .select('nombre')
-            .ilike('nombre', nombreIngresado); // ilike ignora mayúsculas/minúsculas
+        // La cuenta se crea con el correo REAL: Supabase le manda un código para confirmarlo
+        const emailReal = contacto.value.trim().toLowerCase();
+        const fechaActual = new Date().toISOString();
 
-        if (errorBusqueda) throw errorBusqueda;
+        // Datos del perfil (sin contraseña: esa la guarda Supabase Auth cifrada).
+        // Se guardan dentro de la cuenta (Authentication → Users → metadata).
+        const perfil = {
+            nombre: nombreIngresado,
+            contacto: emailReal,
+            relacion: perfilSeleccionadoSolicitud,
+            fundacion: fundacion ? fundacion.value.trim() : '',
+            fecha_envio: fechaActual
+        };
 
-        // Si encontramos a alguien con ese nombre, frenamos todo
-        if (usuarioExistente && usuarioExistente.length > 0) {
-            mostrarMensajeEstado("Ese nombre de usuario ya está registrado. Por favor, elige uno distinto.");
-            usuario.classList.add('campo-error');
-            usuario.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Restauramos el botón y salimos
-            elemento.innerText = textoOriginalBoton;
-            elemento.disabled = false;
-            return;
-        }
-
-        // Generamos el correo interno para Auth (ej: nombre@epunto.com) sin espacios
-        const emailGenerado = nombreIngresado.toLowerCase().replace(/\s+/g, '') + "@epunto.com";
-
-        // 👇 REGISTRAR EN SUPABASE AUTH 👇
+        // 👇 REGISTRAR EN SUPABASE AUTH (envía el correo con el código) 👇
         const { data: dataAuth, error: errorAuth } = await window.supabase.auth.signUp({
-            email: emailGenerado,
+            email: emailReal,
             password: passIngresada,
+            options: { data: perfil }
         });
 
         if (errorAuth) throw errorAuth;
 
-        // 👇 GUARDAR DATOS EN TU TABLA 'usuarios' 👇
-        const fechaActual = new Date().toISOString();
-
-        const { error: errorTabla } = await window.supabase
-            .from('usuarios')
-            .insert([
-                {
-                    nombre: nombreIngresado,
-                    contrasena: passIngresada,
-                    contacto: contacto.value.trim(),
-                    relacion: perfilSeleccionadoSolicitud,
-                    fundacion: fundacion.value.trim(),
-                    fecha_envio: fechaActual
-                }
-            ]);
-
-        if (errorTabla) {
-            console.warn("Fallo al guardar en tabla, pero el auth se creó:", errorTabla);
-            throw errorTabla;
+        // Si el correo ya tenía cuenta confirmada, Supabase no da error (para no
+        // revelar qué correos existen) pero devuelve el usuario sin identidades
+        if (dataAuth.user && Array.isArray(dataAuth.user.identities) && dataAuth.user.identities.length === 0) {
+            throw { code: 'user_already_exists' };
         }
+
+        // Lo guardamos para la pantalla del código (verificarCodigoCorreo)
+        registroPendiente = { email: emailReal, perfil };
 
         // --- LIMPIEZA FINAL ---
         usuario.value = "";
@@ -928,13 +957,32 @@ async function validarFormularioSolicitud(elemento) {
         vistaActual.querySelectorAll('.btn-rela').forEach(btn => btn.classList.remove('activ-cate'));
         perfilSeleccionadoSolicitud = null;
 
-        // Redirigir a la pantalla de éxito
-        vistaObjetivoSeleccionada = elemento.getAttribute('data-vista');
-        if (typeof realizarBusqueda === 'function') realizarBusqueda();
+        // Pasamos a la pantalla donde se escribe el código del correo
+        abrirVerificacionCorreo(emailReal);
 
     } catch (error) {
         console.error("Error al crear cuenta:", error);
-        mostrarMensajeEstado("Hubo un problema al crear la cuenta: " + error.message);
+
+        // Ese correo ya tiene una cuenta
+        if (error.code === 'user_already_exists' || /already registered/i.test(error.message || '')) {
+            marcarCorreoEnUso(contacto);
+        } else if (avisoSolicitud) {
+            if (error.code === 'weak_password') {
+                avisoSolicitud.innerText = "La contraseña es demasiado débil: usa al menos 6 caracteres.";
+            } else if (error.code === 'over_email_send_rate_limit' || error.status === 429) {
+                avisoSolicitud.innerText = "Se han enviado demasiados correos. Espera un rato y vuelve a intentarlo.";
+            } else if (/sending confirmation email/i.test(error.message || '')) {
+                // Supabase no ha podido mandar el correo (SMTP mal configurado)
+                avisoSolicitud.innerText = "No hemos podido enviar el correo con el código. Inténtalo más tarde.";
+            } else if (error.code === 'email_address_not_authorized') {
+                // El envío de correos de serie de Supabase solo manda a los miembros del proyecto
+                avisoSolicitud.innerText = "Ahora mismo no podemos enviar correos a esta dirección. Prueba con otro correo.";
+            } else {
+                avisoSolicitud.innerText = "No se ha podido crear la cuenta. Inténtalo de nuevo.";
+            }
+            avisoSolicitud.style.display = 'block';
+            avisoSolicitud.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     } finally {
         elemento.innerText = textoOriginalBoton;
         elemento.disabled = false;
@@ -942,75 +990,171 @@ async function validarFormularioSolicitud(elemento) {
 }
 
 
-// =========================================================================
-// SISTEMA DE MENSAJES DE ESTADO GLOBAL (Reemplazo de mostrarMensajeEstado)
-// =========================================================================
-function mostrarMensajeEstado(texto, esError = false) {
-    // Cerramos cualquier modal o diálogo que esté abierto para que no tape el mensaje
-    document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
 
-    const contenedor = document.getElementById('mensaje-estado-global');
-    const textoElemento = document.getElementById('texto-estado-global');
+// =========================================================================
+// REGISTRARSE: CORREO YA EN USO
+// El campo se marca en rojo y debajo se avisa (sin mensajes que tapen la pantalla)
+// =========================================================================
+// Pregunta a Supabase si el correo ya tiene una cuenta confirmada (función
+// correo_registrado, ver supabase/usuarios_trigger.sql). Si no se puede
+// comprobar, se deja pasar: signUp lo detecta igualmente al crear la cuenta.
+async function correoYaRegistrado(correo) {
+    try {
+        const { data, error } = await window.supabase.rpc('correo_registrado', { correo: correo.trim() });
+        if (error) throw error;
+        return data === true;
+    } catch (error) {
+        console.warn("No se pudo comprobar si el correo ya existe:", error);
+        return false;
+    }
+}
 
-    if (!contenedor || !textoElemento) {
-        window.alert(texto);
+function marcarCorreoEnUso(campoCorreo) {
+    campoCorreo.classList.add('campo-error');
+    const aviso = document.getElementById('error-texto-correo');
+    if (aviso) {
+        aviso.innerText = "Ese correo ya tiene una cuenta. Inicia sesión o usa otro correo.";
+        aviso.style.display = 'block';
+    }
+    campoCorreo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    campoCorreo.focus({ preventScroll: true });
+}
+
+// =========================================================================
+// VERIFICAR EL CORREO CON EL CÓDIGO QUE ENVÍA SUPABASE
+// =========================================================================
+let registroPendiente = null; // { email, perfil } de la cuenta que falta confirmar
+
+function abrirVerificacionCorreo(email) {
+    document.getElementById('verificar-correo-email').innerText = email;
+    const campoCodigo = document.getElementById('verificar-correo-codigo');
+    campoCodigo.value = '';
+    campoCodigo.classList.remove('campo-error');
+    document.getElementById('error-texto-codigo').style.display = 'none';
+    document.getElementById('texto-codigo-reenviado').style.display = 'none';
+
+    vistaObjetivoSeleccionada = 'vista-verificar-correo';
+    realizarBusqueda();
+    campoCodigo.focus();
+
+    // Acabamos de mandar un código: Supabase no deja pedir otro hasta pasado un minuto
+    esperarParaReenviar(60);
+}
+
+// marcarCampo = false cuando el fallo no es del código escrito (p. ej. al reenviar)
+function mostrarErrorCodigo(texto, marcarCampo = true) {
+    const campoCodigo = document.getElementById('verificar-correo-codigo');
+    const aviso = document.getElementById('error-texto-codigo');
+    if (marcarCampo) campoCodigo.classList.add('campo-error');
+    aviso.innerText = texto;
+    aviso.style.display = 'block';
+    document.getElementById('texto-codigo-reenviado').style.display = 'none';
+    if (marcarCampo) campoCodigo.focus();
+}
+
+// Deja el botón "Reenviar código" desactivado con una cuenta atrás
+let temporizadorReenvio = null;
+function esperarParaReenviar(segundos) {
+    const boton = document.getElementById('btn-reenviar-codigo');
+    if (!boton) return;
+    const textoOriginal = "Reenviar código";
+
+    clearInterval(temporizadorReenvio);
+    boton.disabled = true;
+    boton.innerText = `Reenviar en ${segundos} s`;
+
+    temporizadorReenvio = setInterval(() => {
+        segundos--;
+        if (segundos > 0) {
+            boton.innerText = `Reenviar en ${segundos} s`;
+        } else {
+            clearInterval(temporizadorReenvio);
+            boton.disabled = false;
+            boton.innerText = textoOriginal;
+        }
+    }, 1000);
+}
+
+async function verificarCodigoCorreo(boton) {
+    const campoCodigo = document.getElementById('verificar-correo-codigo');
+    const codigo = campoCodigo.value.replace(/\s+/g, '');
+    document.getElementById('error-texto-codigo').style.display = 'none';
+
+    if (!registroPendiente) {
+        mostrarErrorCodigo("Vuelve a registrarte para recibir un código.");
+        return;
+    }
+    if (!/^\d{6,10}$/.test(codigo)) {
+        mostrarErrorCodigo("Escribe el código de números que te hemos enviado al correo.");
         return;
     }
 
-    // Recordamos dónde estaba el foco para devolverlo al cerrar el mensaje
-    elementoFocoAntesDelMensaje = document.activeElement;
+    const textoOriginal = boton.innerText;
+    boton.innerText = "Comprobando...";
+    boton.disabled = true;
 
-    textoElemento.innerText = texto;
+    try {
+        const { error } = await window.supabase.auth.verifyOtp({
+            email: registroPendiente.email,
+            token: codigo,
+            type: 'signup'
+        });
+        if (error) throw error;
 
-    if (esError) {
-        contenedor.classList.add('error');
-    } else {
-        contenedor.classList.remove('error');
-    }
+        // La copia del perfil en la tabla 'usuarios' la hace Supabase al
+        // confirmarse la cuenta (trigger copiar_usuario_confirmado)
 
-    // Si había un mensaje anterior cerrándose, cancelamos sus temporizadores
-    clearTimeout(temporizadorMensaje);
-    clearTimeout(temporizadorOcultarMensaje);
+        // La sesión queda iniciada
+        sessionStorage.setItem('sesionIniciada', '1');
+        sessionStorage.setItem('nombreUsuario', registroPendiente.perfil.nombre);
+        if (typeof pintarBotonLogin === 'function') pintarBotonLogin();
 
-    contenedor.style.display = 'flex';
-    contenedor.style.opacity = '1';
+        registroPendiente = null;
+        vistaObjetivoSeleccionada = 'vista-publicado-solicitud';
+        realizarBusqueda();
 
-    // El mensaje se ve durante 10 segundos y luego se borra solo.
-    // Con la tecla Escape (o pulsando fuera) se cierra antes.
-    temporizadorMensaje = setTimeout(cerrarMensajeEstado, DURACION_MENSAJE_ESTADO);
-
-    // El foco va a la caja del mensaje
-    const caja = contenedor.querySelector('.mensaje-estado-contenido');
-    if (caja) {
-        caja.setAttribute('tabindex', '-1');
-        caja.focus();
+    } catch (error) {
+        console.error("Error al verificar el código:", error);
+        mostrarErrorCodigo(/expired/i.test(error.message || '')
+            ? "El código ha caducado. Pulsa \"Reenviar código\" para recibir otro."
+            : "El código no es correcto. Revísalo e inténtalo de nuevo.");
+    } finally {
+        boton.innerText = textoOriginal;
+        boton.disabled = false;
     }
 }
 
-const DURACION_MENSAJE_ESTADO = 10000; // 10 segundos
-let temporizadorMensaje = null;
-let temporizadorOcultarMensaje = null;
-let elementoFocoAntesDelMensaje = null;
+async function reenviarCodigoCorreo(boton) {
+    if (!registroPendiente) {
+        mostrarErrorCodigo("Vuelve a registrarte para recibir un código.");
+        return;
+    }
 
-function cerrarMensajeEstado() {
-    const contenedor = document.getElementById('mensaje-estado-global');
-    if (!contenedor || contenedor.style.display === 'none' || contenedor.style.opacity === '0') return;
+    boton.disabled = true;
+    try {
+        const { error } = await window.supabase.auth.resend({ type: 'signup', email: registroPendiente.email });
+        if (error) throw error;
+        document.getElementById('error-texto-codigo').style.display = 'none';
+        document.getElementById('verificar-correo-codigo').classList.remove('campo-error');
+        document.getElementById('texto-codigo-reenviado').style.display = 'block';
+        esperarParaReenviar(60);
+    } catch (error) {
+        console.error("Error al reenviar el código:", error);
 
-    clearTimeout(temporizadorMensaje);
-    contenedor.style.opacity = '0';
-    temporizadorOcultarMensaje = setTimeout(() => {
-        contenedor.style.display = 'none';
-    }, 300);
-
-    const destino = elementoFocoAntesDelMensaje;
-    elementoFocoAntesDelMensaje = null;
-    if (destino && destino.isConnected && destino.offsetParent !== null) destino.focus();
+        // Supabase dice cuántos segundos faltan: "...you can only request this after 42 seconds"
+        const faltan = /after (\d+) seconds?/i.exec(error.message || '');
+        if (faltan) {
+            mostrarErrorCodigo(`Ya te hemos enviado un código hace poco. Podrás pedir otro en ${faltan[1]} segundos.`, false);
+            esperarParaReenviar(parseInt(faltan[1], 10));
+        } else if (error.code === 'over_email_send_rate_limit' || error.status === 429) {
+            mostrarErrorCodigo("Se han enviado demasiados correos. Espera un rato y vuelve a intentarlo.", false);
+            boton.disabled = false;
+        } else if (/sending confirmation email/i.test(error.message || '')) {
+            mostrarErrorCodigo("No hemos podido enviar el correo con el código. Inténtalo más tarde.", false);
+            boton.disabled = false;
+        } else {
+            mostrarErrorCodigo("No se ha podido reenviar el código. Inténtalo de nuevo en un rato.", false);
+            boton.disabled = false;
+        }
+    }
 }
-
-document.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Escape') cerrarMensajeEstado();
-});
-
-document.addEventListener('click', (evento) => {
-    if (evento.target && evento.target.id === 'mensaje-estado-global') cerrarMensajeEstado();
-});

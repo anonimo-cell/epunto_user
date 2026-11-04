@@ -47,7 +47,6 @@ function abrirModalNivel2() {
     const cat1 = localStorage.getItem(`categoriaGuardadaNombre${sufijo}`);
 
     if (!cat1 || cat1 === "No seleccionada") {
-        mostrarMensajeEstado("Primero selecciona una categoría de Nivel 1.");
         return;
     }
 
@@ -63,8 +62,6 @@ function abrirModalNivel2() {
 
     if (idModal) {
         abrirModal(idModal);
-    } else {
-        mostrarMensajeEstado("Categoría no reconocida: " + cat1);
     }
 }
 
@@ -73,7 +70,6 @@ function abrirModalNivel3() {
     const cat2 = localStorage.getItem(`subcategoriaGuardada${sufijo}`);
 
     if (!cat2 || cat2 === "No seleccionada") {
-        mostrarMensajeEstado("Primero selecciona una categoría de Nivel 2.");
         return;
     }
 

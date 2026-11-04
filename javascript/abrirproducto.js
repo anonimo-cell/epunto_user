@@ -9,6 +9,48 @@ const SUPABASE_KEY = 'sb_publishable_Nps0kXuyPJZlCJ1IPWsalQ_tBLNFgkG';
 let productosGlobales = []; // Aquí guardaremos los productos que nos manda Supabase
 let tipoFiltroGlobal = 1;   // 1 = Comercializado, 0 = Bajo coste
 
+// Para las tarjetas del catálogo solo pedimos estas columnas. Lo pesado
+// (pasos con sus fotos, materiales, textos largos) se pide al abrir la ficha.
+const COLUMNAS_TARJETA = 'id,titulo,imagen_url,producto,precio,dificultad,tiempo,fecha,usuario,categoria,categoria1,categoria2';
+const COLUMNAS_DETALLE = 'descripcion,conclusiones,materiales,pasos,enlace';
+
+// Catálogos ya descargados (por dirección de consulta): volver a una
+// categoría ya abierta es instantáneo. Se vacía al subir un producto nuevo.
+const cacheCatalogo = new Map();
+
+async function cargarProductos(consulta) {
+    const url = `${SUPABASE_URL}/rest/v1/verproductos?select=${COLUMNAS_TARJETA}&${consulta}`;
+    if (cacheCatalogo.has(url)) return cacheCatalogo.get(url);
+
+    const respuesta = await fetch(url, {
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+    });
+    if (!respuesta.ok) throw new Error("No se pudo conectar con Supabase");
+
+    const productos = await respuesta.json();
+    cacheCatalogo.set(url, productos);
+    return productos;
+}
+
+// Descarga (una sola vez) las columnas de la ficha de un producto
+async function completarProducto(prod) {
+    if (prod.completo) return;
+
+    const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/verproductos?select=${COLUMNAS_DETALLE}&id=eq.${prod.id}`, {
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+    });
+    if (!respuesta.ok) throw new Error("No se pudo cargar el producto");
+
+    const [detalle] = await respuesta.json();
+    Object.assign(prod, detalle, { completo: true });
+}
+
 // =========================================================================
 // 2. SISTEMA DINÁMICO DE CARGA DESDE LA BASE DE DATOS
 // =========================================================================
@@ -32,14 +74,15 @@ async function abrirCatalogoProductos(boton) {
         const vistaOrigen = boton.closest('.subvista-contenido') || obtenerVistaVisible();
 
         let migasArray = [
-            `<span class="miga-enlace" onclick="regresarvolver(1)">Inicio Ver Productos</span>`
+            `<span class="miga-enlace" onclick="regresarvolver(1)">Ver Productos</span>`
         ];
 
         if (vistaOrigen) {
             const migasPrevias = vistaOrigen.querySelectorAll('.migas-pan .miga-enlace, .migas-pan .miga-actual');
             migasPrevias.forEach(miga => {
                 const texto = miga.innerText.trim();
-                if (texto && texto.toLowerCase() !== 'inicio' && !texto.toLowerCase().includes('inicio ver')) {
+                // "Ver Productos" ya es la primera miga: no la repetimos
+                if (texto && texto.toLowerCase() !== 'ver productos') {
                     migasArray.push(`<span class="miga-enlace" onclick="regresarAnterior()">${texto}</span>`);
                 }
             });
@@ -70,17 +113,7 @@ async function abrirCatalogoProductos(boton) {
         `;
 
         try {
-            const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/verproductos?categoria=ilike.${encodeURIComponent(tituloCategoria)}&order=fecha.desc`, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-
-            if (!respuesta.ok) throw new Error("No se pudo conectar con Supabase");
-
-            const productos = await respuesta.json();
-            productosGlobales = productos;
+            productosGlobales = await cargarProductos(`categoria=ilike.${encodeURIComponent(tituloCategoria)}&order=fecha.desc`);
 
             const btnComercializado = document.getElementById('btn-opcion-2');
             const btnBajoCoste = document.getElementById('btn-opcion-1');
@@ -104,10 +137,18 @@ async function abrirCatalogoProductos(boton) {
     }
 }
 // =========================================================================
-function abrirDetalleVerProducto(indiceProducto) {
+async function abrirDetalleVerProducto(indiceProducto) {
     // 1. Recuperamos el producto de la lista ya descargada (la tarjeta solo pasa su posición)
     const prod = productosGlobales[indiceProducto];
     if (!prod) return;
+
+    // La lista solo trae lo de la tarjeta: pedimos ahora el resto de la ficha
+    try {
+        await completarProducto(prod);
+    } catch (error) {
+        console.error("Error al cargar el producto:", error);
+        return;
+    }
 
     // Guardamos el ID global para las valoraciones en Supabase
     window.productoActualId = prod.id;
@@ -127,7 +168,7 @@ function abrirDetalleVerProducto(indiceProducto) {
     // =========================================================================
     function generarMigasDePan(producto) {
         // El botón de inicio siempre vuelve al inicio general o al catálogo principal
-        let migasHTML = `<span class="miga-enlace" onclick="regresarvolver(1)">Inicio</span>`;
+        let migasHTML = `<span class="miga-enlace" onclick="regresarvolver(1)">Ver Productos</span>`;
 
         let cat1 = producto.categoria1 && producto.categoria1 !== "Sin categoría" && producto.categoria1 !== "No seleccionada" ? producto.categoria1 : null;
         let cat2 = producto.categoria2 && producto.categoria2 !== "Sin categoría" && producto.categoria2 !== "No seleccionada" ? producto.categoria2 : null;
@@ -176,7 +217,8 @@ function abrirDetalleVerProducto(indiceProducto) {
             imgCom.alt = prod.titulo ? `Foto de ${prod.titulo}` : "Foto del producto";
             imgCom.style.cursor = 'pointer';
             imgCom.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
-            imgCom.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto;";
+            // width: auto para que la caja (y su recuadro al pulsarla) mida lo que la foto
+            imgCom.style.cssText = "width: auto; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto;";
         }
 
         let contenedorInfoExtraCom = document.getElementById('detalle-com-info-extra');
@@ -241,7 +283,8 @@ function abrirDetalleVerProducto(indiceProducto) {
             imgBaj.alt = prod.titulo ? `Foto de ${prod.titulo}` : "Foto del producto";
             imgBaj.style.cursor = 'pointer';
             imgBaj.setAttribute('onclick', `abrirImagenGrande('${prod.imagen_url || 'svg/subir/comprar.png'}')`);
-            imgBaj.style.cssText = "width: 100%; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; cursor: pointer;";
+            // width: auto para que la caja (y su recuadro al pulsarla) mida lo que la foto
+            imgBaj.style.cssText = "width: auto; max-width: 100%; max-height: 250px; height: auto; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; cursor: pointer;";
         }
 
         const elPrecio = vistaBaj.querySelector('#detalle-ver-precio');
@@ -545,6 +588,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modalLogin) return;
     modalLogin.addEventListener('close', () => {
         if (sessionStorage.getItem('sesionIniciada') !== '1') subidaPendienteTrasLogin = null;
+        // Al volver a abrirlo no debe quedar nada en rojo
+        modalLogin.querySelectorAll('.campo-error').forEach(campo => campo.classList.remove('campo-error'));
+        const avisoLogin = document.getElementById('mensaje-error-login-modal');
+        if (avisoLogin) avisoLogin.style.display = 'none';
     });
 });
 
@@ -553,16 +600,38 @@ document.addEventListener('DOMContentLoaded', () => {
 // INICIO DE SESIÓN EN EL MODAL FLOTANTE
 // =========================================================================
 async function simularInicioSesionModal() {
-    const usuarioInput = document.getElementById('login-usuario-modal').value.trim();
-    const pass = document.getElementById('login-password-modal').value.trim();
+    const campoUsuario = document.getElementById('login-usuario-modal');
+    const campoPass = document.getElementById('login-password-modal');
+    const usuarioInput = campoUsuario.value.trim();
+    const pass = campoPass.value.trim();
     const mensajeError = document.getElementById('mensaje-error-login-modal');
 
+    // Campos vacíos: marcamos en rojo los que faltan y avisamos debajo,
+    // sin cerrar el diálogo
+    campoUsuario.classList.toggle('campo-error', !usuarioInput);
+    campoPass.classList.toggle('campo-error', !pass);
+
     if (!usuarioInput || !pass) {
-        mostrarMensajeEstado("Rellena ambos campos");
+        if (mensajeError) {
+            mensajeError.innerText = !usuarioInput && !pass
+                ? "Falta rellenar el correo y la contraseña"
+                : !usuarioInput
+                    ? "Falta rellenar el correo"
+                    : "Falta rellenar la contraseña";
+            mensajeError.style.display = 'block';
+        }
+        (!usuarioInput ? campoUsuario : campoPass).focus();
         return;
     }
 
-    const email = usuarioInput.toLowerCase() + "@epunto.com";
+    if (mensajeError) mensajeError.style.display = 'none';
+
+    // Se entra con el correo. Las cuentas antiguas (creadas antes de pedir el
+    // correo real) siguen entrando con su nombre de usuario: si no hay "@",
+    // usamos el correo interno que se les creó (nombre@epunto.com)
+    const email = usuarioInput.includes('@')
+        ? usuarioInput.toLowerCase()
+        : usuarioInput.toLowerCase().replace(/\s+/g, '') + "@epunto.com";
 
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -577,8 +646,8 @@ async function simularInicioSesionModal() {
         // GUARDAMOS EN SESSION (se borra al cerrar el navegador)
         sessionStorage.setItem('sesionIniciada', '1');
 
-        // ⬇️ ¡AQUÍ ESTÁ LA CLAVE! GUARDAMOS EL NOMBRE DEL USUARIO ⬇️
-        sessionStorage.setItem('nombreUsuario', usuarioInput);
+        // Nombre visible del usuario: el que puso al registrarse
+        sessionStorage.setItem('nombreUsuario', nombreVisibleDe(data.user) || usuarioInput);
 
         // PINTAMOS EL BOTÓN AL INSTANTE
         if (typeof pintarBotonLogin === 'function') {
@@ -598,13 +667,108 @@ async function simularInicioSesionModal() {
             cambiarEstadoslider(destino);
         }
 
-        mostrarMensajeEstado("Sesión iniciada");
 
     } catch (e) {
         console.error("Error de inicio de sesión:", e.message);
         if (mensajeError) {
             mensajeError.style.display = 'block';
-            mensajeError.innerText = "Usuario o contraseña incorrectos";
+            mensajeError.innerText = (e.code === 'email_not_confirmed' || /not confirmed/i.test(e.message || ''))
+                ? "Todavía no has confirmado tu correo. Revisa tu bandeja de entrada."
+                : "Correo o contraseña incorrectos";
         }
     }
 }
+
+// Nombre que se muestra del usuario ("Subido por ..."): el nombre de usuario
+// guardado al registrarse; en cuentas antiguas, la parte del correo antes de la @
+function nombreVisibleDe(user) {
+    if (!user) return '';
+    return (user.user_metadata && user.user_metadata.nombre) || (user.email || '').split('@')[0];
+}
+
+// =========================================================================
+// OCULTAR LAS CATEGORÍAS QUE NO TIENEN PRODUCTOS
+// Al cargar la página pedimos solo las categorías de cada producto (muy
+// ligero) y ocultamos en "Ver productos" los botones de categoría y
+// subcategoría sin ningún producto dentro. Los diálogos para elegir
+// categoría al subir un producto no se tocan.
+// =========================================================================
+const normalizarCategoria = texto => (texto || '').trim().toLowerCase();
+const CATEGORIA_VACIA = ['', 'sin categoría', 'no seleccionada'];
+
+// Ruta de cada producto: [nivel 1, nivel 2, nivel 3], sin huecos ni repetidos
+// (p. ej. "Comer y beber" puede venir en el nivel 2 y en el 3)
+function rutaDeProducto(prod) {
+    const ruta = [];
+    [prod.categoria1, prod.categoria2, prod.categoria].forEach(cat => {
+        const c = normalizarCategoria(cat);
+        if (!CATEGORIA_VACIA.includes(c) && ruta[ruta.length - 1] !== c) ruta.push(c);
+    });
+    return ruta;
+}
+
+async function actualizarCategoriasVisibles() {
+    let productos;
+    try {
+        const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/verproductos?select=categoria1,categoria2,categoria`, {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        if (!respuesta.ok) throw new Error("No se pudieron cargar las categorías");
+        productos = await respuesta.json();
+    } catch (error) {
+        // Si falla, mejor enseñar todas las categorías que ninguna
+        console.error("Error al comprobar las categorías con productos:", error);
+        return;
+    }
+
+    // Todas las rutas que tienen algún producto, y sus tramos iniciales
+    // ("autonomía y cuidado", "autonomía y cuidado › higiene", ...)
+    const rutasConProductos = new Set();
+    productos.forEach(prod => {
+        const ruta = rutaDeProducto(prod);
+        for (let i = 1; i <= ruta.length; i++) rutasConProductos.add(ruta.slice(0, i).join(' › '));
+    });
+
+    // Recorremos las vistas desde "Ver productos" siguiendo los botones que
+    // abren subcategorías (data-vista), para saber la ruta de cada botón
+    const pendientes = [{ vista: document.getElementById('vista-ver'), ruta: [] }];
+    const visitadas = new Set();
+
+    while (pendientes.length > 0) {
+        const { vista, ruta } = pendientes.shift();
+        if (!vista || visitadas.has(vista.id)) continue;
+        visitadas.add(vista.id);
+
+        const botones = vista.querySelectorAll('.categorias .btn-cate, .categorias .btn-cate-4');
+        botones.forEach(boton => {
+            const texto = boton.querySelector('.btn-cate-txt');
+            if (!texto) return;
+
+            const rutaBoton = [...ruta, normalizarCategoria(texto.innerText)];
+            const tieneProductos = rutasConProductos.has(rutaBoton.join(' › '));
+            boton.style.display = tieneProductos ? '' : 'none';
+
+            const subvista = boton.getAttribute('data-vista');
+            if (subvista) pendientes.push({ vista: document.getElementById(subvista), ruta: rutaBoton });
+        });
+
+        // Si no queda ninguna categoría visible, lo decimos en lugar de dejar la pantalla vacía
+        const rejilla = vista.querySelector('.categorias .grid-capsulas');
+        if (rejilla) {
+            let aviso = vista.querySelector('.aviso-sin-categorias');
+            const hayVisibles = Array.from(botones).some(b => b.style.display !== 'none');
+            if (!hayVisibles && !aviso) {
+                aviso = document.createElement('p');
+                aviso.className = 'mensaje-catalogo aviso-sin-categorias';
+                aviso.innerText = 'Todavía no hay productos en esta categoría.';
+                rejilla.after(aviso);
+            }
+            if (aviso) aviso.style.display = hayVisibles ? 'none' : '';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', actualizarCategoriasVisibles);

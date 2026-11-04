@@ -34,13 +34,8 @@ async function gestionarClickLogin(boton) {
 
         sessionStorage.removeItem('sesionIniciada');
 
-        // 1. Mostramos el mensaje con el fondo desenfocado
-        mostrarMensajeEstado("Has cerrado sesión");
-
-        // 2. Esperamos 3.5 segundos (lo que dura el mensaje) antes de recargar la página
-        setTimeout(() => {
-            window.location.reload();
-        }, 3500);
+        // Recargamos la página ya sin sesión
+        window.location.reload();
 
     } else {
         // Inicio de sesión desde la cabecera: no hay formulario pendiente que abrir después
@@ -64,7 +59,7 @@ function pintarBotonLogin() {
             botonLogin.classList.add('btn-sesion-activa');
 
             // Cambiamos el texto del botón
-            botonLogin.innerText = "Salir de mi cuenta";
+            botonLogin.innerText = "Cerrar sesión";
         }
     } else {
         // --- AQUÍ CAMBIAS EL ASPECTO CUANDO NO HAY SESIÓN ---
@@ -89,9 +84,10 @@ function seleccionarPerfilFormulario(botonPulsado) {
     const contenedor = botonPulsado.closest('.guia-card');
     if (contenedor) {
         contenedor.querySelectorAll('.btn-rela').forEach(btn => {
-            btn.classList.remove('activ-cate');
+            btn.classList.remove('activ-cate', 'campo-error'); // al elegir perfil se quita el rojo de todos
         });
     }
     botonPulsado.classList.add('activ-cate');
     perfilSeleccionadoSolicitud = botonPulsado.getAttribute('data-perfil');
+    if (typeof ocultarAvisoSolicitudSiCorrecto === 'function') ocultarAvisoSolicitudSiCorrecto();
 }
