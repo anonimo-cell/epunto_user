@@ -45,25 +45,25 @@
     <!--MENÚ DE LATERAL DERECHO (el primero abre el menú de accesibilidad)-->
     <aside class="lateral_izq" aria-label="Accesibilidad e información sobre EPunto">
       <div class="grid-lateral-izq">
-        <div class="side-btn-dech" role="button" tabindex="0" aria-haspopup="dialog" title="Accesibilidad" onclick="abrirModal('modal-acce-mas')">
+        <div class="side-btn-dech" role="button" tabindex="0" aria-haspopup="dialog" onclick="abrirModal('modal-acce-mas')">
           <div class="cabecera-izq">
             <img src="svg/accesibilidad/acces.svg" class="cap-icon-izq" alt="">
-            <span class="btn-titulo-izq">Accesibilidad</span>
+            <span class="btn-titulo-izq">Menú de accesibilidad</span>
           </div>
         </div>
-        <div class="side-btn-dech" role="button" tabindex="0" title="Información" onclick="abrirModal('modal-info')">
+        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-info')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/info.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Información</span>
           </div>  
         </div>
-        <div class="side-btn-dech" role="button" tabindex="0" title="Contacto" onclick="abrirModal('modal-contacto')">
+        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-contacto')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/gmail.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Contacto</span>
           </div>
         </div>
-        <div class="side-btn-dech" role="button" tabindex="0" title="Agradecimientos" onclick="abrirModal('modal-agradecimientos')">
+        <div class="side-btn-dech" role="button" tabindex="0" onclick="abrirModal('modal-agradecimientos')">
           <div class="cabecera-izq">
             <img src="svg/lat_dech/agradecimientos.svg" class="cap-icon-izq" alt="">
             <span class="btn-titulo-izq">Agradecimientos</span>
@@ -1386,6 +1386,7 @@
                     <!-- AÑADIDO ID -->
                     <input type="text" id="solicitud-usuario" class="input-moderno" placeholder="Nombre de usuario"
                       aria-required="true" autocomplete="username" maxlength="20" minlength="4"></label>
+                  <p id="error-texto-usuario" class="mensaje-error-campo" role="alert" style="display: none;"></p>
                 </div>
 
                 <!--CONTACTO (en la columna izquierda, frente a las contraseñas)-->
@@ -1493,9 +1494,9 @@
     <div class="modal-cuerpo">
     
       <div class="form-row">
-        <label>Correo electrónico:<span class="marca-obligatorio" aria-hidden="true">*</span>
-          <input type="text" id="login-usuario-modal" class="input-moderno" placeholder="Introducir correo electrónico"
-            aria-required="true" autocomplete="email" inputmode="email" maxlength="100"></label>
+        <label>Correo electrónico o nombre de usuario:<span class="marca-obligatorio" aria-hidden="true">*</span>
+          <input type="text" id="login-usuario-modal" class="input-moderno" placeholder="Correo o nombre de usuario"
+            aria-required="true" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="100"></label>
       </div>
 
       <div class="form-row">

@@ -516,6 +516,10 @@ document.addEventListener('input', function (event) {
         const errorCorreo = document.getElementById('error-texto-correo');
         if (errorCorreo) errorCorreo.style.display = 'none';
     }
+    if (event.target.id === 'solicitud-usuario') {
+        const errorUsuario = document.getElementById('error-texto-usuario');
+        if (errorUsuario) errorUsuario.style.display = 'none';
+    }
 
     // Inicio de sesión: el aviso se oculta cuando ya no queda ningún campo en rojo
     if (event.target.id === 'login-usuario-modal' || event.target.id === 'login-password-modal') {
@@ -839,6 +843,27 @@ async function validarFormularioSolicitud(elemento) {
 
     // 3. Validar textos
     if (!usuario || !usuario.value.trim()) { errores.push(usuario); faltan.push('el nombre de usuario'); }
+
+    // El nombre de usuario no puede repetirse (con él también se inicia sesión).
+    // No puede llevar "@": así al iniciar sesión se distingue de un correo.
+    const errorUsuario = document.getElementById('error-texto-usuario');
+    if (errorUsuario) errorUsuario.style.display = 'none';
+    if (usuario && usuario.value.trim()) {
+        let mensajeUsuario = '';
+        if (usuario.value.includes('@')) {
+            mensajeUsuario = 'El nombre de usuario no puede llevar "@".';
+        } else if (await usuarioYaRegistrado(usuario.value)) {
+            mensajeUsuario = 'Ese nombre de usuario ya existe. Elige otro.';
+        }
+        if (mensajeUsuario) {
+            errores.push(usuario);
+            if (errorUsuario) {
+                errorUsuario.innerText = mensajeUsuario;
+                errorUsuario.style.display = 'block';
+            }
+        }
+    }
+
     if (!contacto || !contacto.value.trim()) { errores.push(contacto); faltan.push('el correo'); }
 
     // El correo tiene que tener forma de correo: ahí se envía el código de verificación
@@ -966,6 +991,17 @@ async function validarFormularioSolicitud(elemento) {
         // Ese correo ya tiene una cuenta
         if (error.code === 'user_already_exists' || /already registered/i.test(error.message || '')) {
             marcarCorreoEnUso(contacto);
+        } else if (/database error saving new user|usuario_repetido/i.test(error.message || '')) {
+            // La base de datos no deja repetir el nombre (por si dos personas
+            // eligen el mismo a la vez y la comprobación de antes no lo vio)
+            usuario.classList.add('campo-error');
+            const errorUsuario = document.getElementById('error-texto-usuario');
+            if (errorUsuario) {
+                errorUsuario.innerText = 'Ese nombre de usuario ya existe. Elige otro.';
+                errorUsuario.style.display = 'block';
+            }
+            usuario.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            usuario.focus({ preventScroll: true });
         } else if (avisoSolicitud) {
             if (error.code === 'weak_password') {
                 avisoSolicitud.innerText = "La contraseña es demasiado débil: usa al menos 6 caracteres.";
@@ -1005,6 +1041,19 @@ async function correoYaRegistrado(correo) {
         return data === true;
     } catch (error) {
         console.warn("No se pudo comprobar si el correo ya existe:", error);
+        return false;
+    }
+}
+
+// Pregunta a Supabase si el nombre de usuario ya lo tiene otra cuenta
+// (función usuario_registrado, ver supabase/usuarios_login.sql)
+async function usuarioYaRegistrado(nombre) {
+    try {
+        const { data, error } = await window.supabase.rpc('usuario_registrado', { nombre_usuario: nombre.trim() });
+        if (error) throw error;
+        return data === true;
+    } catch (error) {
+        console.warn("No se pudo comprobar si el usuario ya existe:", error);
         return false;
     }
 }

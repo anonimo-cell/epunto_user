@@ -4,6 +4,10 @@
 
 let vistaIntencion = null;
 
+// Pantallas que solo se pueden usar con la sesión iniciada. Si se cierra la
+// sesión estando en una de ellas, se vuelve a la pantalla principal.
+const VISTAS_CON_SESION = ['vista-prod-baj', 'vista-prod-com', 'vista-publicado'];
+
 // =========================================================================
 // MOSTRAR / OCULTAR CONTRASEÑA INDEPENDIENTE
 // =========================================================================
@@ -33,9 +37,31 @@ async function gestionarClickLogin(boton) {
         }
 
         sessionStorage.removeItem('sesionIniciada');
+        sessionStorage.removeItem('nombreUsuario');
 
-        // Recargamos la página ya sin sesión
-        window.location.reload();
+        const vistaActual = typeof obtenerVistaVisible === 'function' ? obtenerVistaVisible() : null;
+
+        if (vistaActual && VISTAS_CON_SESION.includes(vistaActual.id)) {
+            // Estaba subiendo un producto: recargamos (vuelve a la pantalla
+            // principal y el formulario a medias queda vacío)
+            window.location.reload();
+            return;
+        }
+
+        // En el resto de pantallas se queda donde estaba
+        pintarBotonLogin();
+
+        // Si está viendo un producto, quitamos la marca de su voto
+        document.querySelectorAll('#detalle-ver-valoracion').forEach(contenedor => {
+            contenedor.dataset.votoUsuario = '';
+            contenedor.querySelectorAll('.btn-valoracion-independiente').forEach(btn => {
+                btn.classList.remove('active-filtro');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+        });
+
+        const anuncio = document.getElementById('anuncio-accesible');
+        if (anuncio) anuncio.innerText = 'Has cerrado la sesión';
 
     } else {
         // Inicio de sesión desde la cabecera: no hay formulario pendiente que abrir después
@@ -65,6 +91,7 @@ function pintarBotonLogin() {
         // --- AQUÍ CAMBIAS EL ASPECTO CUANDO NO HAY SESIÓN ---
 
         // Restauramos los colores por defecto quitando los estilos que pusimos arriba
+        boton.classList.remove('btn-sesion-activa');
         boton.style.backgroundColor = "";
         boton.style.color = "";
         boton.style.border = "";

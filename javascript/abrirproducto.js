@@ -136,6 +136,24 @@ async function abrirCatalogoProductos(boton) {
         }
     }
 }
+// Ficha de un producto: "Subido por ... el ..." a la izquierda y las
+// etiquetas (precio, dificultad, tiempo) a la derecha, en la misma fila.
+// Se monta una sola vez por vista; las siguientes veces ya está colocado.
+function ponerAutorYEtiquetasEnFila(vista, infoAutor) {
+    const etiquetas = vista.querySelector('.detalle-card .prod-etiquetas');
+    if (!etiquetas || infoAutor.parentElement.classList.contains('detalle-fila-autor')) return;
+
+    const fila = document.createElement('div');
+    fila.className = 'detalle-fila-autor';
+    etiquetas.parentNode.insertBefore(fila, etiquetas);
+    fila.appendChild(infoAutor);
+    fila.appendChild(etiquetas);
+
+    // Quitamos los estilos en línea que los centraban por separado
+    infoAutor.removeAttribute('style');
+    etiquetas.removeAttribute('style');
+}
+
 // =========================================================================
 async function abrirDetalleVerProducto(indiceProducto) {
     // 1. Recuperamos el producto de la lista ya descargada (la tarjeta solo pasa su posición)
@@ -232,6 +250,7 @@ async function abrirDetalleVerProducto(indiceProducto) {
         let fechaFormateadaCom = prod.fecha ? new Date(prod.fecha).toLocaleDateString() : "Fecha no disponible";
         let usuarioSubidaCom = prod.usuario ? prod.usuario : "Anónimo";
         if (contenedorInfoExtraCom) {
+            ponerAutorYEtiquetasEnFila(vistaCom, contenedorInfoExtraCom);
             contenedorInfoExtraCom.innerHTML = `Subido por <strong>${usuarioSubidaCom}</strong> el ${fechaFormateadaCom}`;
         }
 
@@ -293,6 +312,7 @@ async function abrirDetalleVerProducto(indiceProducto) {
         let fechaFormateada = prod.fecha ? new Date(prod.fecha).toLocaleDateString() : "Fecha no disponible";
         let usuarioSubida = prod.usuario ? prod.usuario : "Anónimo";
         if (contenedorInfoExtra) {
+            ponerAutorYEtiquetasEnFila(vistaBaj, contenedorInfoExtra);
             contenedorInfoExtra.innerHTML = `Subido por <strong>${usuarioSubida}</strong> el ${fechaFormateada}`;
         }
 
@@ -435,7 +455,7 @@ function renderizarProductosFiltrados() {
                 <button class="btn-producto" onclick="abrirDetalleVerProducto(${indiceProducto})">
                   <span class="prod-titulo">${prod.titulo}</span>
                   <img src="${prod.imagen_url || 'svg/subir/comprar.png'}" class="prod-img" alt="" loading="lazy" decoding="async">
-                  <div class="prod-etiquetas">
+                  <div class="prod-etiquetas${esComercializado ? ' prod-etiquetas-solo-precio' : ''}">
                     ${etiquetasHTML}
                   </div>
                 </button>
@@ -671,9 +691,9 @@ async function simularInicioSesionModal() {
     if (!usuarioInput || !pass) {
         if (mensajeError) {
             mensajeError.innerText = !usuarioInput && !pass
-                ? "Falta rellenar el correo y la contraseña"
+                ? "Falta rellenar el correo o usuario y la contraseña"
                 : !usuarioInput
-                    ? "Falta rellenar el correo"
+                    ? "Falta rellenar el correo o usuario"
                     : "Falta rellenar la contraseña";
             mensajeError.style.display = 'block';
         }
@@ -683,14 +703,22 @@ async function simularInicioSesionModal() {
 
     if (mensajeError) mensajeError.style.display = 'none';
 
-    // Se entra con el correo. Las cuentas antiguas (creadas antes de pedir el
-    // correo real) siguen entrando con su nombre de usuario: si no hay "@",
-    // usamos el correo interno que se les creó (nombre@epunto.com)
-    const email = usuarioInput.includes('@')
-        ? usuarioInput.toLowerCase()
-        : usuarioInput.toLowerCase().replace(/\s+/g, '') + "@epunto.com";
-
     try {
+        // Se entra con el correo o con el nombre de usuario. Si no lleva "@"
+        // es un nombre: Supabase nos da el correo de esa cuenta, pero solo si
+        // la contraseña es correcta (función correo_de_usuario, ver
+        // supabase/usuarios_login.sql). También sirve para las cuentas antiguas.
+        let email = usuarioInput.toLowerCase();
+        if (!usuarioInput.includes('@')) {
+            const { data: correo, error: errorCorreo } = await supabase.rpc('correo_de_usuario', {
+                nombre_usuario: usuarioInput,
+                contrasena: pass
+            });
+            if (errorCorreo) throw errorCorreo;
+            if (!correo) throw { code: 'invalid_credentials', message: 'Usuario o contraseña incorrectos' };
+            email = correo;
+        }
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: pass
@@ -731,7 +759,9 @@ async function simularInicioSesionModal() {
             mensajeError.style.display = 'block';
             mensajeError.innerText = (e.code === 'email_not_confirmed' || /not confirmed/i.test(e.message || ''))
                 ? "Todavía no has confirmado tu correo. Revisa tu bandeja de entrada."
-                : "Correo o contraseña incorrectos";
+                : usuarioInput.includes('@')
+                    ? "Correo o contraseña incorrectos"
+                    : "Usuario o contraseña incorrectos";
         }
     }
 }
