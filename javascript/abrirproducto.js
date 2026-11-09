@@ -246,24 +246,7 @@ async function abrirDetalleVerProducto(indiceProducto) {
             conclusionesCom.innerText = prod.enlace || "No se ha proporcionado una forma de compra.";
         }
         
-        let contenedorValoracionCom = vistaCom.querySelector('#detalle-ver-valoracion');
-        if (!contenedorValoracionCom) {
-            const detalleCardCom = vistaCom.querySelector('.detalle-card');
-            contenedorValoracionCom = document.createElement('div');
-            contenedorValoracionCom.id = 'detalle-ver-valoracion';
-            // Adaptación móvil: flex-wrap permite que caigan en otra línea si la pantalla es de 320px
-            contenedorValoracionCom.style.cssText = "display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 25px; margin-bottom: 10px;";
-
-            contenedorValoracionCom.innerHTML = `
-                <button type="button" class="btn-val-g btn-valoracion-independiente" id="btn-mg-si" onclick="alternarValoracion(this, 'me-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
-                     Me ha resultado útil
-                </button>
-                <button type="button" class="btn-val-n btn-valoracion-independiente" id="btn-mg-no" onclick="alternarValoracion(this, 'no-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
-                     No me gusta
-                </button>
-            `;
-            if (detalleCardCom) detalleCardCom.appendChild(contenedorValoracionCom);
-        }
+        pintarValoracion(vistaCom, prod);
 
     } else {
         // --- VISTA DE BAJO COSTE ---
@@ -393,25 +376,7 @@ async function abrirDetalleVerProducto(indiceProducto) {
             }
         }
 
-        // SLIDER DE VALORACIÓN (BAJO COSTE) ADAPTADO A MÓVIL
-        let contenedorValoracion = vistaBaj.querySelector('#detalle-ver-valoracion');
-        if (!contenedorValoracion) {
-            const detalleCardBaj = vistaBaj.querySelector('.detalle-card');
-            contenedorValoracion = document.createElement('div');
-            contenedorValoracion.id = 'detalle-ver-valoracion';
-            // Adaptación móvil: flex-wrap permite que caigan en otra línea si la pantalla es estrecha
-            contenedorValoracion.style.cssText = "display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 25px; margin-bottom: 10px;";
-
-            contenedorValoracion.innerHTML = `
-                <button type="button" class="btn-val-g btn-valoracion-independiente" id="btn-mg-si" onclick="alternarValoracion(this, 'me-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
-                     Me ha resultado útil
-                </button>
-                <button type="button" class="btn-val-n btn-valoracion-independiente" id="btn-mg-no" onclick="alternarValoracion(this, 'no-gusta')" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;">
-                     No me gusta
-                </button>
-            `;
-            if (detalleCardBaj) detalleCardBaj.appendChild(contenedorValoracion);
-        }
+        pintarValoracion(vistaBaj, prod);
     }
 }
 
@@ -534,31 +499,123 @@ document.addEventListener('keydown', (evento) => {
 
 
 
-function alternarValoracion(botonPulsado, opcion) {
-    const contenedor = botonPulsado.closest('#detalle-ver-valoracion');
-    const todosLosBotones = contenedor.querySelectorAll('.btn-valoracion-independiente');
+// =========================================================================
+// VALORACIONES: "ME GUSTA" / "NO ME GUSTA"
+// Solo votan los usuarios con sesión iniciada. El voto se guarda en la tabla
+// "valoraciones" (uno por usuario y producto) y la función votar_producto
+// recalcula las columnas me_gusta y no_gusta de verproductos.
+// (SQL en sql/valoraciones.sql)
+// =========================================================================
+const TEXTOS_VOTO = { me_gusta: 'Me gusta', no_gusta: 'No me gusta' };
 
-    // Comprobamos si el botón que acaba de pulsar ya estaba activo
-    const yaEstabaActivo = botonPulsado.classList.contains('active-filtro');
+// Pulgar arriba / abajo. Usan el color del texto del botón (currentColor),
+// así se adaptan al contraste alto y al botón activo. Son decorativos:
+// el lector de pantalla lee solo el texto.
+const PULGAR_ARRIBA = '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>';
+const ICONOS_VOTO = {
+    me_gusta: `<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="1.3em" height="1.3em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.25em; margin-right: 6px; flex-shrink: 0;">${PULGAR_ARRIBA}</svg>`,
+    no_gusta: `<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="1.3em" height="1.3em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.25em; margin-right: 6px; flex-shrink: 0; transform: rotate(180deg);">${PULGAR_ARRIBA}</svg>`
+};
 
-    // 1. Apagamos y reseteamos el texto original de ambos botones
-    todosLosBotones.forEach(btn => {
-        btn.classList.remove('active-filtro');
-        if (btn.id === 'btn-mg-si') btn.innerText = "Me ha resultado útil";
-        if (btn.id === 'btn-mg-no') btn.innerText = "No me ha resultado útil";
+function anunciarValoracion(texto) {
+    const anuncio = document.getElementById('anuncio-accesible');
+    if (anuncio) anuncio.innerText = texto;
+}
+
+// Usuario con sesión de Supabase (null si no ha iniciado sesión)
+async function usuarioActual() {
+    if (!window.supabase || !window.supabase.auth) return null;
+    const { data } = await window.supabase.auth.getSession();
+    return data && data.session ? data.session.user : null;
+}
+
+// Pinta los dos botones con sus contadores y marca el voto del usuario
+function actualizarBotonesValoracion(contenedor, prod, votoUsuario) {
+    contenedor.querySelectorAll('.btn-valoracion-independiente').forEach(btn => {
+        const tipo = btn.dataset.voto;
+        const activo = tipo === votoUsuario;
+        btn.classList.toggle('active-filtro', activo);
+        btn.setAttribute('aria-pressed', activo ? 'true' : 'false');
+        // Los totales solo se guardan en la base de datos: en la web no se enseñan
+        btn.innerHTML = `${ICONOS_VOTO[tipo]}<span>${TEXTOS_VOTO[tipo]}</span>`;
     });
+}
 
-    // 2. Si NO estaba activo, lo encendemos y le asignamos su texto personalizado
-    if (!yaEstabaActivo) {
-        botonPulsado.classList.add('active-filtro');
+async function pintarValoracion(vista, prod) {
+    let contenedor = vista.querySelector('#detalle-ver-valoracion');
+    if (!contenedor) {
+        const detalleCard = vista.querySelector('.detalle-card');
+        contenedor = document.createElement('div');
+        contenedor.id = 'detalle-ver-valoracion';
+        // Adaptación móvil: flex-wrap permite que caigan en otra línea si la pantalla es estrecha
+        contenedor.style.cssText = "display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 25px; margin-bottom: 10px;";
+        contenedor.innerHTML = `
+            <button type="button" class="btn-val-g btn-valoracion-independiente" data-voto="me_gusta" onclick="alternarValoracion(this)" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;"></button>
+            <button type="button" class="btn-val-n btn-valoracion-independiente" data-voto="no_gusta" onclick="alternarValoracion(this)" style="flex: 1 1 140px; min-width: 130px; box-sizing: border-box; padding: 10px 5px;"></button>
+        `;
+        if (detalleCard) detalleCard.appendChild(contenedor);
+    }
 
-        // Textos personalizados al activarse cada botón:
-        if (opcion === 'me-gusta') {
-            botonPulsado.innerText = "Le has dado a útil"; // Texto cuando está activo "Me gusta"
-        } else if (opcion === 'no-gusta') {
-            botonPulsado.innerText = "Le has dado a no útil"; // Texto cuando está activo "No me gusta"
-        }
+    // Los botones se reutilizan entre productos: primero los dejamos sin voto
+    contenedor.dataset.productoId = prod.id;
+    contenedor.dataset.votoUsuario = '';
+    actualizarBotonesValoracion(contenedor, prod, null);
 
+    // Si hay sesión, buscamos si este usuario ya votó este producto
+    const usuario = await usuarioActual();
+    if (!usuario) return;
+
+    const { data, error } = await window.supabase
+        .from('valoraciones')
+        .select('voto')
+        .eq('producto_id', prod.id)
+        .eq('user_id', usuario.id)
+        .maybeSingle();
+
+    // Mientras llegaba la respuesta puede haber abierto otro producto
+    if (error || contenedor.dataset.productoId != prod.id) return;
+
+    const voto = data ? data.voto : '';
+    contenedor.dataset.votoUsuario = voto;
+    actualizarBotonesValoracion(contenedor, prod, voto || null);
+}
+
+async function alternarValoracion(botonPulsado) {
+    const contenedor = botonPulsado.closest('#detalle-ver-valoracion');
+    const prod = productosGlobales.find(p => p.id == contenedor.dataset.productoId);
+    if (!prod) return;
+
+    // Solo pueden votar los usuarios registrados
+    const usuario = await usuarioActual();
+    if (!usuario) {
+        anunciarValoracion('Inicia sesión para valorar los productos');
+        abrirModal('modal-login');
+        return;
+    }
+
+    // Pulsar el voto que ya tenía lo quita; pulsar el otro lo cambia
+    const votoAnterior = contenedor.dataset.votoUsuario || null;
+    const votoNuevo = botonPulsado.dataset.voto === votoAnterior ? null : botonPulsado.dataset.voto;
+
+    const botones = contenedor.querySelectorAll('.btn-valoracion-independiente');
+    botones.forEach(btn => btn.disabled = true);
+
+    try {
+        const { error } = await window.supabase.rpc('votar_producto', {
+            p_producto_id: prod.id,
+            p_voto: votoNuevo
+        });
+        if (error) throw error;
+
+        contenedor.dataset.votoUsuario = votoNuevo || '';
+        actualizarBotonesValoracion(contenedor, prod, votoNuevo);
+
+        anunciarValoracion(votoNuevo ? `Has votado: ${TEXTOS_VOTO[votoNuevo]}` : 'Has quitado tu voto');
+    } catch (error) {
+        console.error('Error al guardar la valoración:', error);
+        anunciarValoracion('No se pudo guardar tu valoración. Inténtalo de nuevo.');
+    } finally {
+        botones.forEach(btn => btn.disabled = false);
     }
 }
 // =========================================================================
